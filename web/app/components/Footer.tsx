@@ -7,6 +7,7 @@ import Link from "next/link";
 
 
 
+
 const Footer = () => {
 
     return (
@@ -30,6 +31,7 @@ const Footer = () => {
                         <li><a href="#" className="hover:underline">About</a></li>
                         <li><a href="#" className="hover:underline">Competitions</a></li>
                         <li><a href="#" className="hover:underline">News</a></li>
+                        
                     </ul>
                 </div>
 
