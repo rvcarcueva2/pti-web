@@ -35,26 +35,55 @@ export default function Header() {
 
           {/* Social Media */}
           <div className="flex items-center gap-1">
-            <a href="https://www.facebook.com/profile.php?id=100071547405103">
-              <FontAwesomeIcon icon={faFacebook} size="lg" />
-            </a>
             <a
-              href="https://www.instagram.com/pilipinas_taekwondo_inc"
+                href="https://www.facebook.com/profile.php?id=100071547405103"
+                target="_blank"
+                rel="noopener noreferrer"
             >
-              <FontAwesomeIcon icon={faSquareInstagram} size="lg" />
+                <Image
+                    src="/icons/Facebook.png"
+                    alt="Facebook"
+                    width={24}
+                    height={24}
+                    className="hover:opacity-80 transition"
+                />
             </a>
+
             <a
-              href="https://www.youtube.com/@pilipinastaekwondo"
+                href="https://www.instagram.com/pilipinas_taekwondo_inc"
+                target="_blank"
+                rel="noopener noreferrer"
             >
-              <FontAwesomeIcon icon={faYoutube} size="lg" />
+                <Image
+                    src="/icons/Instagram.png"
+                    alt="Instagram"
+                    width={24}
+                    height={24}
+                    className="hover:opacity-80 transition"
+                />
             </a>
-          </div>
+
+            <a
+                href="https://www.youtube.com/@pilipinastaekwondo"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <Image
+                    src="/icons/Youtube.png"
+                    alt="YouTube"
+                    width={26}
+                    height={26}
+                    className="hover:opacity-80 transition"
+                />
+            </a>
+            </div>
         </div>
       </div>
 
       {/* Main Header */}
-      <div className={`bg-white shadow font-geist`}>
+      <div className="bg-white shadow-lg font-geist z-10 relative">
         <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
+
           {/* Logo */}
           <div className="flex items-center">
             <Image
@@ -67,24 +96,59 @@ export default function Header() {
           </div>
 
           <div className={`flex items-center gap-8 ml-auto`}>
-            <nav className="flex items-center gap-8 text-black font-bold text-sm uppercase">
+            <nav className="flex items-center gap-8 text-black font-bold text-base uppercase">
+
+                {/* Home */}
                 <Link href="/" className="relative font-black text-black">
-                    <span className="relative after:content-[''] after:absolute after:left-1/2 after:-bottom-1 after:w-[120%] after:h-[2px] after:bg-[#FED018] after:-translate-x-1/2">
+                    <span className="relative after:content-[''] after:absolute after:left-1/2 after:-bottom-1 after:w-[100%] after:h-[3px] after:bg-[#fed018] after:-translate-x-1/2">
                         Home
                     </span>
                 </Link>
-                <Link href="/about" className="hover:font-black">About</Link>
-                <Link href="/events" className="hover:font-black">Competitions</Link>
-                <Link href="/news" className="hover:font-black">News</Link>
-                <Link href="/contact" className="hover:font-black">Contact</Link>
+
+                {/* About */}
+                <Link href="/about" className="relative group">
+                    <span className="relative transition">
+                        About
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    </span>
+                </Link>
+
+                {/* Competitions */}
+                <Link href="/events" className="relative group">
+                    <span className="relative transition">
+                        Competitions
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    </span>
+                </Link>
+
+                <Link href="/news" className="relative group">
+                    <span className="relative transition">
+                        News
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    </span>
+                </Link>
+
+                {/* Contact */}
+                <Link href="/contact" className="relative group">
+                    <span className="relative transition">
+                        Contact
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    </span>
+                    </Link>
             </nav>
 
+            {/* Sign In */}
             <Link
-              href="/login"
-              className="bg-black text-white px-6 py-2 rounded hover:opacity-90 transition text-sm uppercase font-bold"
+                href="/login"
+                className="relative overflow-hidden group px-8 py-2.5 bg-black text-white rounded text-sm uppercase transition-all duration-300"
             >
-              Sign In
+                <span className="relative z-10">Sign In</span>
+                <span className="absolute inset-0 bg-[#FED018] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute inset-0 group-hover:text-black transition duration-300 z-10 flex items-center justify-center font-bold">
+                    Sign In
+                </span>
             </Link>
+
           </div>
         </div>
       </div>
