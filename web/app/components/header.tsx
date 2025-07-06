@@ -8,10 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 export default function Header() {
   return (
