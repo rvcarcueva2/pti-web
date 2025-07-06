@@ -7,24 +7,30 @@ import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { usePathname } from 'next/navigation';
 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
 export default function Header() {
+    const pathname = usePathname();
   return (
     <header>
 
       {/* Contact Header */}
       <div className={`bg-black text-white text-sm font-geist`}>
-        <div className="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between">
+        <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
 
           {/* Email & Phone */}
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faEnvelope}  className="w-4 h-4" />
+              <FontAwesomeIcon icon={faEnvelope}/>
               <span>pilipinastaekwondo@gmail.com</span>
             </div>
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
+              <FontAwesomeIcon icon={faPhone}/>
               <span>+63 900 000 0000</span>
             </div>
           </div>
@@ -39,8 +45,8 @@ export default function Header() {
                 <Image
                     src="/icons/Facebook.png"
                     alt="Facebook"
-                    width={24}
-                    height={24}
+                    width={20}
+                    height={20}
                     className="hover:opacity-80 transition"
                 />
             </a>
@@ -53,8 +59,8 @@ export default function Header() {
                 <Image
                     src="/icons/Instagram.png"
                     alt="Instagram"
-                    width={24}
-                    height={24}
+                    width={20}
+                    height={20}
                     className="hover:opacity-80 transition"
                 />
             </a>
@@ -67,8 +73,8 @@ export default function Header() {
                 <Image
                     src="/icons/Youtube.png"
                     alt="YouTube"
-                    width={26}
-                    height={26}
+                    width={22}
+                    height={22}
                     className="hover:opacity-80 transition"
                 />
             </a>
@@ -85,8 +91,8 @@ export default function Header() {
             <Image
               src="/PTI-Logo.png"
               alt="Pilipinas Taekwondo"
-              width={60}
-              height={60}
+              width={65}
+              height={65}
               className="rounded-full"
             />
           </div>
@@ -95,43 +101,64 @@ export default function Header() {
             <nav className="flex items-center gap-8 text-black font-bold text-base uppercase">
 
                 {/* Home */}
-                <Link href="/" className="relative font-black text-black">
-                    <span className="relative after:content-[''] after:absolute after:left-1/2 after:-bottom-1 after:w-[100%] after:h-[2.5px] after:bg-[#fed018] after:-translate-x-1/2">
+                <Link href="/" className="relative group">
+                    <span className={`relative ${pathname === '/' ? 'font-black' : 'font-semibold'} text-black`}>
                         Home
+                        {pathname === '/' ? (
+                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
+                        ) : (
+                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
+                        )}
                     </span>
                 </Link>
 
                 {/* About */}
                 <Link href="/about" className="relative group">
-                    <span className="relative transition">
+                    <span className={`relative ${pathname === '/about' ? 'font-black' : 'font-semibold'} text-black`}>
                         About
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                        {pathname === '/about' ? (
+                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
+                        ) : (
+                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
+                        )}
                     </span>
                 </Link>
 
                 {/* Competitions */}
                 <Link href="/events" className="relative group">
-                    <span className="relative transition">
+                    <span className={`relative ${pathname === '/events' ? 'font-black' : 'font-semibold'} text-black`}>
                         Competitions
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                        {pathname === '/events' ? (
+                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
+                        ) : (
+                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
+                        )}
                     </span>
                 </Link>
 
+                {/* News */}
                 <Link href="/news" className="relative group">
-                    <span className="relative transition">
+                    <span className={`relative ${pathname === '/news' ? 'font-black' : 'font-semibold'} text-black`}>
                         News
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                        {pathname === '/news' ? (
+                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
+                        ) : (
+                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
+                        )}
                     </span>
                 </Link>
 
                 {/* Contact */}
                 <Link href="/contact" className="relative group">
-                    <span className="relative transition">
+                    <span className={`relative ${pathname === '/contact' ? 'font-black' : 'font-semibold'} text-black`}>
                         Contact
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                        {pathname === '/contact' ? (
+                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
+                        ) : (
+                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
+                        )}
                     </span>
-                    </Link>
-            </nav>
+                </Link>
 
             {/* Sign In */}
             <Link
@@ -144,7 +171,7 @@ export default function Header() {
                     Sign In
                 </span>
             </Link>
-
+            </nav>
           </div>
         </div>
       </div>
