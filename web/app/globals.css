@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
-h1 { font-size: 2.25rem; } /* 36px */
+h1 { font-size: 2.25rem; font-weight: 900;} /* 36px */
 h2 { font-size: 1.875rem; } /* 30px */
 h3 { font-size: 1.5rem; }   /* 24px */
 h4 { font-size: 1.25rem; }  /* 20px */
