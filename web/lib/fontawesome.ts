@@ -1,8 +1,9 @@
 import { library, config } from "@fortawesome/fontawesome-svg-core";
-import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 
 config.autoAddCss = false;
 
-library.add(faEnvelope);
+library.add(faEnvelope, faPhone, faFacebook, faYoutube, faSquareInstagram);
