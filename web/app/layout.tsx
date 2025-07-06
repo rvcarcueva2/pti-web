@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
+import Footer from "@/app/components/footer";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,14 +17,16 @@ const geistMono = Geist_Mono({
 
 const poppinsBlack = Poppins({
   weight: "900",
-  subsets: ["latin"],
   variable: "--font-poppins-black",
+  subsets: ["latin"],
+  
 });
 
 const poppinsRegular = Poppins({
   weight: "400",
-  subsets: ["latin"],
   variable: "--font-poppins-regular",
+  subsets: ["latin"],
+  
 });
 
 
@@ -44,6 +48,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
       >
         {children}
+        <Footer />
+        
       </body>
     </html>
   );
