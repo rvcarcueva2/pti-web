@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
-import Footer from "@/app/components/footer";
+import Footer from "@/app/components/Footer";
+import Header from "@/app/components/header";
 
 import "../lib/fontawesome";
 import "./globals.css";
@@ -48,6 +49,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
       >
+        <Header />
+        {/* Main Content */}
         {children}
         <Footer />
         
