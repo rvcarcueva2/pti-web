@@ -81,7 +81,7 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="bg-white shadow-lg font-geist z-10 relative">
+      <div className="bg-white shadow-lg font-geist z-10 relative ">
         <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
 
           {/* Logo */}
@@ -89,8 +89,8 @@ export default function Header() {
             <Image
               src="/PTI-Logo.png"
               alt="Pilipinas Taekwondo"
-              width={70}
-              height={70}
+              width={60}
+              height={60}
               className="rounded-full"
             />
           </div>
@@ -100,7 +100,7 @@ export default function Header() {
 
                 {/* Home */}
                 <Link href="/" className="relative font-black text-black">
-                    <span className="relative after:content-[''] after:absolute after:left-1/2 after:-bottom-1 after:w-[100%] after:h-[3px] after:bg-[#fed018] after:-translate-x-1/2">
+                    <span className="relative after:content-[''] after:absolute after:left-1/2 after:-bottom-1 after:w-[100%] after:h-[2.5px] after:bg-[#fed018] after:-translate-x-1/2">
                         Home
                     </span>
                 </Link>
@@ -109,7 +109,7 @@ export default function Header() {
                 <Link href="/about" className="relative group">
                     <span className="relative transition">
                         About
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
                     </span>
                 </Link>
 
@@ -117,14 +117,14 @@ export default function Header() {
                 <Link href="/events" className="relative group">
                     <span className="relative transition">
                         Competitions
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
                     </span>
                 </Link>
 
                 <Link href="/news" className="relative group">
                     <span className="relative transition">
                         News
-                    <span className="absolute left-1/2 -bottom-1 w-0 h-[3px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
+                    <span className="absolute left-1/2 -bottom-1 w-0 h-[2.5px] bg-[#FED018] transition-all duration-300 group-hover:w-[100%] group-hover:-translate-x-1/2"></span>
                     </span>
                 </Link>
 
