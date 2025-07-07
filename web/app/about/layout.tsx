@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-    title: "About PTI",
+    title: "About | Pilipinas Taekwondo Inc.",
   description:
     "About Pilipinas Taekwondo Inc.",
 };
