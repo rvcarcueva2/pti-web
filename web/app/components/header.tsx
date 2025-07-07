@@ -21,7 +21,7 @@ export default function Header() {
 
       {/* Contact Header */}
       <div className={`bg-black text-white text-sm font-geist`}>
-        <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between">
 
           {/* Email & Phone */}
           <div className="flex items-center gap-6">
@@ -31,7 +31,7 @@ export default function Header() {
             </div>
             <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faPhone}/>
-              <span>+63 900 000 0000</span>
+              <span>+63 905 815 5032</span>
             </div>
           </div>
 
@@ -43,7 +43,7 @@ export default function Header() {
                 rel="noopener noreferrer"
             >
                 <Image
-                    src="/icons/Facebook.png"
+                    src="/icons/Facebook.svg"
                     alt="Facebook"
                     width={20}
                     height={20}
@@ -57,7 +57,7 @@ export default function Header() {
                 rel="noopener noreferrer"
             >
                 <Image
-                    src="/icons/Instagram.png"
+                    src="/icons/Instagram.svg"
                     alt="Instagram"
                     width={20}
                     height={20}
@@ -71,7 +71,7 @@ export default function Header() {
                 rel="noopener noreferrer"
             >
                 <Image
-                    src="/icons/Youtube.png"
+                    src="/icons/Youtube.svg"
                     alt="YouTube"
                     width={22}
                     height={22}
@@ -163,7 +163,7 @@ export default function Header() {
             {/* Sign In */}
             <Link
                 href="/login"
-                className="relative overflow-hidden group px-8 py-2.5 bg-black text-white rounded text-sm uppercase transition-all duration-300"
+                className="relative overflow-hidden group px-8 py-2.5 bg-[#1A1A1A] text-white rounded text-sm uppercase transition-all duration-300"
             >
                 <span className="relative z-10">Sign In</span>
                 <span className="absolute inset-0 bg-[#FED018] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
