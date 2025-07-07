@@ -142,7 +142,7 @@ const Footer = () => {
 
 
                 <div className="font-geist ">
-                    <h4 className="font-semibold mb-3">Follow Us</h4>
+                    <h4 className="font-semibold mb-3">Contact Us</h4>
 
                     <div className="flex items-center gap-2 mb-2">
                         <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4" />
