@@ -125,10 +125,10 @@ export default function Header() {
                 </Link>
 
                 {/* Competitions */}
-                <Link href="/events" className="relative group">
-                    <span className={`relative ${pathname === '/events' ? 'font-black' : 'font-semibold'} text-black`}>
+                <Link href="/competitions" className="relative group">
+                    <span className={`relative ${pathname === '/competitions' ? 'font-black' : 'font-semibold'} text-black`}>
                         Competitions
-                        {pathname === '/events' ? (
+                        {pathname === '/competitions' ? (
                             <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
                         ) : (
                             <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
