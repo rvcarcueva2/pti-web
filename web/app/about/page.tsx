@@ -2,11 +2,11 @@ import Header from "@/app/components/header";
 import "@/app/globals.css";
 import Image from "next/image";
 
-export default function Home() {
+export default function About() {
   return (
     <>
       <section className="px-4 sm:px-4 pt-16 pb-10 text-center">
-        <h1 className="font-geist text-3xl font-bold border-b-4 border-[#FED018] inline-block pb-2">
+        <h1 className="font-poppins-black text-3xl border-b-4 border-[#FED018] inline-block pb-2">
           ABOUT
         </h1>
         <p className="font-geist font-[450] mt-12 text-justify mx-auto max-w-6xl">
@@ -31,8 +31,8 @@ export default function Home() {
       </section>
 
       <section className="bg-[#1A1A1A] text-white text-center py-16">
-        <h2 className="text-[#FED018] text-xl font-bold mb-10">
-          Lorem ipsum dolor sit amet
+        <h2 className="font-poppins-black text-[#FED018] text-xl  mb-10">
+          PARTNERSHIPS
         </h2>
 
         <div className="grid grid-cols-3 max-w-6xl mx-auto gap-10 px-6">
