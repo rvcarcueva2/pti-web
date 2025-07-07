@@ -148,18 +148,6 @@ export default function Header() {
                     </span>
                 </Link>
 
-                {/* Contact */}
-                <Link href="/contact" className="relative group">
-                    <span className={`relative ${pathname === '/contact' ? 'font-black' : 'font-semibold'} text-black`}>
-                        Contact
-                        {pathname === '/contact' ? (
-                            <span className="absolute left-1/2 bottom-[-6px] w-full h-[2px] bg-[#FED018] -translate-x-1/2"></span>
-                        ) : (
-                            <span className="absolute left-1/2 bottom-[-6px] w-0 h-[2px] bg-[#FED018] transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
-                        )}
-                    </span>
-                </Link>
-
             {/* Sign In */}
             <Link
                 href="/login"
