@@ -83,7 +83,7 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="bg-white shadow-lg font-geist z-10 relative ">
+      <div className="bg-white shadow-lg font-geist z-10 relative">
         <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between">
 
           {/* Logo */}
