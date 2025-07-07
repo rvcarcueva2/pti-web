@@ -125,7 +125,7 @@ export default function Header() {
                 </Link>
 
                 {/* Competitions */}
-                <Link href="/events" className="relative group">
+                <Link href="/competitions" className="relative group">
                     <span className={`relative ${pathname === '/events' ? 'font-black' : 'font-semibold'} text-black`}>
                         Competitions
                         {pathname === '/events' ? (
