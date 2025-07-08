@@ -21,13 +21,13 @@ export default function Competitions() {
                         <div key={post.slug} className="mx-auto max-w-6xl border-2 rounded-sm border-foreground p-6 hover:shadow-lg transition-shadow relative">
                             {/* Post Image */}
                             {postImage && (
-                                <div className="mb-4 overflow-x-auto">
+                                <div className="mb-4 overflow-hidden">
                                     <Image
                                         src={postImage}
                                         alt={post.meta.title}
-                                        width={1514}
-                                        height={757}
-                                        className="w-full h-auto mx-auto rounded-lg"
+                                        width={1500}
+                                        height={700}
+                                        className="rounded-lg"
                                     />
                                 </div>
                             )}
@@ -36,9 +36,9 @@ export default function Competitions() {
                             </div>
                             <div className="font-geist text-center">
                                 <p className="text-[#EAB044] font-semibold text-sm">{post.meta.date}</p>
-                                
+
                             </div>
-                            
+
                             {/* Button positioned absolutely at bottom right */}
                             <Link href={`/competitions/${post.slug}`}>
                                 <button className="absolute bottom-4 right-6 bg-foreground hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer">
