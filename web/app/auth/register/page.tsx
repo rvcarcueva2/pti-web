@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -56,10 +57,19 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="font-geist min-h-screen w-full flex items-center justify-center px-4 py-12 overflow-y-auto">
+    <div className="font-geist bg-register min-h-screen w-full flex items-center justify-center px-4 pt-14 pb-20">
+
       <div className="w-full max-w-md text-center rounded-lg p-6">
         <div className="mb-6">
-          <Image src="/PTI-Logo.png" alt="Logo" width={100} height={100} className="mx-auto" />
+          <Link href="/">
+            <Image
+              src="/PTI-Logo.png"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="mx-auto cursor-pointer"
+            />
+          </Link>
         </div>
 
         <h2 className="text-xl font-bold mb-6">Create your account</h2>
