@@ -1,22 +1,28 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Header from "./header";
-import HomeHeader from "@/app/components/HomeHeader";
+import { usePathname } from 'next/navigation';
+import ContactHeader from '@/app/components/ContactHeader';
+import MainHeader from '@/app/components/MainHeader';
+import HomeHeader from '@/app/components/HomeHeader';
 
 export default function HeaderWrapper() {
   const pathname = usePathname();
 
-  // Routes that should NOT show any header
-  const noHeaderRoutes = ["/sign-in", "/register"];
+  // Routes that should show only the black contact header
+  const contactOnlyRoutes = ['/auth/sign-in', '/auth/register'];
 
-  if (noHeaderRoutes.includes(pathname)) {
-    return null;
+  if (contactOnlyRoutes.includes(pathname)) {
+    return <ContactHeader />;
   }
 
-  if (pathname === "/") {
+  if (pathname === '/') {
     return <HomeHeader />;
   }
 
-  return <Header />;
+  return (
+    <>
+      <ContactHeader />
+      <MainHeader />
+    </>
+  );
 }
