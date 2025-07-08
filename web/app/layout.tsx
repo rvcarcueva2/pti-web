@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
-import Footer from "@/app/components/Footer";
+import FooterWrapper from "@/app/components/FooterWrapper";
 import HeaderWrapper from "@/app/components/HeaderWrapper";
 
 import "../lib/fontawesome";
@@ -52,7 +52,7 @@ export default function RootLayout({
         <HeaderWrapper />
         {/* Main Content */}
         {children}
-        <Footer />
+        <FooterWrapper />
       </body>
     </html>
   );
