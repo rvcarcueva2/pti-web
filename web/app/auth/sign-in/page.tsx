@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const SignIn: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,18 +34,20 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="font-geist relative flex h-screen w-full items-center justify-center px-4 overflow-hidden">
+    <div className="font-geist bg-sign-in min-h-[107vh] w-full flex items-start justify-center px-4 pt-26 pb-26">
       {/* Form Container */}
       <div className="w-full max-w-md text-center rounded-lg p-6">
         {/* Logo */}
         <div className="mb-6">
-          <Image
-            src="/PTI-Logo.png"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="mx-auto"
-          />
+          <Link href="/">
+            <Image
+              src="/PTI-Logo.png"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="mx-auto cursor-pointer"
+            />
+          </Link>
         </div>
 
         {/* Heading */}
