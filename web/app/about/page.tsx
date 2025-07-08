@@ -1,4 +1,3 @@
-import Header from "@/app/components/header";
 import "@/app/globals.css";
 import Image from "next/image";
 
