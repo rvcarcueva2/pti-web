@@ -57,3 +57,17 @@ p {
   font-size: 1rem; /* 20px */
   line-height: 1.5;
 }
+
+.bg-sign-in {
+  background-image: url('/images/sign-in_background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.bg-register {
+  background-image: url('/images/register_background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top center;
+}
