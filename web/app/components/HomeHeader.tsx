@@ -111,7 +111,7 @@ export default function HomeHeader() {
 
             {/* Sign In */}
             <Link
-              href="/login"
+              href="/auth/sign-in"
               className="relative overflow-hidden group px-8 py-2.5 bg-[#1A1A1A] text-white rounded text-sm uppercase transition-all duration-300"
             >
               <span className="relative z-10">Sign In</span>
