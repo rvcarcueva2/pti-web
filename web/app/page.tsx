@@ -49,19 +49,20 @@ export default function Carousel() {
     <>
       {/* Hero Background */}
       <div className="relative w-full h-screen overflow-hidden">
-        <div className="absolute inset-0 -z-10">
+        <div className="relative w-full h-auto">
           <Image
             src="/images/Hero.png"
             alt="Pilipinas Taekwondo Incorporated"
-            fill
+            width={1920}
+            height={1080}
             priority
-            className="object-contain object-top w-full h-full"
+            className="w-full h-auto object-contain object-top"
           />
         </div>
       </div>
 
       {/* Section Title */}
-      <section className="px-4 -mt-35 pt-1 pb-10 text-center">
+      <section className="-mt-28 px-4 pt-10 pb-10 text-center">
         <h1 className="font-poppins-black text-3xl border-b-4 border-[#FED018] inline-block pb-2">
           COMPETITIONS
         </h1>
