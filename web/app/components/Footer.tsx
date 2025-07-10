@@ -106,7 +106,7 @@ const Footer = () => {
                                 alt="Facebook"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition"
+                                className="hover:opacity-80 transition border-0 rounded-sm"
                             />
                         </a>
 
@@ -120,7 +120,7 @@ const Footer = () => {
                                 alt="Instagram"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition"
+                                className="hover:opacity-80 transition rounded-sm"
                             />
                         </a>
 
@@ -134,7 +134,7 @@ const Footer = () => {
                                 alt="YouTube"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition"
+                                className="hover:opacity-80 transition rounded-sm"
                             />
                         </a>
                     </div>

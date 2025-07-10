@@ -14,7 +14,7 @@ export default function Competitions() {
             </h1>
 
             {/* List of Competition Posts */}
-            <div className="mt-8 space-y-6">
+            <div className="mt-16 space-y-6">
                 {posts.map((post) => {
                     const postImage = getFirstImageFromPost(post.slug);
                     return (
