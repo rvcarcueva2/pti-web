@@ -54,7 +54,7 @@ h5 { font-size: 1.125rem; } /* 18px */
 h6 { font-size: 1rem; }     /* 16px */
 
 p {
-  font-size: 1rem; /* 20px */
+  font-size: 1rem; /* 16px */
   line-height: 1.5;
 }
 
@@ -71,3 +71,28 @@ p {
   background-repeat: no-repeat;
   background-position: top center;
 }
+
+
+ @media (max-width: 1490px) {
+    .text-responsive {
+      font-size: 1rem; /* ~16px */
+    }
+  }
+
+  @media (max-width: 1280px) {
+    .text-responsive {
+      font-size: 0.875rem; /* 14px */
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .text-responsive {
+      font-size: 0.8125rem; /* 13px */
+    }
+  }
+
+  @media (max-width: 768px) {
+    .text-responsive {
+      font-size: 0.8125rem; /* 13px */
+    }
+  }
