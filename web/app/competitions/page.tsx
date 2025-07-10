@@ -1,7 +1,7 @@
 import "@/app/globals.css";
 import Image from "next/image";
 import Link from "next/link";
-import { getAllPosts, getFirstImageFromPost } from "@/lib/posts";
+import { getAllPosts, getFirstImageFromPost, formatDate } from "@/lib/posts";
 
 export default function Competitions() {
     const posts = getAllPosts();
@@ -35,7 +35,7 @@ export default function Competitions() {
                                 {post.meta.title}
                             </div>
                             <div className="font-geist text-center">
-                                <p className="text-[#EAB044] font-semibold text-sm">{post.meta.date}</p>
+                                <p className="text-[#EAB044] font-semibold text-sm">{formatDate(post.meta.date)}</p>
 
                             </div>
 

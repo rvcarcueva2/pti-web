@@ -1,4 +1,4 @@
-import { getPostBySlug, getPostSlugs } from '@/lib/posts';
+import { getPostBySlug, getPostSlugs, formatDate } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -69,7 +69,7 @@ export default async function CompetitionPost({ params }: Props) {
                                 </span>
                                 <span className="flex items-center gap-3">
                                     <FontAwesomeIcon icon="calendar-days" style={{ fontSize: '20px' }} />
-                                    {post.meta.date || 'TBA'}
+                                    {formatDate(post.meta.date) || 'TBA'}
                                 </span>
                             </div>
                             <div>
