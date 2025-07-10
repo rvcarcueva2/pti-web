@@ -18,10 +18,11 @@ const Register: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
   };
@@ -32,20 +33,21 @@ const Register: React.FC = () => {
     const newErrors: { [key: string]: string } = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Required field checks
     Object.entries(formData).forEach(([key, value]) => {
       if (!value.trim()) {
         newErrors[key] = 'This field is required.';
       }
     });
 
-    // Email format check
     if (formData.email && !emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address.';
     }
 
-    // Password match check
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    if (
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    ) {
       newErrors.confirmPassword = 'Passwords do not match.';
     }
 
@@ -57,9 +59,25 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="font-geist bg-register min-h-screen w-full flex items-center justify-center px-4 pt-14 pb-20">
+    <div className="relative font-geist bg-register min-h-screen w-full flex items-center justify-center px-4 pt-14 pb-20 overflow-hidden">
+      {/* Decorative Images */}
+      <Image
+        src="/images/1.png"
+        alt="Top Left Decoration"
+        width={200}
+        height={200}
+        className="absolute top-0 left-0 z-0"
+      />
+      <Image
+        src="/images/2.png"
+        alt="Bottom Right Decoration"
+        width={500}
+        height={500}
+        className="absolute bottom-0 right-0 z-0"
+      />
 
-      <div className="w-full max-w-md text-center rounded-lg p-6">
+      {/* Form */}
+      <div className="relative z-10 w-full max-w-md text-center rounded-lg p-6">
         <div className="mb-6">
           <Link href="/">
             <Image
@@ -88,7 +106,9 @@ const Register: React.FC = () => {
               onChange={handleChange}
               className="w-full px-3 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            {errors.firstName && <p className="text-sm text-[#D41716] mt-1">{errors.firstName}</p>}
+            {errors.firstName && (
+              <p className="text-sm text-[#D41716] mt-1">{errors.firstName}</p>
+            )}
           </div>
 
           {/* Last Name */}
@@ -104,7 +124,9 @@ const Register: React.FC = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            {errors.lastName && <p className="text-sm text-[#D41716] mt-1">{errors.lastName}</p>}
+            {errors.lastName && (
+              <p className="text-sm text-[#D41716] mt-1">{errors.lastName}</p>
+            )}
           </div>
 
           {/* Gender & Mobile */}
@@ -124,9 +146,13 @@ const Register: React.FC = () => {
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A] text-xs">⏷</div>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A] text-xs">
+                  ⏷
+                </div>
               </div>
-              {errors.gender && <p className="text-sm text-[#D41716] mt-1">{errors.gender}</p>}
+              {errors.gender && (
+                <p className="text-sm text-[#D41716] mt-1">{errors.gender}</p>
+              )}
             </div>
 
             <div className="w-1/2">
@@ -141,7 +167,9 @@ const Register: React.FC = () => {
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
               />
-              {errors.mobile && <p className="text-sm text-[#D41716] mt-1">{errors.mobile}</p>}
+              {errors.mobile && (
+                <p className="text-sm text-[#D41716] mt-1">{errors.mobile}</p>
+              )}
             </div>
           </div>
 
@@ -158,7 +186,9 @@ const Register: React.FC = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            {errors.email && <p className="text-sm text-[#D41716] mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-sm text-[#D41716] mt-1">{errors.email}</p>
+            )}
           </div>
 
           {/* Username */}
@@ -174,7 +204,9 @@ const Register: React.FC = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            {errors.username && <p className="text-sm text-[#D41716] mt-1">{errors.username}</p>}
+            {errors.username && (
+              <p className="text-sm text-[#D41716] mt-1">{errors.username}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -204,7 +236,9 @@ const Register: React.FC = () => {
                 className="object-contain"
               />
             </button>
-            {errors.password && <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -222,19 +256,29 @@ const Register: React.FC = () => {
             />
             <button
               type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              onClick={() =>
+                setShowConfirmPassword(!showConfirmPassword)
+              }
               className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
               tabIndex={-1}
             >
               <Image
-                src={showConfirmPassword ? '/icons/hide-password.svg' : '/icons/show-password.svg'}
+                src={
+                  showConfirmPassword
+                    ? '/icons/hide-password.svg'
+                    : '/icons/show-password.svg'
+                }
                 alt="Toggle confirm password"
                 width={20}
                 height={20}
                 className="object-contain"
               />
             </button>
-            {errors.confirmPassword && <p className="text-sm text-[#D41716] mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="text-sm text-[#D41716] mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -248,7 +292,10 @@ const Register: React.FC = () => {
 
         <p className="text-xs mt-4 text-center">
           Already have an account?{' '}
-          <a href="/auth/sign-in" className="font-semibold text-[#040163] hover:underline">
+          <a
+            href="/auth/sign-in"
+            className="font-semibold text-[#040163] hover:underline"
+          >
             Sign in
           </a>
         </p>
