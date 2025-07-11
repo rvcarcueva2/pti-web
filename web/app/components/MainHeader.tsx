@@ -34,7 +34,7 @@ export default function Header() {
                             alt="Pilipinas Taekwondo"
                             width={65}
                             height={65}
-                            className="rounded-full"
+                            className="rounded-full w-[65px] h-[65px] max-[1080px]:w-[45px] max-[1080px]:h-[45px]"
                         />
                     </div>
 
