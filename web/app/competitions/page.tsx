@@ -7,7 +7,7 @@ export default function Competitions() {
     const posts = getAllPosts();
 
     return (
-        <main className="px-4 sm:px-4 pt-16 pb-10 text-center">
+        <main className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
             {/* Page Heading */}
             <div className="text-center">
                 {/* h3 for mobile only */}
@@ -51,14 +51,25 @@ export default function Competitions() {
 
                             <div className="mt-2 md:mt-0 md:absolute md:bottom-4 md:right-6 text-center md:text-right">
                                 <Link href={`/competitions/${post.slug}`}>
-                                    <button className="cursor-pointer bg-foreground hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 justify-center md:justify-end mx-auto md:mx-0">
-                                    View Details
+                                    <button className="group cursor-pointer bg-foreground hover:bg-[#FED018] text-white hover:text-[#1A1A1A] font-semibold py-2 px-4 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 justify-center md:justify-end mx-auto md:mx-0">
+                                        View Details
+
+                                        {/* Default icon (visible when not hovered) */}
                                         <Image
                                             src="/icons/Forward Button.svg"
                                             alt="Forward"
                                             width={24}
                                             height={24}
-                                            className="w-6 h-6"
+                                            className="w-6 h-6 group-hover:hidden"
+                                        />
+
+                                        {/* Hover icon (visible when hovered) */}
+                                        <Image
+                                            src="/icons/forward-button2.svg"
+                                            alt="Forward Hover"
+                                            width={24}
+                                            height={24}
+                                            className="w-6 h-6 hidden group-hover:block"
                                         />
                                     </button>
                                 </Link>
