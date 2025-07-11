@@ -37,7 +37,7 @@ const Footer = () => {
                         Get in touch with us and stay updated.
                     </h4>
 
-                    <form className="flex items-center border border-gray-300 bg-gray-100 rounded w-full max-[768px]:max-w-sm max-[768px]:mx-auto">
+                    <form className="flex items-center border border-gray-300 bg-gray-100 rounded w-full max-w-md max-[768px]:max-w-[90%] max-[768px]:mx-auto">
                         <input
                             type="email"
                             placeholder="Enter your email"
@@ -168,10 +168,16 @@ const Footer = () => {
             </div>
 
             <div className='bg-foreground text-white mt-8 md:mt-10 text-center text-sm font-light py-2 md:py-4 font-geist max-[1024px]:py-1 max-[1024px]:mt-3 max-[1024px]:text-[10px] max-[768px]:py-0.5 max-[768px]:mt-2 max-[768px]:text-[8px]'>
-                <div><p className="max-[1024px]:px-2 max-[768px]:px-1 max-[768px]:leading-none text-responsive">© Copyright 2025  Pilipinas Taekwondo Incorporated. All Rights Reserved </p> </div>
-
+                <div>
+                    <p className="max-[1024px]:px-2 max-[768px]:px-1 max-[768px]:leading-none text-responsive">
+                        © Copyright 2025  Pilipinas Taekwondo Incorporated.
+                        <span className="hidden max-[768px]:inline"><br /></span>
+                        <span className="ml-1">All Rights Reserved</span>
+                    </p>
+                </div>
             </div>
         </footer>
     );
 };
+
 export default Footer;
