@@ -64,16 +64,19 @@ const Register: React.FC = () => {
       <Image
         src="/images/1.png"
         alt="Top Left Decoration"
-        width={200}
-        height={200}
-        className="absolute top-0 left-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 100px, 200px"
+        className="absolute top-0 left-0 z-0 w-[100px] md:w-[200px]"
       />
+
       <Image
         src="/images/2.png"
         alt="Bottom Right Decoration"
-        width={500}
-        height={500}
-        className="absolute bottom-0 right-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 200px, 500px"
+        className="absolute bottom-0 right-0 z-0 w-[200px] md:w-[500px]"
       />
 
       {/* Form */}
@@ -83,14 +86,25 @@ const Register: React.FC = () => {
             <Image
               src="/PTI-Logo.png"
               alt="Logo"
-              width={100}
-              height={100}
-              className="mx-auto cursor-pointer"
+              width={0}
+              height={0}
+              sizes="(max-width: 768px) 80px, 100px"
+              className="w-[80px] md:w-[100px] mx-auto cursor-pointer"
             />
           </Link>
         </div>
 
-        <h2 className="text-xl font-bold mb-6">Create your account</h2>
+        <>
+          {/* h4 for mobile only */}
+          <h4 className="block md:hidden text-base font-bold mb-6">
+            Create your account
+          </h4>
+
+          {/* h2 for tablet and up */}
+          <h2 className="hidden md:block text-xl font-bold mb-6">
+            Create your account
+          </h2>
+        </>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* First Name */}
@@ -130,8 +144,9 @@ const Register: React.FC = () => {
           </div>
 
           {/* Gender & Mobile */}
-          <div className="flex gap-4">
-            <div className="w-1/2">
+          <div className="flex flex-col sm:flex-row gap-4">
+
+            <div className="w-full sm:w-1/2">
               <label className="block text-sm font-semibold mb-1">
                 Gender<span className="text-[#D41716]">*</span>
               </label>
@@ -155,7 +170,7 @@ const Register: React.FC = () => {
               )}
             </div>
 
-            <div className="w-1/2">
+            <div className="w-full sm:w-1/2">
               <label className="block text-sm font-semibold mb-1">
                 Mobile Number<span className="text-[#D41716]">*</span>
               </label>
