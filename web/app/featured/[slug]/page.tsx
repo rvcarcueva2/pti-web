@@ -46,7 +46,7 @@ export default async function FeaturedPost({ params }: Props) {
     };
 
     return (
-        <main className="px-4 sm:px-4 pt-16 pb-10">
+        <main className="px-6 sm:px-8 pt-16 pb-10">
             {/* Two-column layout */}
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main content */}
@@ -54,36 +54,47 @@ export default async function FeaturedPost({ params }: Props) {
                     <div className="font-geist">
                         {/* Featured Image */}
                         {featured.meta.image && (
-                            <div className="mb-8">
+                            <div className="mb-4">
                                 <Image
                                     src={featured.meta.image}
                                     alt={featured.meta.title}
                                     width={1200}
                                     height={600}
-                                    className="w-full h-[600px] object-cover shadow-lg"
+                                    className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[600px] object-cover shadow-lg"
                                 />
                             </div>
                         )}
                         
-                        <h2 className="font-geist font-bold text-2xl mb-4">{featured.meta.title}</h2>
-                        {featured.meta.date && (
-                            <p className="text-sm text-gray-400 mb-6">{formatDate(featured.meta.date)}</p>
-                        )}
+                        <>
+                            {/* h4 for mobile */}
+                            <h4 className="block md:hidden font-geist font-bold text-base mb-1">
+                            {featured.meta.title}
+                            </h4>
 
-                        <div className="max-w-none prose prose-lg mx-auto">
+                            {/* h2 for desktop */}
+                            <h2 className="hidden md:block font-geist font-bold text-2xl mb-1">
+                            {featured.meta.title}
+                            </h2>
+                        </>
+
+                            {featured.meta.date && (
+                            <p className="text-sm text-gray-400 mb-6">{formatDate(featured.meta.date)}</p>
+                            )}
+
+                        <div className="text-responsive max-w-none prose prose-lg mx-auto">
                             <MDXRemote source={featured.content} components={components} />
                         </div>
 
                         {/* Back to Home Link */}
-                        <div className="mt-8 pt-8">
-                            <Link 
-                                href="/" 
+                        <div className="mt-4 pt-2 mb-10">
+                            <Link
+                                href="/news"
                                 className="inline-flex items-center text-[#EAB044] hover:text-[#D4A73C] transition-colors duration-200 group font-semibold"
                             >
                                 <span className="mr-1 transition-transform duration-200 group-hover:-translate-x-0.5">
                                     ←
                                 </span>
-                                Back to Home
+                                Back to All News
                             </Link>
                         </div>
                     </div>
@@ -91,8 +102,8 @@ export default async function FeaturedPost({ params }: Props) {
 
                 {/* Recent News Sidebar*/}
                 <div className="lg:col-span-1">
-                    <div className="top-8 border-l-1 border-gray-300 pl-6">
-                        <h3 className="text-xl font-bold mb-6 text-center lg:text-left">Recent News</h3>
+                    <div className="top-8 border-l-0 lg:border-l lg:border-gray-300 lg:pl-6">
+                        <h3 className="font-geist text-xl font-bold mb-6 text-center lg:text-left">Recent News</h3>
                         
                         {recentNews.length > 0 ? (
                             <div className="space-y-4">
@@ -100,24 +111,37 @@ export default async function FeaturedPost({ params }: Props) {
                                     <div key={recentNewsItem.slug} className="group mb-8">
                                         {recentNewsItem.meta.image && (
                                             <div className="mb-3">
-                                                <Image
-                                                    src={recentNewsItem.meta.image}
-                                                    alt={recentNewsItem.meta.title}
-                                                    width={400}
-                                                    height={300}
-                                                    className="w-full h-[300px] object-cover"
-                                                />
+                                                <div className="mb-3">
+                                                    {/* 16:9 aspect ratio for mobile, fixed height for md and up */}
+                                                    <div className="relative w-full aspect-[16/9] md:aspect-auto md:h-[300px]">
+                                                        <Image
+                                                        src={recentNewsItem.meta.image}
+                                                        alt={recentNewsItem.meta.title}
+                                                        fill
+                                                        className="object-cover"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        <h4 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-1">
-                                            {recentNewsItem.meta.title}
-                                        </h4>
-                                        <p className="text-xs text-gray-400 mb-2">
+                                        <>
+                                            {/* h5 for mobile */}
+                                            <h5 className="block md:hidden font-geist font-semibold text-sm text-gray-900 line-clamp-2 mb-1">
+                                                {recentNewsItem.meta.title}
+                                            </h5>
+
+                                            {/* h4 for desktop and up */}
+                                            <h4 className="hidden md:block font-geist font-semibold text-sm text-gray-900 line-clamp-2 mb-1">
+                                                {recentNewsItem.meta.title}
+                                            </h4>
+                                        </>
+
+                                        <p className="font-geist text-xs text-gray-400 mb-2">
                                             {formatDate(recentNewsItem.meta.date)}
                                         </p>
                                         <Link 
                                             href={`/news/${recentNewsItem.slug}`}
-                                            className="inline-flex items-center text-[#EAB044] hover:text-[#D4A73C] transition-colors duration-200 text-xs group font-semibold"
+                                            className="font-geist inline-flex items-center text-[#EAB044] hover:text-[#D4A73C] transition-colors duration-200 text-xs group font-semibold"
                                         >
                                             Discover the full story
                                             <span className="ml-1 transition-transform duration-200 group-hover:translate-x-0.5">
