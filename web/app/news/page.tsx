@@ -14,11 +14,19 @@ export default function News({ searchParams }: Props) {
     const featuredNews = getFeaturedNews();
 
     return (
-        <main className="pt-16 pb-10">
+        <main className="pt-10 md:pt-16 pb-10">
             <div className="flex justify-center items-center mb-8">
-                <h1 className="font-poppins-black text-3xl border-b-4 border-[#FED018] inline-block pb-2">
-                    NEWS
-                </h1>
+                <div className="text-center">
+                    {/* h3 for mobile only */}
+                    <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                        NEWS
+                    </h2>
+
+                    {/* h1 for desktop and up */}
+                    <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                        NEWS
+                    </h1>
+                </div>
             </div>
 
             {/* Featured News Section - Static Content */}
