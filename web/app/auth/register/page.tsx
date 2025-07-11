@@ -102,7 +102,7 @@ const Register: React.FC = () => {
 
           {/* h2 for tablet and up */}
           <h2 className="hidden md:block text-xl font-bold mb-6">
-            Sign in to your account
+            Create your account
           </h2>
         </>
 
