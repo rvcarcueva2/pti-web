@@ -47,27 +47,22 @@ export default function HomeCarousel() {
 
   return (
     <>
-      {/* Hero Background */}
-      <div className="relative w-full h-screen overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/images/Hero.png"
-            alt="Pilipinas Taekwondo Incorporated"
-            fill
-            priority
-            className="object-contain object-top w-full h-full"
-          />
-        </div>
-      </div>
-
       {/* Section Title */}
-      <section className="px-4 -mt-35 pt-1 pb-10 text-center">
-        <h1 className="font-poppins-black text-3xl border-b-4 border-[#FED018] inline-block pb-2">
+      <section className="text-center mt-4 sm:mt-6 md:mt-10 mb-6 sm:mb-8 md:mb-10">
+        <div className="text-center">
+        {/* h2 for mobile only */}
+        <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+          COMPETITIONS
+        </h2>
+
+        {/* h1 for desktop and up */}
+        <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
           COMPETITIONS
         </h1>
+      </div>
       </section>
 
-      <div className="relative w-full overflow-hidden pb-20 mb-10">
+      <div className="relative w-full overflow-hidden pb-6 mb-4">
         {/* Left Arrow */}
         <button
           onClick={() =>
