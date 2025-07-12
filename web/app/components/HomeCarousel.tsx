@@ -48,7 +48,8 @@ export default function HomeCarousel() {
   return (
     <>
       {/* Section Title */}
-      <section className="text-center mt-4 sm:mt-6 md:mt-10 mb-6 sm:mb-8 md:mb-10">
+      <section className="text-center -mt-46 mb-6 sm:mt-2 sm:mb-8 md:-mt-26 md:mb-18">
+
         <div className="text-center">
         {/* h2 for mobile only */}
         <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
@@ -68,9 +69,9 @@ export default function HomeCarousel() {
           onClick={() =>
             setCurrent((prev) => (prev - 1 + images.length) % images.length)
           }
-          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 left-[13%] w-10 h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
+          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 left-[13%] w-4 h-4 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
         >
-          <span className="text-2xl text-[#FED018] group-hover:scale-110 transition">&#10094;</span>
+          <span className="text-[6px] sm:text-2xl leading-none text-[#FED018] flex items-center justify-center group-hover:scale-110 transition">&#10094;</span>
         </button>
 
         {/* Right Arrow */}
@@ -78,9 +79,9 @@ export default function HomeCarousel() {
           onClick={() =>
             setCurrent((prev) => (prev + 1) % images.length)
           }
-          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 right-[12.5%] w-10 h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
+          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 right-[12.5%] w-4 h-4 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
         >
-          <span className="text-2xl text-[#FED018] group-hover:scale-110 transition">&#10095;</span>
+          <span className="text-[6px] sm:text-2xl leading-none text-[#FED018] flex items-center justify-center group-hover:scale-110 transition">&#10095;</span>
         </button>
 
         {/* Carousel Content */}
