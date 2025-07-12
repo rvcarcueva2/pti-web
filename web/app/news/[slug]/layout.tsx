@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return {
-        title: news.meta.title,
+        title: `${news.meta.title} | Pilipinas Taekwondo Inc.`,
         description: news.meta.description || '', // Optional: if you have a meta description
     };
 }
