@@ -23,7 +23,7 @@ export default function About() {
         </p>
       </section>
 
-      <section className="px-4 sm:px-20 mt-[-18px] mb-[-20px] md:mt-2">
+      <section className="px-4 sm:px-20 mt-[-18px] mb-[-20px] md:-mt-3">
         <Image
           src="/images/PTI.png"
           alt="PTI Group"
