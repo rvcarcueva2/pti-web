@@ -20,7 +20,7 @@ export default function Header() {
     <header>
 
       {/* Contact Header */}
-      <div className={`bg-black text-white text-sm font-geist`}>
+      <div className="hidden lg:block bg-black text-white text-sm font-geist">
         <div className="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between">
 
           {/* Email & Phone */}

@@ -33,7 +33,40 @@ export function getAllNews() {
   });
 }
 
+export function getPaginatedNews(page: number = 1, limit: number = 5) {
+  const allNews = getAllNews();
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  
+  return {
+    news: allNews.slice(startIndex, endIndex),
+    currentPage: page,
+    totalPages: Math.ceil(allNews.length / limit),
+    totalNews: allNews.length,
+    hasNextPage: endIndex < allNews.length,
+    hasPrevPage: page > 1
+  };
+}
+
 export function getFeaturedNews(): string | null {
   const allNews = getAllNews();
   return allNews.length > 0 ? allNews[0].slug : null;
+}
+
+export function getRecentNews(excludeSlug?: string, limit: number = 5) {
+  const allNews = getAllNews();
+  const filteredNews = excludeSlug 
+    ? allNews.filter(news => news.slug !== excludeSlug) 
+    : allNews;
+  
+  return filteredNews.slice(0, limit);
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
