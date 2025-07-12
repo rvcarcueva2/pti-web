@@ -92,14 +92,25 @@ export default async function CompetitionPost({ params }: Props) {
                             </div>
 
                             <div>
-                                <button className="bg-foreground hover:bg-[#EAB044] text-white font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
+                                <button className="group bg-foreground hover:bg-[#EAB044] text-white font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
                                     Register
+
+                                    {/* Default icon (visible when not hovered) */}
                                     <Image
-                                        src="/icons/Forward Button.svg"
-                                        alt="Forward"
-                                        width={24}
-                                        height={24}
-                                        className="w-6 h-6 ml-2"
+                                    src="/icons/Forward Button.svg"
+                                    alt="Forward"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 group-hover:hidden"
+                                    />
+
+                                    {/* Hover icon (visible when hovered) */}
+                                    <Image
+                                    src="/icons/forward-button2.svg"
+                                    alt="Forward Hover"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 hidden group-hover:inline"
                                     />
                                 </button>
                             </div>
