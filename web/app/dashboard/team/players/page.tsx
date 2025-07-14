@@ -16,6 +16,7 @@ export default function PlayersPage() {
       belt: '8th Geup Yellow',
       age: 21,
       weight: 42,
+      birthday: '2004-04-08',
     },
     {
       lastName: 'Carcueva',
@@ -24,6 +25,7 @@ export default function PlayersPage() {
       belt: '8th Geup Yellow',
       age: 21,
       weight: 55,
+      birthday: '2004-06-16',
     },
   ];
 
@@ -57,11 +59,20 @@ export default function PlayersPage() {
     }
   };
 
+  const formatBirthday = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yy = String(date.getFullYear()).slice(-2);
+    return `${mm}/${dd}/${yy}`;
+  };
+
   const columns = [
     { label: 'Last Name', key: 'lastName', width: 'w-[120px]' },
     { label: 'First Name', key: 'firstName', width: 'w-[140px]' },
     { label: 'Gender', key: 'gender', width: 'w-[100px]' },
     { label: 'Belt Level', key: 'belt', width: 'w-[150px]' },
+    { label: 'Birthday', key: 'birthday', width: 'w-[120px]' },
     { label: 'Age', key: 'age', width: 'w-[60px]' },
     { label: 'Weight (kg)', key: 'weight', width: 'w-[90px]' },
   ];
@@ -141,6 +152,7 @@ export default function PlayersPage() {
                 <td className="p-3">{player.firstName}</td>
                 <td className="p-3">{player.gender}</td>
                 <td className="p-3">{player.belt}</td>
+                <td className="p-3">{formatBirthday(player.birthday)}</td>
                 <td className="p-3">{player.age}</td>
                 <td className="p-3">{player.weight}</td>
                 <td className="p-3 w-[80px] text-right text-[#EAB044]">
