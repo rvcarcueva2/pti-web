@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
-import Footer from "@/app/components/Footer";
-import Header from "@/app/components/header";
+import FooterWrapper from "@/app/components/FooterWrapper";
+import ResponsiveHeader from "@/app/components/ResponsiveHeader";
 
 import "../lib/fontawesome";
 import "./globals.css";
@@ -37,8 +37,6 @@ export const metadata: Metadata = {
   description: "Official Website of Pilipinas Taekwondo Inc.",
 };
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,11 +47,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
       >
-        <Header />
-        {/* Main Content */}
+        <ResponsiveHeader /> {/* <-- Updated this */}
         {children}
-        <Footer />
-        
+        <FooterWrapper />
       </body>
     </html>
   );
