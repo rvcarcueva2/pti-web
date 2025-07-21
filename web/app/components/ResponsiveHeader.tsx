@@ -21,18 +21,20 @@ export default function ResponsiveHeader() {
   }, []);
 
   const isAuthPage = pathname === '/auth/sign-in' || pathname === '/auth/register';
+  const isDashboard = pathname.startsWith('/user-dashboard');
 
   if (isAuthPage) {
-    // Only show contact header on sign-in and register pages
     return <ContactHeader />;
   }
 
-  // Home page on desktop
+  if (isDashboard) {
+    return null; // ⛔ No header on dashboard
+  }
+
   if (pathname === '/' && !isMobile) {
     return <HomeHeader />;
   }
 
-  // Default: Contact + Main header
   return (
     <>
       <ContactHeader />
