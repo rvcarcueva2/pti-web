@@ -9,7 +9,7 @@ export default function HeaderWrapper() {
   const pathname = usePathname();
 
   // Routes that should show only the black contact header
-  const contactOnlyRoutes = ['/auth/sign-in', '/auth/register'];
+  const contactOnlyRoutes = ['/auth/sign-in', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
 
   if (contactOnlyRoutes.includes(pathname)) {
     return <ContactHeader />;
