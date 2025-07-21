@@ -1,19 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../../../lib/supabaseClient';
 
 const SignIn: React.FC = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if user is already signed in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // User is already signed in, redirect to home
+          setIsAuthenticated(true);
+          router.replace('/'); // Use replace instead of push
+          return;
+        }
+        setIsAuthenticated(false);
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Don't render anything while checking authentication or if authenticated
+  if (isAuthenticated === null || isAuthenticated === true) {
+    return null; // Return nothing instead of loading spinner
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string; password?: string; general?: string } = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email) {
@@ -29,8 +61,73 @@ const SignIn: React.FC = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Signing in with', { email, password });
+      try {
+        // Sign in with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+        if (error) {
+          // Don't log the error to console to avoid Next.js warnings
+          // console.error('Sign in error:', error);
+          
+          // Handle specific error types
+          if (error.message.includes('Invalid login credentials')) {
+            // Check if the email exists using our API
+            try {
+              const checkResponse = await fetch('/api/auth/check-email', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email.trim() }),
+              });
+              
+              const checkData = await checkResponse.json();
+              
+              if (checkResponse.ok) {
+                if (checkData.exists) {
+                  // Email exists, so password is wrong
+                  setErrors({ password: 'The password you entered is incorrect.' });
+                } else {
+                  // Email not found
+                  setErrors({ email: 'The email is not yet registered.' });
+                }
+              } else {
+                // API error, default to wrong password for better UX
+                setErrors({ password: 'The password you entered is incorrect.' });
+              }
+            } catch (checkError) {
+              // Don't log check errors to console
+              // console.error('Error checking email:', checkError);
+              // Default to wrong password error
+              setErrors({ password: 'The password you entered is incorrect.' });
+            }
+          } else if (error.message.includes('Email not confirmed')) {
+            setErrors({ email: 'Please check your email and confirm your account.' });
+          } else {
+            setErrors({ general: 'Sign in failed, please try again' });
+          }
+        } else {
+          // Sign in successful
+          // Clear form and redirect to home page
+          setEmail('');
+          setPassword('');
+          
+          // Small delay to ensure session is set
+          setTimeout(() => {
+            router.push('/');
+          }, 100);
+        }
+      } catch (error) {
+        // Don't log catch errors to console
+        // console.error('Sign in catch error:', error);
+        setErrors({ general: 'Sign in failed, please try again' });
+      }
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -68,6 +165,13 @@ const SignIn: React.FC = () => {
 
         {/* Heading */}
         <h2 className="text-xl font-bold mb-6">Sign in to your account</h2>
+
+        {/* General Error */}
+        {errors.general && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errors.general}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} noValidate className="space-y-4 text-left">
@@ -129,10 +233,13 @@ const SignIn: React.FC = () => {
               )}
             </button>
             {errors.password && (
-              <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>
+              <p className="text-sm text-[#D41716] mt-1">
+                {errors.password}
+                {errors.password.includes('incorrect') }
+              </p>
             )}
             <div className="text-right mt-1">
-              <a href="#" className="text-sm text-gray-600 hover:underline">
+              <a href="/auth/forgot-password" className="text-sm text-gray-600 hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -141,9 +248,10 @@ const SignIn: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#1A1A1A] text-white font-semibold py-2 rounded hover:opacity-90 transition cursor-pointer"
+            disabled={isLoading}
+            className="w-full bg-[#1A1A1A] text-white font-semibold py-2 rounded hover:opacity-90 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
