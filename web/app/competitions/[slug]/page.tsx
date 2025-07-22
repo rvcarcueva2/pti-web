@@ -1,4 +1,4 @@
-import { getPostBySlug, getPostSlugs } from '@/lib/posts';
+import { getPostBySlug, getPostSlugs, formatDate } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -27,7 +27,7 @@ export default async function CompetitionPost({ params }: Props) {
                 alt={props.alt || 'Competition Image'}
                 width={1500}
                 height={700}
-                className="w-full h-auto mx-auto my-8"
+                className="w-full h-auto mx-auto my-4 mb-1 md:my-8"
             />
         ),
         p: ({ children, ...props }: any) => {
@@ -44,15 +44,33 @@ export default async function CompetitionPost({ params }: Props) {
     };
 
     return (
-        <main className="px-4 sm:px-4 pt-16 pb-10 text-center">
-            <h1 className="font-poppins-black text-3xl border-b-4 border-[#FED018] inline-block pb-2">
-                COMPETITIONS
-            </h1>
+        <main className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
+            <div className="text-center">
+                {/* h3 for mobile only */}
+                <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                    COMPETITIONS
+                </h2>
+
+                {/* h1 for desktop and up */}
+                <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                    COMPETITIONS
+                </h1>
+            </div>
 
             {/* Competition Post Container */}
-            <div className="font-geist mx-auto my-8 max-w-6xl">
+            <div className="font-geist mx-auto my-4 md:my-8 max-w-6xl">
                 <div className="max-w-none">
-                    <h2 className="text-2xl font-bold mb-4 text-center">{post.meta.title}</h2>
+                    <>
+                        {/* h4 for mobile */}
+                        <h4 className="block md:hidden text-xl font-bold mb-4 text-center">
+                            {post.meta.title}
+                        </h4>
+
+                        {/* h2 for desktop */}
+                        <h2 className="hidden md:block text-2xl font-bold mb-4 text-center">
+                            {post.meta.title}
+                        </h2>
+                    </>
 
                     {/* Render MDX content */}
                     <div className="max-w-none">
@@ -60,8 +78,8 @@ export default async function CompetitionPost({ params }: Props) {
                     </div>
 
                     {/* Competition Meta Info (SAFE from hydration issues) */}
-                    <div className="p-4 mx-auto max-w-6xl mt-4">
-                        <div className="flex justify-between items-center">
+                    <div className="p-4 mx-auto max-w-6xl mt-2 md:mt-4">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div className="flex flex-col text-black gap-4 text-left font-geist text-x">
                                 <span className="flex items-center gap-3">
                                     <FontAwesomeIcon icon="location-dot" style={{ fontSize: '20px' }} />
@@ -69,18 +87,30 @@ export default async function CompetitionPost({ params }: Props) {
                                 </span>
                                 <span className="flex items-center gap-3">
                                     <FontAwesomeIcon icon="calendar-days" style={{ fontSize: '20px' }} />
-                                    {post.meta.date || 'TBA'}
+                                    {formatDate(post.meta.date) || 'TBA'}
                                 </span>
                             </div>
+
                             <div>
-                                <button className="bg-foreground hover:bg-[#EAB044] text-white font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
+                                <button className="group bg-foreground hover:bg-[#EAB044] text-white font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
                                     Register
+
+                                    {/* Default icon (visible when not hovered) */}
                                     <Image
-                                        src="/icons/Forward Button.svg"
-                                        alt="Forward"
-                                        width={24}
-                                        height={24}
-                                        className="w-6 h-6 ml-2"
+                                    src="/icons/Forward Button.svg"
+                                    alt="Forward"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 group-hover:hidden"
+                                    />
+
+                                    {/* Hover icon (visible when hovered) */}
+                                    <Image
+                                    src="/icons/forward-button2.svg"
+                                    alt="Forward Hover"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 hidden group-hover:inline"
                                     />
                                 </button>
                             </div>
@@ -88,46 +118,49 @@ export default async function CompetitionPost({ params }: Props) {
                     </div>
 
                     {/* Competition Categories */}
-                    <div className="bg-white rounded-lg p-4 mt-8 max-w-6xl mx-auto shadow-sm">
-                        <div className="grid grid-cols-4 gap-4 text-center">
-                            <div className="flex flex-col items-center gap-2">
-                                <h4 className="font-semibold text-black">Players</h4>
+                    <div className="bg-white rounded-lg p-2 md:p-4 mt-4 md:mt-6 max-w-6xl mx-4 md:mx-auto shadow-sm">
+                        <div className="grid grid-cols-4 gap-2 md:gap-4 text-center">
+                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                                <h4 className="text-responsive font-semibold text-black text-xs md:text-lg">Players</h4>
                                 <Image
-                                    src="/icons/Players.svg"
-                                    alt="Players"
-                                    width={40}
-                                    height={40}
-                                    className="w-18 h-18 items-center justify-center mx-auto"
+                                src="/icons/Players.svg"
+                                alt="Players"
+                                width={72}
+                                height={72}
+                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
-                            <div className="flex flex-col items-center gap-2">
-                                <h4 className="font-semibold text-[#EAB044]">Teams</h4>
+
+                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                                <h4 className="text-responsive font-semibold text-[#EAB044] text-xs md:text-lg">Teams</h4>
                                 <Image
-                                    src="/icons/Teams.svg"
-                                    alt="Teams"
-                                    width={40}
-                                    height={40}
-                                    className="w-18 h-18 items-center justify-center mx-auto"
+                                src="/icons/Teams.svg"
+                                alt="Teams"
+                                width={72}
+                                height={72}
+                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
-                            <div className="flex flex-col items-center gap-2">
-                                <h4 className="font-semibold text-[#D41716]">Kyorugi</h4>
+
+                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                                <h4 className="text-responsive font-semibold text-[#D41716] text-xs md:text-lg">Kyorugi</h4>
                                 <Image
-                                    src="/icons/Kyorugi.svg"
-                                    alt="Kyorugi"
-                                    width={40}
-                                    height={40}
-                                    className="w-18 h-18 items-center justify-center mx-auto"
+                                src="/icons/Kyorugi.svg"
+                                alt="Kyorugi"
+                                width={72}
+                                height={72}
+                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
-                            <div className="flex flex-col items-center gap-2">
-                                <h4 className="font-semibold text-[#040163]">Poomsae</h4>
+
+                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                                <h4 className="text-responsive font-semibold text-[#040163] text-xs md:text-lg">Poomsae</h4>
                                 <Image
-                                    src="/icons/Poomsae.svg"
-                                    alt="Poomsae"
-                                    width={40}
-                                    height={40}
-                                    className="w-18 h-18 items-center justify-center mx-auto"
+                                src="/icons/Poomsae.svg"
+                                alt="Poomsae"
+                                width={72}
+                                height={72}
+                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
                         </div>

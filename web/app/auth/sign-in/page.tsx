@@ -136,35 +136,49 @@ const SignIn: React.FC = () => {
       <Image
         src="/images/1.png"
         alt="Top Left Decoration"
-        width={200}
-        height={200}
-        className="absolute top-0 left-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 100px, 200px"
+        className="absolute top-0 left-0 z-0 w-[100px] md:w-[200px]"
       />
+
       <Image
         src="/images/2.png"
         alt="Bottom Right Decoration"
-        width={500}
-        height={500}
-        className="absolute bottom-0 right-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 200px, 500px"
+        className="absolute bottom-0 right-0 z-0 w-[200px] md:w-[500px]"
       />
 
       {/* Form Container */}
-      <div className="relative z-10 w-full max-w-md text-center rounded-lg p-6">
+      <div className="relative z-10 w-full max-w-md text-center rounded-lg px-4 py-6 md:px-6">
         {/* Logo */}
         <div className="mb-6">
           <Link href="/">
             <Image
               src="/PTI-Logo.png"
               alt="Logo"
-              width={100}
-              height={100}
-              className="mx-auto cursor-pointer"
+              width={0}
+              height={0}
+              sizes="(max-width: 768px) 80px, 100px"
+              className="w-[80px] md:w-[100px] mx-auto cursor-pointer"
             />
           </Link>
         </div>
 
         {/* Heading */}
-        <h2 className="text-xl font-bold mb-6">Sign in to your account</h2>
+        <>
+          {/* h4 for mobile only */}
+          <h4 className="block md:hidden text-base font-bold mb-6">
+            Sign in to your account
+          </h4>
+
+          {/* h2 for tablet and up */}
+          <h2 className="hidden md:block text-xl font-bold mb-6">
+            Sign in to your account
+          </h2>
+        </>
 
         {/* General Error */}
         {errors.general && (
@@ -174,7 +188,7 @@ const SignIn: React.FC = () => {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} noValidate className="space-y-4 text-left">
+        <form onSubmit={handleSubmit} noValidate className="space-y-3 md:space-y-4 text-left">
           {/* Email */}
           <div>
             <label className="block text-sm font-semibold mb-1">
@@ -256,15 +270,17 @@ const SignIn: React.FC = () => {
         </form>
 
         {/* Register link */}
-        <p className="text-xs mt-4 text-center">
-          Don’t have an account?{' '}
-          <a
-            href="/auth/register"
-            className="font-semibold text-[#040163] hover:underline"
-          >
-            Register now
-          </a>
-        </p>
+        <div className="text-adjust">
+          <p className="text-[0.6875rem] sm:text-xs mt-4 text-center">
+            Don’t have an account?{' '}
+            <a
+              href="/auth/register"
+              className="font-semibold text-[#040163] hover:underline"
+            >
+              Register now
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
