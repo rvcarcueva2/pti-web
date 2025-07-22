@@ -313,7 +313,7 @@ export default function Header() {
                                             setIsMobileMenuOpen(false);
                                             router.push('/profile');
                                         }}
-                                        className="flex items-center w-full px-6 py-3 bg-gray-100 text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-gray-200"
+                                        className="flex items-center w-full px-6 py-3 bg-gray-200 text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-gray-200"
                                     >
                                         <FontAwesomeIcon icon={faUser} className="w-4 h-4 mr-2" />
                                         Profile
