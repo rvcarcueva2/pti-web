@@ -53,37 +53,26 @@ export default function CompetitionPage() {
   function getSamplePlayers(): Player[] {
     return [
       {
-        lastName: 'Garcia',
-        firstName: 'Luis',
-        middleName: 'Santos',
-        sex: 'Male',
-        age: '15',
-        height: '165',
-        belt: '8th Geup Yellow',
-        category: 'Kyorugi',
-        group: 'Cadet',
-      },
-      {
-        lastName: 'Reyes',
-        firstName: 'Ana',
-        middleName: 'Maria',
+        lastName: 'Mones',
+        firstName: 'Hazel Ann',
+        middleName: 'Besañez',
         sex: 'Female',
-        age: '10',
-        height: '140',
-        belt: '7th Geup Yellow-Stripe',
-        category: 'Poomsae',
-        group: 'Group 2',
-      },
-      {
-        lastName: 'Lee',
-        firstName: 'Daniel',
-        middleName: 'Kim',
-        sex: 'Male',
-        age: '18',
-        height: '175',
-        belt: '9th Geup White',
+        age: '21',
+        height: '153',
+        belt: 'Yellow Belt',
         category: 'Kyorugi',
         group: 'Senior',
+      },
+      {
+        lastName: 'Carcueva',
+        firstName: 'Reycel John Emmanuel',
+        middleName: 'Vejano',
+        sex: 'Male',
+        age: '21',
+        height: '165',
+        belt: 'White Belt',
+        category: 'Poomsae',
+        group: 'Group 4',
       },
     ];
   }
@@ -98,6 +87,15 @@ export default function CompetitionPage() {
   };
 
   const handleAddPlayer = () => {
+    const requiredFields = ['lastName', 'firstName', 'sex', 'age', 'height', 'belt', 'category'];
+
+    const isValid = requiredFields.every((field) => newPlayer[field as keyof Player].trim() !== '');
+
+    if (!isValid) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
     if (editIndex !== null) {
       const updated = [...players];
       updated[editIndex] = { ...newPlayer };
@@ -105,6 +103,7 @@ export default function CompetitionPage() {
     } else {
       setPlayers([...players, { ...newPlayer }]);
     }
+
     setNewPlayer(emptyPlayer());
     setIsModalOpen(false);
     setEditIndex(null);
@@ -271,10 +270,10 @@ export default function CompetitionPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-6xl border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+        <div className="fixed inset-0 bg-black/30 flex justify-start items-center z-50" style={{ paddingLeft: '16rem' }}>
+          <div className="bg-white p-6 ml-14 rounded-md w-full max-w-[1126px] border border-[rgba(0,0,0,0.2)] shadow-lg relative">
             <button
-              className="cursor-pointer absolute top-2 right-3 text-xl font-bold text-gray-600"
+              className="absolute top-2 right-3 text-xl font-bold text-gray-600 cursor-pointer"
               onClick={() => {
                 setIsModalOpen(false);
                 setEditIndex(null);
@@ -295,12 +294,35 @@ export default function CompetitionPage() {
                 {selectField({ label: 'Sex', value: newPlayer.sex, onChange: (v: string) => setNewPlayer({ ...newPlayer, sex: v }), required: true, options: ['Male', 'Female'] })}
                 {inputField({ label: 'Age', value: newPlayer.age, onChange: (v: string) => setNewPlayer({ ...newPlayer, age: v }), required: true, type: 'number' })}
                 {inputField({ label: 'Height (cm)', value: newPlayer.height, onChange: (v: string) => setNewPlayer({ ...newPlayer, height: v }), required: true, type: 'number' })}
-                {selectField({ label: 'Belt', value: newPlayer.belt, onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }), required: true, options: ['9th Geup White', '8th Geup Yellow', '7th Geup Yellow-Stripe'] })}
+                {selectField({
+                  label: 'Belt',
+                  value: newPlayer.belt,
+                  onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }),
+                  required: true,
+                  options: [
+                    'White Belt',
+                    'Yellow Belt',
+                    'Orange Belt',
+                    'Green Belt',
+                    'Blue Belt',
+                    'Brown Belt',
+                    'Senior Brown Belt',
+                    'Red Belt',
+                    'Senior Red Belt',
+                    'Poom Belt',
+                    'Black Belt',
+                  ],
+                })}
                 {selectField({ label: 'Category', value: newPlayer.category, onChange: (v: string) => setNewPlayer({ ...newPlayer, category: v }), required: true, options: ['Kyorugi', 'Poomsae'] })}
-                {inputField({ label: 'Group', value: newPlayer.group, onChange: () => {}, disabled: true })}
+                {inputField({
+                  label: 'Group',
+                  value: newPlayer.group || 'Auto-generated',
+                  onChange: () => {},
+                  disabled: true,
+                })}
               </div>
               <div className="mt-4 flex justify-end">
-                <button type="submit" className="cursor-pointer bg-[#EAB044] text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
+                <button type="submit" className="bg-[#EAB044] cursor-pointer text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
                   {editIndex !== null ? 'Save' : '+ Add'}
                 </button>
               </div>
@@ -331,22 +353,39 @@ export default function CompetitionPage() {
 
   function selectField({ label, value, onChange, required = false, options = [] }: any) {
     return (
-      <div>
+      <div className="relative">
         <label className="block mb-1 text-sm font-medium text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full border border-[rgba(0,0,0,0.2)] rounded p-2"
-        >
-          <option value="">Select {label.toLowerCase()}</option>
-          {options.map((opt: string) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="cursor-pointer w-full border border-[rgba(0,0,0,0.2)] rounded p-2 pr-10 appearance-none text-gray-700"
+          >
+            <option value="">Select {label.toLowerCase()}</option>
+            {options.map((opt: string) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+
+          {/* Custom down arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.65a.75.75 0 01-1.1 0l-4.25-4.65a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
     );
   }
