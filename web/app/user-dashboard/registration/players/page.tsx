@@ -20,20 +20,20 @@ export default function CompetitionPage() {
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<Player[]>(getSamplePlayers());
   const [newPlayer, setNewPlayer] = useState<Player>(emptyPlayer());
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const columns = [
-    { label: 'Last Name', key: 'lastName', width: 'w-[120px]' },
+    { label: 'Last Name', key: 'lastName', width: 'w-[130px]' },
     { label: 'First Name', key: 'firstName', width: 'w-[130px]' },
     { label: 'Middle Name', key: 'middleName', width: 'w-[130px]' },
     { label: 'Sex', key: 'sex', width: 'w-[70px]' },
     { label: 'Age', key: 'age', width: 'w-[60px]' },
     { label: 'Height (cm)', key: 'height', width: 'w-[120px]' },
     { label: 'Belt', key: 'belt', width: 'w-[130px]' },
-    { label: 'Category', key: 'category', width: 'w-[90px]' },
-    { label: 'Group', key: 'group', width: 'w-[130px]' },
+    { label: 'Category', key: 'category', width: 'w-[100px]' },
+    { label: 'Group', key: 'group', width: 'w-[100px]' },
   ];
 
   function emptyPlayer(): Player {
@@ -48,6 +48,44 @@ export default function CompetitionPage() {
       category: '',
       group: '',
     };
+  }
+
+  function getSamplePlayers(): Player[] {
+    return [
+      {
+        lastName: 'Garcia',
+        firstName: 'Luis',
+        middleName: 'Santos',
+        sex: 'Male',
+        age: '15',
+        height: '165',
+        belt: '8th Geup Yellow',
+        category: 'Kyorugi',
+        group: 'Cadet',
+      },
+      {
+        lastName: 'Reyes',
+        firstName: 'Ana',
+        middleName: 'Maria',
+        sex: 'Female',
+        age: '10',
+        height: '140',
+        belt: '7th Geup Yellow-Stripe',
+        category: 'Poomsae',
+        group: 'Group 2',
+      },
+      {
+        lastName: 'Lee',
+        firstName: 'Daniel',
+        middleName: 'Kim',
+        sex: 'Male',
+        age: '18',
+        height: '175',
+        belt: '9th Geup White',
+        category: 'Kyorugi',
+        group: 'Senior',
+      },
+    ];
   }
 
   const handleSort = (column: string) => {
@@ -131,19 +169,19 @@ export default function CompetitionPage() {
       {/* Search + Table */}
       <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
         <div className="flex justify-between items-center p-4 border-b border-[rgba(0,0,0,0.2)]">
-            <h3 className="text-lg text-gray-800">Players</h3>
-            <div className="relative w-full max-w-xs">
-                <input
-                type="text"
-                placeholder="Search"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                />
-                <div className="absolute top-1/2 left-3 -translate-y-1/2">
-                <Image src="/icons/search.svg" alt="Search Icon" width={16} height={16} />
-                </div>
+          <h3 className="text-lg text-gray-800">Players</h3>
+          <div className="relative w-full max-w-xs">
+            <input
+              type="text"
+              placeholder="Search"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="absolute top-1/2 left-3 -translate-y-1/2">
+              <Image src="/icons/search.svg" alt="Search Icon" width={16} height={16} />
             </div>
+          </div>
         </div>
 
         {/* Table */}
@@ -182,7 +220,7 @@ export default function CompetitionPage() {
                   </td>
                 ))}
                 <td className="p-3 text-left">
-                  <div className="flex items-center gap-3 -ml-8">
+                  <div className="flex items-center gap-3 ml-8">
                     <button
                       onClick={() => handleEditPlayer(index)}
                       className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
