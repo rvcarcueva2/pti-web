@@ -20,43 +20,35 @@ export default function PlayersPage() {
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [players, setPlayers] = useState([
-    {
-      lastName: 'Mones',
-      firstName: 'Hazel Ann',
-      middleName: 'Reyes',
-      sex: 'Female',
-      age: 21,
-      height: 160,
-      belt: '8th Geup Yellow',
-      category: 'Kyorugi',
-      group: 'Senior',
-    },
-  ]);
-
-  const [newPlayer, setNewPlayer] = useState<Player>({
-    lastName: '',
-    firstName: '',
-    middleName: '',
-    sex: '',
-    age: '',
-    height: '',
-    belt: '',
-    category: '',
-    group: '',
-  });
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [newPlayer, setNewPlayer] = useState<Player>(emptyPlayer());
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const columns = [
     { label: 'Last Name', key: 'lastName', width: 'w-[120px]' },
-    { label: 'First Name', key: 'firstName', width: 'w-[140px]' },
-    { label: 'Middle Name', key: 'middleName', width: 'w-[140px]' },
-    { label: 'Sex', key: 'sex', width: 'w-[80px]' },
+    { label: 'First Name', key: 'firstName', width: 'w-[130px]' },
+    { label: 'Middle Name', key: 'middleName', width: 'w-[130px]' },
+    { label: 'Sex', key: 'sex', width: 'w-[70px]' },
     { label: 'Age', key: 'age', width: 'w-[60px]' },
-    { label: 'Height (cm)', key: 'height', width: 'w-[100px]' },
-    { label: 'Belt', key: 'belt', width: 'w-[150px]' },
-    { label: 'Category', key: 'category', width: 'w-[100px]' },
-    { label: 'Group', key: 'group', width: 'w-[160px]' },
+    { label: 'Height (cm)', key: 'height', width: 'w-[120px]' },
+    { label: 'Belt', key: 'belt', width: 'w-[130px]' },
+    { label: 'Category', key: 'category', width: 'w-[90px]' },
+    { label: 'Group', key: 'group', width: 'w-[130px]' },
   ];
+
+  function emptyPlayer(): Player {
+    return {
+      lastName: '',
+      firstName: '',
+      middleName: '',
+      sex: '',
+      age: '',
+      height: '',
+      belt: '',
+      category: '',
+      group: '',
+    };
+  }
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -68,19 +60,16 @@ export default function PlayersPage() {
   };
 
   const handleAddPlayer = () => {
-    setPlayers([...players, { ...newPlayer, age: +newPlayer.age, height: +newPlayer.height }]);
-    setNewPlayer({
-      lastName: '',
-      firstName: '',
-      middleName: '',
-      sex: '',
-      age: '',
-      height: '',
-      belt: '',
-      category: '',
-      group: '',
-    });
+    if (editIndex !== null) {
+      const updated = [...players];
+      updated[editIndex] = { ...newPlayer };
+      setPlayers(updated);
+    } else {
+      setPlayers([...players, { ...newPlayer }]);
+    }
+    setNewPlayer(emptyPlayer());
     setIsModalOpen(false);
+    setEditIndex(null);
   };
 
   const getGroup = (age: number, category: string): string => {
@@ -99,6 +88,18 @@ export default function PlayersPage() {
     return '';
   };
 
+  const handleDeletePlayer = (index: number) => {
+    const updatedPlayers = [...players];
+    updatedPlayers.splice(index, 1);
+    setPlayers(updatedPlayers);
+  };
+
+  const handleEditPlayer = (index: number) => {
+    setNewPlayer(players[index]);
+    setEditIndex(index);
+    setIsModalOpen(true);
+  };
+
   useEffect(() => {
     const ageNum = parseInt(newPlayer.age);
     if (!isNaN(ageNum) && newPlayer.category) {
@@ -107,17 +108,15 @@ export default function PlayersPage() {
     }
   }, [newPlayer.age, newPlayer.category]);
 
-  let filteredPlayers = players.filter((player) =>
-    `${player.firstName} ${player.lastName} ${player.middleName}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  let filteredPlayers = players.filter((player) => {
+    const playerValues = Object.values(player).join(' ').toLowerCase();
+    return playerValues.includes(search.toLowerCase());
+  });
 
   if (sortColumn) {
     filteredPlayers = [...filteredPlayers].sort((a, b) => {
       const valueA = a[sortColumn as keyof typeof a];
       const valueB = b[sortColumn as keyof typeof b];
-
       if (typeof valueA === 'number' && typeof valueB === 'number') {
         return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
       } else {
@@ -134,20 +133,24 @@ export default function PlayersPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Players</h1>
         <div className="flex gap-2">
-          <button className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
+          <button className="cursor-pointer bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
             <Image src="/icons/excel.svg" alt="Excel Icon" width={16} height={16} />
             <span>Export Excel</span>
           </button>
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-[#EAB044] text-white px-4 py-2 rounded-md text-sm hover:bg-[#d49a35]"
+            onClick={() => {
+              setNewPlayer(emptyPlayer());
+              setEditIndex(null);
+              setIsModalOpen(true);
+            }}
+            className="cursor-pointer bg-[#EAB044] text-white px-4 py-2 rounded-md text-sm hover:bg-[#d49a35]"
           >
             Add Player
           </button>
         </div>
       </div>
 
-      {/* Main Container */}
+      {/* Search + Table */}
       <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
@@ -188,7 +191,7 @@ export default function PlayersPage() {
                   </div>
                 </th>
               ))}
-              <th className="p-3 w-[80px] text-right text-gray-700 font-medium"></th>
+              <th className="p-3 w-[120px] text-left text-gray-700 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -199,11 +202,23 @@ export default function PlayersPage() {
                     {player[col.key as keyof typeof player]}
                   </td>
                 ))}
-                <td className="p-3 w-[80px] text-right text-[#EAB044]">
-                  <button className="flex items-center justify-end gap-1 hover:underline text-sm">
-                    <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
-                    Edit
-                  </button>
+                <td className="p-3 text-left">
+                  <div className="flex items-center gap-3 -ml-8">
+                    <button
+                      onClick={() => handleEditPlayer(index)}
+                      className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
+                    >
+                      <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeletePlayer(index)}
+                      className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-red-500"
+                    >
+                      <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -212,28 +227,48 @@ export default function PlayersPage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
-        <p>
+      <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
+        <p className="justify-self-start">
           Showing 1 to {filteredPlayers.length} of {filteredPlayers.length} results
         </p>
-        <div className="flex items-center gap-2">
-          <select className="border border-gray-300 rounded-md px-2 py-1">
-            <option value="10">10</option>
-          </select>
-          <span>per page</span>
-          <button className="border rounded px-2 py-1">&lt;</button>
-          <button className="border rounded px-2 py-1 bg-[#EAB044] text-white">1</button>
-          <button className="border rounded px-2 py-1">&gt;</button>
+        <div className="flex items-center justify-center gap-1 relative">
+          <div className="relative">
+            <select className="appearance-none border border-[rgba(0,0,0,0.2)] rounded-md px-3 py-1 text-sm text-center pr-6 cursor-pointer">
+              <option value="10">10</option>
+            </select>
+            <Image
+              src="/icons/down-arrow.svg"
+              alt="Dropdown"
+              width={12}
+              height={12}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none cursor-pointer"
+            />
+          </div>
+          <span className="text-sm">per page</span>
+        </div>
+        <div className="flex justify-end items-center gap-3">
+          <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
+            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+              <Image src="/icons/previous.svg" alt="Previous" width={20} height={20} />
+            </button>
+            <div className="px-4 bg-[#00000010] text-[#EAB044] font-semibold text-sm h-full flex items-center">1</div>
+            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+              <Image src="/icons/next.svg" alt="Next" width={20} height={20} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-4xl border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+          <div className="bg-white p-6 rounded-md w-full max-w-6xl border border-[rgba(0,0,0,0.2)] shadow-lg relative">
             <button
-              className="absolute top-2 right-3 text-xl font-bold text-gray-600"
-              onClick={() => setIsModalOpen(false)}
+              className="cursor-pointer absolute top-2 right-3 text-xl font-bold text-gray-600"
+              onClick={() => {
+                setIsModalOpen(false);
+                setEditIndex(null);
+              }}
             >
               ×
             </button>
@@ -244,19 +279,19 @@ export default function PlayersPage() {
               }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {inputField({ label: 'Last Name', value: newPlayer.lastName, onChange: (v: string) => setNewPlayer({ ...newPlayer, lastName: v }), required: true, placeholder: 'Enter last name' })}
-                {inputField({ label: 'First Name', value: newPlayer.firstName, onChange: (v: string) => setNewPlayer({ ...newPlayer, firstName: v }), required: true, placeholder: 'Enter first name' })}
-                {inputField({ label: 'Middle Name', value: newPlayer.middleName, onChange: (v: string) => setNewPlayer({ ...newPlayer, middleName: v }), placeholder: 'Enter middle name' })}
+                {inputField({ label: 'Last Name', value: newPlayer.lastName, onChange: (v: string) => setNewPlayer({ ...newPlayer, lastName: v }), required: true })}
+                {inputField({ label: 'First Name', value: newPlayer.firstName, onChange: (v: string) => setNewPlayer({ ...newPlayer, firstName: v }), required: true })}
+                {inputField({ label: 'Middle Name', value: newPlayer.middleName, onChange: (v: string) => setNewPlayer({ ...newPlayer, middleName: v }) })}
                 {selectField({ label: 'Sex', value: newPlayer.sex, onChange: (v: string) => setNewPlayer({ ...newPlayer, sex: v }), required: true, options: ['Male', 'Female'] })}
-                {inputField({ label: 'Age', value: newPlayer.age, onChange: (v: string) => setNewPlayer({ ...newPlayer, age: v }), required: true, type: 'number', placeholder: 'Enter age' })}
-                {inputField({ label: 'Height (cm)', value: newPlayer.height, onChange: (v: string) => setNewPlayer({ ...newPlayer, height: v }), required: true, type: 'number', placeholder: 'Enter height' })}
+                {inputField({ label: 'Age', value: newPlayer.age, onChange: (v: string) => setNewPlayer({ ...newPlayer, age: v }), required: true, type: 'number' })}
+                {inputField({ label: 'Height (cm)', value: newPlayer.height, onChange: (v: string) => setNewPlayer({ ...newPlayer, height: v }), required: true, type: 'number' })}
                 {selectField({ label: 'Belt', value: newPlayer.belt, onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }), required: true, options: ['9th Geup White', '8th Geup Yellow', '7th Geup Yellow-Stripe'] })}
                 {selectField({ label: 'Category', value: newPlayer.category, onChange: (v: string) => setNewPlayer({ ...newPlayer, category: v }), required: true, options: ['Kyorugi', 'Poomsae'] })}
-                {inputField({ label: 'Group', value: newPlayer.group, onChange: () => {}, disabled: true, placeholder: 'Auto-generated' })}
+                {inputField({ label: 'Group', value: newPlayer.group, onChange: () => {}, disabled: true })}
               </div>
               <div className="mt-4 flex justify-end">
-                <button type="submit" className="bg-[#EAB044] text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
-                  + Add
+                <button type="submit" className="cursor-pointer bg-[#EAB044] text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
+                  {editIndex !== null ? 'Save' : '+ Add'}
                 </button>
               </div>
             </form>
@@ -266,25 +301,7 @@ export default function PlayersPage() {
     </div>
   );
 
-  type InputFieldProps = {
-    label: string;
-    value: string | number;
-    onChange: (v: string) => void;
-    required?: boolean;
-    type?: string;
-    placeholder?: string;
-    disabled?: boolean;
-  };
-
-  function inputField({
-    label,
-    value,
-    onChange,
-    required = false,
-    type = 'text',
-    placeholder = '',
-    disabled = false,
-  }: InputFieldProps) {
+  function inputField({ label, value, onChange, required = false, type = 'text', disabled = false }: any) {
     return (
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -294,7 +311,7 @@ export default function PlayersPage() {
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={`Enter ${label.toLowerCase()}`}
           className={`w-full border border-[rgba(0,0,0,0.2)] rounded p-2 ${disabled ? 'bg-gray-100' : ''}`}
           disabled={disabled}
         />
@@ -302,19 +319,7 @@ export default function PlayersPage() {
     );
   }
 
-  function selectField({
-    label,
-    value,
-    onChange,
-    required = false,
-    options = [],
-  }: {
-    label: string;
-    value: string;
-    onChange: (v: string) => void;
-    required?: boolean;
-    options?: string[];
-  }) {
+  function selectField({ label, value, onChange, required = false, options = [] }: any) {
     return (
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -326,7 +331,7 @@ export default function PlayersPage() {
           className="w-full border border-[rgba(0,0,0,0.2)] rounded p-2"
         >
           <option value="">Select {label.toLowerCase()}</option>
-          {options?.map((opt) => (
+          {options.map((opt: string) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
