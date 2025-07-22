@@ -108,6 +108,34 @@ export default function PlayersPage() {
     }
   }, [newPlayer.age, newPlayer.category]);
 
+  useEffect(() => {
+    // Sample players added on mount
+    setPlayers([
+      {
+        lastName: 'Dela Cruz',
+        firstName: 'Juan',
+        middleName: 'Reyes',
+        sex: 'Male',
+        age: '15',
+        height: '165',
+        belt: '8th Geup Yellow',
+        category: 'Kyorugi',
+        group: 'Cadet',
+      },
+      {
+        lastName: 'Santos',
+        firstName: 'Maria',
+        middleName: 'Lopez',
+        sex: 'Female',
+        age: '10',
+        height: '145',
+        belt: '9th Geup White',
+        category: 'Poomsae',
+        group: 'Group 2',
+      },
+    ]);
+  }, []);
+
   let filteredPlayers = players.filter((player) => {
     const playerValues = Object.values(player).join(' ').toLowerCase();
     return playerValues.includes(search.toLowerCase());
