@@ -92,7 +92,7 @@ export default async function CompetitionPost({ params }: Props) {
                             </div>
 
                             <div>
-                                <button className="group bg-foreground hover:bg-[#EAB044] text-white font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
+                                <button className="group bg-foreground hover:bg-[#FED018] text-white hover:text-[#1A1A1A] font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
                                     Register
 
                                     {/* Default icon (visible when not hovered) */}
