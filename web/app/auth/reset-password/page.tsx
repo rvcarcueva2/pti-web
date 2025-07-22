@@ -21,7 +21,7 @@ const ResetPassword: React.FC = () => {
     // Check if we have the necessary tokens in the URL
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
-    
+
     if (accessToken && refreshToken) {
       // Set the session with the tokens from the URL
       supabase.auth.setSession({
@@ -196,9 +196,8 @@ const ResetPassword: React.FC = () => {
               placeholder="Enter your new password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${
-                errors.password ? 'border-[#D41716]' : 'border-black/20'
-              } focus:ring-2 focus:ring-black`}
+              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${errors.password ? 'border-[#D41716]' : 'border-black/20'
+                } focus:ring-2 focus:ring-black`}
             />
             <button
               type="button"
@@ -229,9 +228,8 @@ const ResetPassword: React.FC = () => {
               placeholder="Confirm your new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${
-                errors.confirmPassword ? 'border-[#D41716]' : 'border-black/20'
-              } focus:ring-2 focus:ring-black`}
+              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${errors.confirmPassword ? 'border-[#D41716]' : 'border-black/20'
+                } focus:ring-2 focus:ring-black`}
             />
             <button
               type="button"
@@ -266,9 +264,12 @@ const ResetPassword: React.FC = () => {
         <p className="text-xs mt-4 text-center">
           <Link
             href="/auth/sign-in"
-            className="font-semibold text-[#040163] hover:underline"
+            className="inline-flex items-center text-[#040163] transition-colors duration-200 group font-semibold"
           >
-            ← Back to Sign In
+            <span className="mr-1 transition-transform duration-200 group-hover:-translate-x-0.5">
+              ←
+            </span>
+            Back to Sign In
           </Link>
         </p>
       </div>
