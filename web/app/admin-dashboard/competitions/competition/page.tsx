@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type Competition = {
-  teams: number;
+  teams: string;
   players: number;
   kyorugi: number;
   poomsae: number;
@@ -18,7 +18,7 @@ export default function CompetitionPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const columns = [
-    { label: 'Teams', key: 'teams', minWidth: 'min-w-[100px]' },
+    { label: 'Team', key: 'team', minWidth: 'min-w-[100px]' },
     { label: 'Players', key: 'players', minWidth: 'min-w-[100px]' },
     { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[100px]' },
     { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-[100px]' },
@@ -27,21 +27,21 @@ export default function CompetitionPage() {
   const competitions: Competition[] = [
     {
       competition: 'National Championship',
-      teams: 30,
+      teams: "Team 1",
       players: 120,
       kyorugi: 75,
       poomsae: 45,
     },
     {
       competition: 'Regional Open',
-      teams: 22,
+      teams: "Team 2",
       players: 85,
       kyorugi: 50,
       poomsae: 35,
     },
     {
       competition: 'Summer Invitational',
-      teams: 15,
+      teams: "Team 3",
       players: 60,
       kyorugi: 40,
       poomsae: 20,
@@ -84,13 +84,21 @@ export default function CompetitionPage() {
   return (
     <div className="font-geist p-6 ml-64">
       {/* Heading */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Competition Name</h1>
-        <div className="flex gap-2">
-          <button className="cursor-pointer bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
-            <Image src="/icons/excel.svg" alt="Excel Icon" width={16} height={16} />
-            <span>Export Excel</span>
-          </button>
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Link href="/admin-dashboard/competitions" className="font-medium group text-md text-[#EAB044] flex items-center">
+            <span className="mr-1 transition-transform duration-200 group-hover:-translate-x-1">←</span>
+            <span>Back</span>
+          </Link>
+        </div>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">Competition Name</h1>
+          <div className="flex gap-2">
+            <button className="cursor-pointer bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
+              <Image src="/icons/excel.svg" alt="Excel Icon" width={16} height={16} />
+              <span>Export Excel</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -139,23 +147,27 @@ export default function CompetitionPage() {
           </thead>
           <tbody>
             {filteredCompetitions.map((comp, index) => (
-              <tr key={index} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
-                <td className="p-3 min-w-[100px]">{comp.teams}</td>
-                <td className="p-3 min-w-[100px]">{comp.players}</td>
-                <td className="p-3 min-w-[100px]">{comp.kyorugi}</td>
-                <td className="p-3 min-w-[100px]">{comp.poomsae}</td>
-                <td className="p-3 text-center w-[60px]">
-                  <Link href="/admin-dashboard/competitions/competition">
+              <Link
+                key={index}
+                href="/admin-dashboard/competitions/competition/team"
+                className="contents"
+              >
+                <tr className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer">
+                  <td className="p-3 min-w-[100px]">{comp.teams}</td>
+                  <td className="p-3 min-w-[100px]">{comp.players}</td>
+                  <td className="p-3 min-w-[100px]">{comp.kyorugi}</td>
+                  <td className="p-3 min-w-[100px]">{comp.poomsae}</td>
+                  <td className="p-3 text-center w-[60px]">
                     <Image
                       src="/icons/information.svg"
                       alt="Info"
                       width={18}
                       height={18}
-                      className="cursor-pointer mx-auto"
+                      className="mx-auto"
                     />
-                  </Link>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              </Link>
             ))}
           </tbody>
         </table>
