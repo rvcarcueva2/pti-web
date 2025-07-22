@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type Player = {
   lastName: string;
@@ -13,7 +14,7 @@ type Player = {
   belt: string;
   category: string;
   group: string;
-  award: string; // ← added
+  award: string;
 };
 
 export default function PlayersPage() {
@@ -23,40 +24,28 @@ export default function PlayersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [players, setPlayers] = useState<Player[]>([
     {
-        lastName: 'Garcia',
-        firstName: 'Juan',
-        middleName: '',
-        sex: 'Male',
-        age: '16',
-        height: '',
-        belt: '7th Geup Yellow-Stripe',
-        category: 'Kyorugi',
-        group: 'Junior',
-        award: 'Gold',
+      lastName: 'Mones',
+      firstName: 'Hazel Ann',
+      middleName: 'Besañez',
+      sex: 'Female',
+      age: '21',
+      height: '153',
+      belt: 'Yellow Belt',
+      category: 'Kyorugi',
+      group: 'Senior',
+      award: 'Gold',
     },
     {
-        lastName: 'Reyes',
-        firstName: 'Maria',
-        middleName: '',
-        sex: 'Female',
-        age: '10',
-        height: '',
-        belt: '8th Geup Yellow',
-        category: 'Poomsae',
-        group: 'Group 2',
-        award: 'Silver',
-    },
-    {
-        lastName: 'Lopez',
-        firstName: 'Carlos',
-        middleName: '',
-        sex: 'Male',
-        age: '18',
-        height: '',
-        belt: '9th Geup White',
-        category: 'Kyorugi',
-        group: 'Senior',
-        award: 'Bronze',
+      lastName: 'Carcueva',
+      firstName: 'Reycel John Emmanuel',
+      middleName: 'Vejano',
+      sex: 'Male',
+      age: '21',
+      height: '165',
+      belt: 'White Belt',
+      category: 'Poomsae',
+      group: 'Group 4',
+      award: 'Silver',
     },
   ]);
   const [newPlayer, setNewPlayer] = useState<Player>(emptyPlayer());
@@ -66,10 +55,10 @@ export default function PlayersPage() {
     { label: 'Last Name', key: 'lastName', width: 'w-[160px]' },
     { label: 'First Name', key: 'firstName', width: 'w-[160px]' },
     { label: 'Sex', key: 'sex', width: 'w-[100px]' },
-    { label: 'Belt', key: 'belt', width: 'w-[200px]' },
+    { label: 'Belt', key: 'belt', width: 'w-[150px]' },
     { label: 'Category', key: 'category', width: 'w-[150px]' },
     { label: 'Group', key: 'group', width: 'w-[150px]' },
-    { label: 'Award', key: 'award', width: 'w-[100px]' }, // ← new column
+    { label: 'Award', key: 'award', width: 'w-[100px]' },
   ];
 
   function emptyPlayer(): Player {
@@ -83,7 +72,7 @@ export default function PlayersPage() {
       belt: '',
       category: '',
       group: '',
-      award: '', // Added to fix the error
+      award: '',
     };
   }
 
@@ -152,50 +141,53 @@ export default function PlayersPage() {
 
   if (sortColumn) {
     filteredPlayers = [...filteredPlayers].sort((a, b) => {
-      const valueA = a[sortColumn as keyof typeof a];
-      const valueB = b[sortColumn as keyof typeof b];
-      if (typeof valueA === 'number' && typeof valueB === 'number') {
-        return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-      } else {
-        return sortDirection === 'asc'
-          ? String(valueA).localeCompare(String(valueB))
-          : String(valueB).localeCompare(String(valueA));
-      }
+      const valueA = a[sortColumn as keyof Player];
+      const valueB = b[sortColumn as keyof Player];
+      return sortDirection === 'asc'
+        ? String(valueA).localeCompare(String(valueB))
+        : String(valueB).localeCompare(String(valueA));
     });
   }
 
   return (
     <div className="font-geist p-6 ml-64">
       {/* Heading */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Competition Name</h1>
-        <div className="flex gap-2">
-          <button className="cursor-pointer bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
-            <Image src="/icons/excel.svg" alt="Excel Icon" width={16} height={16} />
-            <span>Export Excel</span>
-          </button>
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Link href="/admin-dashboard/results" className="font-medium group text-md text-[#EAB044] flex items-center">
+            <span className="mr-1 transition-transform duration-200 group-hover:-translate-x-1">←</span>
+            <span>Back</span>
+          </Link>
+        </div>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">Competition Name</h1>
+          <div className="flex gap-2">
+            <button className="cursor-pointer bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 flex items-center gap-2">
+              <Image src="/icons/excel.svg" alt="Excel Icon" width={16} height={16} />
+              <span>Export Excel</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Search + Table */}
       <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
         <div className="flex justify-between items-center p-4 border-b border-[rgba(0,0,0,0.2)]">
-            <h3 className="text-lg text-gray-800">Players</h3>
-            <div className="relative w-full max-w-xs">
-                <input
-                type="text"
-                placeholder="Search"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                />
-                <div className="absolute top-1/2 left-3 -translate-y-1/2">
-                <Image src="/icons/search.svg" alt="Search Icon" width={16} height={16} />
+          <h3 className="text-lg text-gray-800">Players</h3>
+          <div className="relative w-full max-w-xs">
+            <input
+              type="text"
+              placeholder="Search"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="absolute top-1/2 left-3 -translate-y-1/2">
+              <Image src="/icons/search.svg" alt="Search Icon" width={16} height={16} />
             </div>
+          </div>
         </div>
-      </div>
 
-        {/* Table */}
         <table className="w-full table-fixed text-sm">
           <thead className="bg-gray-50 border-b border-[rgba(0,0,0,0.2)]">
             <tr>
@@ -227,7 +219,7 @@ export default function PlayersPage() {
               <tr key={index} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
                 {columns.map((col) => (
                   <td key={col.key} className="p-3">
-                    {player[col.key as keyof typeof player]}
+                    {player[col.key as keyof Player]}
                   </td>
                 ))}
                 <td className="p-3 text-left">
@@ -269,11 +261,11 @@ export default function PlayersPage() {
         </div>
         <div className="flex justify-end items-center gap-3">
           <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
-            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer">
               <Image src="/icons/previous.svg" alt="Previous" width={20} height={20} />
             </button>
             <div className="px-4 bg-[#00000010] text-[#EAB044] font-semibold text-sm h-full flex items-center">1</div>
-            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer">
               <Image src="/icons/next.svg" alt="Next" width={20} height={20} />
             </button>
           </div>
@@ -309,6 +301,12 @@ export default function PlayersPage() {
                 {selectField({ label: 'Belt', value: newPlayer.belt, onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }), required: true, options: ['9th Geup White', '8th Geup Yellow', '7th Geup Yellow-Stripe'] })}
                 {selectField({ label: 'Category', value: newPlayer.category, onChange: (v: string) => setNewPlayer({ ...newPlayer, category: v }), required: true, options: ['Kyorugi', 'Poomsae'] })}
                 {inputField({ label: 'Group', value: newPlayer.group, onChange: () => {}, disabled: true })}
+                {selectField({
+                  label: 'Award',
+                  value: newPlayer.award,
+                  onChange: (v: string) => setNewPlayer({ ...newPlayer, award: v }),
+                  options: ['Gold', 'Silver', 'Bronze']
+                })}
               </div>
               <div className="mt-4 flex justify-end">
                 <button type="submit" className="cursor-pointer bg-[#EAB044] text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
@@ -322,9 +320,23 @@ export default function PlayersPage() {
     </div>
   );
 
-  function inputField({ label, value, onChange, required = false, type = 'text', disabled = false }: any) {
+  function inputField({
+    label,
+    value,
+    onChange,
+    required = false,
+    type = 'text',
+    disabled = false,
+  }: {
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    required?: boolean;
+    type?: string;
+    disabled?: boolean;
+  }) {
     return (
-      <div>
+      <div className="relative">
         <label className="block mb-1 text-sm font-medium text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
@@ -332,9 +344,9 @@ export default function PlayersPage() {
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={`Enter ${label.toLowerCase()}`}
-          className={`w-full border border-[rgba(0,0,0,0.2)] rounded p-2 ${disabled ? 'bg-gray-100' : ''}`}
+          required={required}
           disabled={disabled}
+          className={`w-full border border-[rgba(0,0,0,0.2)] rounded p-2 text-gray-700 ${disabled ? 'bg-gray-100' : ''}`}
         />
       </div>
     );
@@ -342,22 +354,39 @@ export default function PlayersPage() {
 
   function selectField({ label, value, onChange, required = false, options = [] }: any) {
     return (
-      <div>
+      <div className="relative">
         <label className="block mb-1 text-sm font-medium text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full border border-[rgba(0,0,0,0.2)] rounded p-2"
-        >
-          <option value="">Select {label.toLowerCase()}</option>
-          {options.map((opt: string) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="cursor-pointer w-full border border-[rgba(0,0,0,0.2)] rounded p-2 pr-10 appearance-none text-gray-700"
+          >
+            <option value="">Select {label.toLowerCase()}</option>
+            {options.map((opt: string) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+
+          {/* Custom down arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.65a.75.75 0 01-1.1 0l-4.25-4.65a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
     );
   }
