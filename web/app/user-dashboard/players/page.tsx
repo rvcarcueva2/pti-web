@@ -60,6 +60,15 @@ export default function PlayersPage() {
   };
 
   const handleAddPlayer = () => {
+    const requiredFields = ['lastName', 'firstName', 'sex', 'age', 'height', 'belt', 'category'];
+
+    const isValid = requiredFields.every((field) => newPlayer[field as keyof Player].trim() !== '');
+
+    if (!isValid) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
     if (editIndex !== null) {
       const updated = [...players];
       updated[editIndex] = { ...newPlayer };
@@ -67,6 +76,7 @@ export default function PlayersPage() {
     } else {
       setPlayers([...players, { ...newPlayer }]);
     }
+
     setNewPlayer(emptyPlayer());
     setIsModalOpen(false);
     setEditIndex(null);
@@ -109,29 +119,28 @@ export default function PlayersPage() {
   }, [newPlayer.age, newPlayer.category]);
 
   useEffect(() => {
-    // Sample players added on mount
     setPlayers([
       {
-        lastName: 'Dela Cruz',
-        firstName: 'Juan',
-        middleName: 'Reyes',
-        sex: 'Male',
-        age: '15',
-        height: '165',
-        belt: '8th Geup Yellow',
+        lastName: 'Mones',
+        firstName: 'Hazel Ann',
+        middleName: 'Besañez',
+        sex: 'Female',
+        age: '21',
+        height: '153',
+        belt: 'Yellow Belt',
         category: 'Kyorugi',
-        group: 'Cadet',
+        group: 'Senior',
       },
       {
-        lastName: 'Santos',
-        firstName: 'Maria',
-        middleName: 'Lopez',
-        sex: 'Female',
-        age: '10',
-        height: '145',
-        belt: '9th Geup White',
+        lastName: 'Carcueva',
+        firstName: 'Reycel John Emmanuel',
+        middleName: 'Vejano',
+        sex: 'Male',
+        age: '21',
+        height: '165',
+        belt: 'White Belt',
         category: 'Poomsae',
-        group: 'Group 2',
+        group: 'Group 4',
       },
     ]);
   }, []);
@@ -145,19 +154,15 @@ export default function PlayersPage() {
     filteredPlayers = [...filteredPlayers].sort((a, b) => {
       const valueA = a[sortColumn as keyof typeof a];
       const valueB = b[sortColumn as keyof typeof b];
-      if (typeof valueA === 'number' && typeof valueB === 'number') {
-        return sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-      } else {
-        return sortDirection === 'asc'
-          ? String(valueA).localeCompare(String(valueB))
-          : String(valueB).localeCompare(String(valueA));
-      }
+      return sortDirection === 'asc'
+        ? String(valueA).localeCompare(String(valueB))
+        : String(valueB).localeCompare(String(valueA));
     });
   }
 
   return (
     <div className="font-geist p-6 ml-64">
-      {/* Heading */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Players</h1>
         <div className="flex gap-2">
@@ -276,11 +281,11 @@ export default function PlayersPage() {
         </div>
         <div className="flex justify-end items-center gap-3">
           <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
-            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer">
               <Image src="/icons/previous.svg" alt="Previous" width={20} height={20} />
             </button>
             <div className="px-4 bg-[#00000010] text-[#EAB044] font-semibold text-sm h-full flex items-center">1</div>
-            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
+            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer">
               <Image src="/icons/next.svg" alt="Next" width={20} height={20} />
             </button>
           </div>
@@ -289,10 +294,10 @@ export default function PlayersPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-6xl border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+        <div className="fixed inset-0 bg-black/30 flex justify-start items-center z-50" style={{ paddingLeft: '16rem' }}>
+          <div className="bg-white p-6 ml-14 rounded-md w-full max-w-[1126px] border border-[rgba(0,0,0,0.2)] shadow-lg relative">
             <button
-              className="cursor-pointer absolute top-2 right-3 text-xl font-bold text-gray-600"
+              className="absolute top-2 right-3 text-xl font-bold text-gray-600 cursor-pointer"
               onClick={() => {
                 setIsModalOpen(false);
                 setEditIndex(null);
@@ -313,12 +318,35 @@ export default function PlayersPage() {
                 {selectField({ label: 'Sex', value: newPlayer.sex, onChange: (v: string) => setNewPlayer({ ...newPlayer, sex: v }), required: true, options: ['Male', 'Female'] })}
                 {inputField({ label: 'Age', value: newPlayer.age, onChange: (v: string) => setNewPlayer({ ...newPlayer, age: v }), required: true, type: 'number' })}
                 {inputField({ label: 'Height (cm)', value: newPlayer.height, onChange: (v: string) => setNewPlayer({ ...newPlayer, height: v }), required: true, type: 'number' })}
-                {selectField({ label: 'Belt', value: newPlayer.belt, onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }), required: true, options: ['9th Geup White', '8th Geup Yellow', '7th Geup Yellow-Stripe'] })}
+                {selectField({
+                  label: 'Belt',
+                  value: newPlayer.belt,
+                  onChange: (v: string) => setNewPlayer({ ...newPlayer, belt: v }),
+                  required: true,
+                  options: [
+                    'White Belt',
+                    'Yellow Belt',
+                    'Orange Belt',
+                    'Green Belt',
+                    'Blue Belt',
+                    'Brown Belt',
+                    'Senior Brown Belt',
+                    'Red Belt',
+                    'Senior Red Belt',
+                    'Poom Belt',
+                    'Black Belt',
+                  ],
+                })}
                 {selectField({ label: 'Category', value: newPlayer.category, onChange: (v: string) => setNewPlayer({ ...newPlayer, category: v }), required: true, options: ['Kyorugi', 'Poomsae'] })}
-                {inputField({ label: 'Group', value: newPlayer.group, onChange: () => {}, disabled: true })}
+                {inputField({
+                  label: 'Group',
+                  value: newPlayer.group || 'Auto-generated',
+                  onChange: () => {},
+                  disabled: true,
+                })}
               </div>
               <div className="mt-4 flex justify-end">
-                <button type="submit" className="cursor-pointer bg-[#EAB044] text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
+                <button type="submit" className="bg-[#EAB044] cursor-pointer text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
                   {editIndex !== null ? 'Save' : '+ Add'}
                 </button>
               </div>
@@ -349,22 +377,39 @@ export default function PlayersPage() {
 
   function selectField({ label, value, onChange, required = false, options = [] }: any) {
     return (
-      <div>
+      <div className="relative">
         <label className="block mb-1 text-sm font-medium text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full border border-[rgba(0,0,0,0.2)] rounded p-2"
-        >
-          <option value="">Select {label.toLowerCase()}</option>
-          {options.map((opt: string) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="cursor-pointer w-full border border-[rgba(0,0,0,0.2)] rounded p-2 pr-10 appearance-none text-gray-700"
+          >
+            <option value="">Select {label.toLowerCase()}</option>
+            {options.map((opt: string) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+
+          {/* Custom down arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.65a.75.75 0 01-1.1 0l-4.25-4.65a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
     );
   }
