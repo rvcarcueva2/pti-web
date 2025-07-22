@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 
 type Registration = {
   competition: string;
@@ -14,6 +14,7 @@ export default function RegistrationPage() {
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const router = useRouter();
 
   const columns = [
     { label: 'Competition', key: 'competition', minWidth: 'min-w-[340px]' },
@@ -48,6 +49,10 @@ export default function RegistrationPage() {
     }
   };
 
+  const handleRowClick = () => {
+    router.push('/user-dashboard/registration/players');
+  };
+
   let filteredRegistrations = registrations.filter((reg) =>
     Object.values(reg).join(' ').toLowerCase().includes(search.toLowerCase())
   );
@@ -56,7 +61,6 @@ export default function RegistrationPage() {
     filteredRegistrations = [...filteredRegistrations].sort((a, b) => {
       const valueA = a[sortColumn as keyof Registration];
       const valueB = b[sortColumn as keyof Registration];
-
       return sortDirection === 'asc'
         ? String(valueA).localeCompare(String(valueB))
         : String(valueB).localeCompare(String(valueA));
@@ -71,12 +75,10 @@ export default function RegistrationPage() {
 
   return (
     <div className="font-geist p-6 ml-64">
-      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Registration</h1>
       </div>
 
-      {/* Search and Table */}
       <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
@@ -93,7 +95,6 @@ export default function RegistrationPage() {
           </div>
         </div>
 
-        {/* Table */}
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-[rgba(0,0,0,0.2)]">
             <tr>
@@ -122,15 +123,12 @@ export default function RegistrationPage() {
           </thead>
           <tbody>
             {filteredRegistrations.map((reg, index) => (
-              <tr key={index} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
-                <td className="p-3 min-w-[340px]">
-                  <Link
-                    href="/user-dashboard/registration/players"
-                    className="text-black hover:underline"
-                  >
-                    {reg.competition}
-                  </Link>
-                </td>
+              <tr
+                key={index}
+                onClick={handleRowClick}
+                className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer"
+              >
+                <td className="p-3 min-w-[340px]">{reg.competition}</td>
                 <td className="p-3 min-w-[120px]">{reg.dateRegistered}</td>
                 <td className={`p-3 min-w-[100px] ${getStatusColor(reg.status)}`}>
                   {reg.status}
@@ -141,7 +139,7 @@ export default function RegistrationPage() {
                     alt="Info"
                     width={18}
                     height={18}
-                    className="cursor-pointer mx-auto"
+                    className="mx-auto"
                   />
                 </td>
               </tr>
@@ -155,7 +153,6 @@ export default function RegistrationPage() {
         <p className="justify-self-start">
           Showing 1 to {filteredRegistrations.length} of {filteredRegistrations.length} results
         </p>
-
         <div className="flex items-center justify-center gap-2 relative">
           <div className="relative">
             <select className="appearance-none border border-[rgba(0,0,0,0.2)] rounded-md px-3 py-1 text-sm text-center pr-6 cursor-pointer">
@@ -171,7 +168,6 @@ export default function RegistrationPage() {
           </div>
           <span>per page</span>
         </div>
-
         <div className="flex justify-end items-center gap-3">
           <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
             <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center">
