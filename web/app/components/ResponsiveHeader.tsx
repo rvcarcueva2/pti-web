@@ -20,11 +20,14 @@ export default function ResponsiveHeader() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const isAuthPage = pathname === '/auth/sign-in' || pathname === '/auth/register';
+  const isAuthPage = pathname === '/auth/sign-in' || 
+                    pathname === '/auth/register' || 
+                    pathname === '/auth/forgot-password' || 
+                    pathname === '/auth/reset-password';
 
   if (isAuthPage) {
-    // Only show contact header on sign-in and register pages
-    return <ContactHeader />;
+    // Don't show any header on auth pages
+    return null;
   }
 
   // Home page on desktop

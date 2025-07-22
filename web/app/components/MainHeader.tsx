@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { usePathname } from 'next/navigation';
+import { supabase } from '../../lib/supabaseClient';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -16,10 +18,95 @@ const geistSans = Geist({
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [userFirstName, setUserFirstName] = useState<string>('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Get current session and user profile
+        const getSession = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    setUser(session.user);
+                    
+                    // Get first name from user metadata or fallback
+                    const firstName = session.user.user_metadata?.firstName || 
+                                    session.user.user_metadata?.first_name || 
+                                    session.user.email?.split('@')[0] || 
+                                    'User';
+                    setUserFirstName(firstName);
+                } else {
+                    setUser(null);
+                    setUserFirstName('');
+                }
+            } catch (error) {
+                console.error('Error getting session:', error);
+                setUser(null);
+                setUserFirstName('');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        getSession();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (event, session) => {
+                if (session?.user) {
+                    setUser(session.user);
+                    
+                    // Get first name from user metadata or fallback
+                    const firstName = session.user.user_metadata?.firstName || 
+                                    session.user.user_metadata?.first_name || 
+                                    session.user.email?.split('@')[0] || 
+                                    'User';
+                    setUserFirstName(firstName);
+                } else {
+                    setUser(null);
+                    setUserFirstName('');
+                }
+                setIsLoading(false);
+            }
+        );
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown && !dropdown.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        setIsDropdownOpen(false);
+        router.push('/');
+    };
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
     return (
         <header>
@@ -90,17 +177,54 @@ export default function Header() {
                                 </span>
                             </Link>
 
-                            {/* Sign In */}
-                            <Link
-                                href="/auth/sign-in"
-                                className="relative overflow-hidden group px-8 py-2.5 bg-[#1A1A1A] text-white rounded text-sm uppercase transition-all duration-300"
-                            >
-                                <span className="relative z-10">Sign In</span>
-                                <span className="absolute inset-0 bg-[#FED018] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-                                <span className="absolute inset-0 group-hover:text-black transition duration-300 z-10 flex items-center justify-center font-bold">
-                                    Sign In
-                                </span>
-                            </Link>
+                            {/* Authentication */}
+                            {!isLoading && user ? (
+                                <div className="relative user-dropdown">
+                                    <button
+                                        onClick={toggleDropdown}
+                                        className="flex items-center gap-2 px-4 py-2.5 bg-[#1A1A1A] text-white rounded text-sm uppercase transition-all duration-300 hover:bg-[#FED018] hover:text-black cursor-pointer"
+                                    >
+                                        <span className="text-sm">
+                                            {userFirstName}
+                                        </span>
+                                        <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3" />
+                                    </button>
+                                    {isDropdownOpen && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                            <div className="py-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsDropdownOpen(false);
+                                                        router.push('/profile');
+                                                    }}
+                                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                                                >
+                                                    <FontAwesomeIcon icon={faUser} className="w-4 h-4 mr-2" />
+                                                    Profile
+                                                </button>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                                                >
+                                                    <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4 mr-2" />
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : !isLoading ? (
+                                <Link
+                                    href="/auth/sign-in"
+                                    className="relative overflow-hidden group px-8 py-2.5 bg-[#1A1A1A] text-white rounded text-sm uppercase transition-all duration-300"
+                                >
+                                    <span className="relative z-10">Sign In</span>
+                                    <span className="absolute inset-0 bg-[#FED018] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                                    <span className="absolute inset-0 group-hover:text-black transition duration-300 z-10 flex items-center justify-center font-bold">
+                                        Sign In
+                                    </span>
+                                </Link>
+                            ) : null}
                         </nav>
                     </div>
 
@@ -181,14 +305,39 @@ export default function Header() {
                                 </span>
                             </Link>
 
-                            {/* Mobile Sign In */}
-                            <Link
-                                href="/auth/sign-in"
-                                className="relative overflow-hidden group px-6 py-4 bg-[#1A1A1A] text-white rounded-lg text-sm uppercase transition-all duration-300 mt-4 text-center hover:bg-[#FED018] hover:text-black font-bold text-responsive"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                <span className="relative z-10">Sign In</span>
-                            </Link>
+                            {/* Mobile Authentication */}
+                            {!isLoading && user ? (
+                                <div className="space-y-2 mt-4">
+                                    <button
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            router.push('/profile');
+                                        }}
+                                        className="flex items-center w-full px-6 py-3 bg-gray-100 text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-gray-200"
+                                    >
+                                        <FontAwesomeIcon icon={faUser} className="w-4 h-4 mr-2" />
+                                        Profile
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            handleLogout();
+                                        }}
+                                        className="flex items-center w-full px-6 py-3 bg-[#1A1A1A] text-white rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-red-200"
+                                    >
+                                        <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4 mr-2" />
+                                        Logout
+                                    </button>
+                                </div>
+                            ) : !isLoading ? (
+                                <Link
+                                    href="/auth/sign-in"
+                                    className="relative overflow-hidden group px-6 py-4 bg-[#1A1A1A] text-white rounded-lg text-sm uppercase transition-all duration-300 mt-4 text-center hover:bg-[#FED018] hover:text-black font-bold text-responsive"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <span className="relative z-10">Sign In</span>
+                                </Link>
+                            ) : null}
                         </nav>
                     </div>
                 </div>
