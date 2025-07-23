@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faUser, faChevronDown, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone, faUser, faChevronDown, faSignOutAlt, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -219,6 +219,16 @@ export default function HomeHeader() {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="py-2">
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          router.push('/user-dashboard/my-team');
+                        }}
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                      >
+                        <FontAwesomeIcon icon={faBookmark} className="w-4 h-4 mr-2" />
+                        My Team
+                      </button>
                       <button
                         onClick={() => {
                           setIsDropdownOpen(false);

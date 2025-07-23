@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { usePathname } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
@@ -195,6 +195,16 @@ export default function Header() {
                                                 <button
                                                     onClick={() => {
                                                         setIsDropdownOpen(false);
+                                                        router.push('/user-dashboard/my-team');
+                                                    }}
+                                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                                                >
+                                                    <FontAwesomeIcon icon={faBookmark} className="w-4 h-4 mr-2" />
+                                                    My Team
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setIsDropdownOpen(false);
                                                         router.push('/profile');
                                                     }}
                                                     className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
@@ -308,6 +318,16 @@ export default function Header() {
                             {/* Mobile Authentication */}
                             {!isLoading && user ? (
                                 <div className="space-y-2 mt-4">
+                                    <button
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            router.push('/user-dashboard/my-team');
+                                        }}
+                                        className="flex items-center w-full px-6 py-3 bg-[#FED018] text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-[#FED018]/90"
+                                    >
+                                        <FontAwesomeIcon icon={faBookmark} className="w-4 h-4 mr-2" />
+                                        My Team
+                                    </button>
                                     <button
                                         onClick={() => {
                                             setIsMobileMenuOpen(false);
