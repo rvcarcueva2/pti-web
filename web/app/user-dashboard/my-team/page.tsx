@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,209 +36,156 @@ export default function MyTeamPage() {
   // File states
   const [teamLogoFile, setTeamLogoFile] = useState<File | null>(null);
   const [coachPhotoFile, setCoachPhotoFile] = useState<File | null>(null);
-  const [teamLogoPreview, setTeamLogoPreview] = useState<string | null>(null);
-  const [coachPhotoPreview, setCoachPhotoPreview] = useState<string | null>(null);
 
   // Error and success states
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    const checkAuthAndLoadTeam = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-          router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
-          return;
-        }
+  // Memoized previews
+  const teamLogoPreview = useMemo(() => {
+    if (teamLogoFile) return URL.createObjectURL(teamLogoFile);
+    if (teamForm.team_logo) return teamForm.team_logo;
+    return null;
+  }, [teamLogoFile, teamForm.team_logo]);
 
-        if (!session?.user) {
-          router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
-          return;
-        }
+  const coachPhotoPreview = useMemo(() => {
+    if (coachPhotoFile) return URL.createObjectURL(coachPhotoFile);
+    if (teamForm.coach_photo) return teamForm.coach_photo;
+    return null;
+  }, [coachPhotoFile, teamForm.coach_photo]);
 
-        setUser(session.user);
-        await loadTeamData(session.user.id);
+  // Only refresh session if missing
+  const getSession = useCallback(async () => {
+    let { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshed.session) return null;
+      session = refreshed.session;
+    }
+    return session;
+  }, []);
 
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuthAndLoadTeam();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_OUT' || !session?.user) {
-          router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
-        } else if (session?.user) {
-          setUser(session.user);
-          await loadTeamData(session.user.id);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [router]);
-
-  const loadTeamData = async (userId: string) => {
+  const loadTeamData = useCallback(async (userId: string) => {
     try {
-      // Always refresh session before API call
-      let { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) {
-        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError || !refreshed.session) {
-          setIsEditing(true);
-          return;
-        }
-        session = refreshed.session;
+        setIsEditing(true);
+        return;
       }
-
       const response = await fetch('/api/teams', {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
       });
       const data = await response.json();
-
       if (response.ok && data.team) {
         setTeamForm(data.team);
         setHasTeamData(true);
         setIsEditing(false);
-        
-        // Set image previews if they exist
-        if (data.team.team_logo) {
-          setTeamLogoPreview(data.team.team_logo);
-        }
-        if (data.team.coach_photo) {
-          setCoachPhotoPreview(data.team.coach_photo);
-        }
       } else {
-        // No team data exists, start in editing mode
         setHasTeamData(false);
         setIsEditing(true);
       }
-    } catch (error) {
-      console.error('Error loading team data:', error);
+    } catch {
       setIsEditing(true);
     }
-  };
+  }, [getSession]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    let mounted = true;
+    const checkAuthAndLoadTeam = async () => {
+      const session = await getSession();
+      if (!session?.user) {
+        router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
+        return;
+      }
+      setUser(session.user);
+      await loadTeamData(session.user.id);
+      if (mounted) setIsLoading(false);
+    };
+    checkAuthAndLoadTeam();
+
+    // Debounce auth change API calls
+    let debounceTimer: NodeJS.Timeout | null = null;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          if (event === 'SIGNED_OUT' || !session?.user) {
+            router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
+          } else if (session?.user) {
+            setUser(session.user);
+            await loadTeamData(session.user.id);
+          }
+        }, 200);
+      }
+    );
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [router, loadTeamData, getSession]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTeamForm(prev => ({ ...prev, [name]: value }));
-    
-    // Clear errors when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     setSuccessMessage('');
-  };
+  }, [errors]);
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'team_logo' | 'coach_photo'
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      if (type === 'team_logo') {
-        setTeamLogoFile(file);
-        setTeamLogoPreview(URL.createObjectURL(file));
-      } else {
-        setCoachPhotoFile(file);
-        setCoachPhotoPreview(URL.createObjectURL(file));
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, type: 'team_logo' | 'coach_photo') => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        if (type === 'team_logo') setTeamLogoFile(file);
+        else setCoachPhotoFile(file);
       }
-    }
-  };
+    },
+    []
+  );
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+  const uploadFile = useCallback(async (file: File, folder: string): Promise<string | null> => {
     try {
-      // Always refresh session before API call
-      let { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError || !refreshed.session) {
-          throw new Error('Not authenticated');
-        }
-        session = refreshed.session;
-      }
-
-      console.log(`Uploading file to ${folder}:`, file.name);
-
+      const session = await getSession();
+      if (!session) throw new Error('Not authenticated');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('bucket', 'teams');
       formData.append('folder', folder);
-
-      // Add timeout to prevent hanging
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch('/api/upload/file', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
         body: formData,
         signal: controller.signal,
       });
-
       clearTimeout(timeoutId);
-
-      console.log('Upload response status:', response.status);
       const data = await response.json();
-      console.log('Upload response data:', data);
-
-      if (response.ok && data.success) {
-        console.log('File uploaded successfully:', data.url);
-        return data.url;
-      } else {
-        throw new Error(data.error || 'Failed to upload file');
-      }
-    } catch (error) {
-      console.error('File upload error:', error);
+      if (response.ok && data.success) return data.url;
+      throw new Error(data.error || 'Failed to upload file');
+    } catch {
       return null;
     }
-  };
+  }, [getSession]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrors({});
     setSuccessMessage('');
-
-    // Validation
     const newErrors: { [key: string]: string } = {};
-
-    if (!teamForm.team_name.trim()) {
-      newErrors.team_name = 'Team name is required.';
-    }
-
-    if (!teamForm.coach_name.trim()) {
-      newErrors.coach_name = 'Coach name is required.';
-    }
-
+    if (!teamForm.team_name.trim()) newErrors.team_name = 'Team name is required.';
+    if (!teamForm.coach_name.trim()) newErrors.coach_name = 'Coach name is required.';
     if (teamForm.social && !teamForm.social.trim().match(/^https?:\/\/.+/)) {
       if (!teamForm.social.trim().startsWith('www.') && !teamForm.social.trim().includes('.')) {
         newErrors.social = 'Please enter a valid URL or website address.';
       }
     }
-
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length === 0) {
       try {
         let teamLogoUrl = teamForm.team_logo;
         let coachPhotoUrl = teamForm.coach_photo;
-
-        // Upload files if new ones were selected
         if (teamLogoFile) {
           teamLogoUrl = await uploadFile(teamLogoFile, 'logos');
           if (!teamLogoUrl) {
@@ -247,7 +194,6 @@ export default function MyTeamPage() {
             return;
           }
         }
-
         if (coachPhotoFile) {
           coachPhotoUrl = await uploadFile(coachPhotoFile, 'photos');
           if (!coachPhotoUrl) {
@@ -256,31 +202,14 @@ export default function MyTeamPage() {
             return;
           }
         }
-
-        // Always refresh session before API call
-        let { data: { session } } = await supabase.auth.getSession();
+        const session = await getSession();
         if (!session) {
-          const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-          if (refreshError || !refreshed.session) {
-            setErrors({ general: 'Authentication expired. Please sign in again.' });
-            setIsSubmitting(false);
-            return;
-          }
-          session = refreshed.session;
+          setErrors({ general: 'Authentication expired. Please sign in again.' });
+          setIsSubmitting(false);
+          return;
         }
-
-        console.log('Submitting team data...', {
-          team_name: teamForm.team_name.trim(),
-          social: teamForm.social.trim() || null,
-          coach_name: teamForm.coach_name.trim(),
-          team_logo: teamLogoUrl,
-          coach_photo: coachPhotoUrl,
-        });
-
-        // Add timeout to prevent hanging
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         const response = await fetch('/api/teams', {
           method: 'POST',
           headers: {
@@ -296,54 +225,31 @@ export default function MyTeamPage() {
           }),
           signal: controller.signal,
         });
-
         clearTimeout(timeoutId);
-
-        console.log('Response status:', response.status);
         const data = await response.json();
-        console.log('Response data:', data);
-
         if (response.ok && data.success) {
           setSuccessMessage(data.message);
           setTeamForm(data.team);
           setHasTeamData(true);
           setIsEditing(false);
-          
-          // Clear file states
           setTeamLogoFile(null);
           setCoachPhotoFile(null);
-          
-          // Update previews with saved URLs
-          if (data.team.team_logo) {
-            setTeamLogoPreview(data.team.team_logo);
-          }
-          if (data.team.coach_photo) {
-            setCoachPhotoPreview(data.team.coach_photo);
-          }
-          
         } else {
-          console.error('API Error:', data);
           setErrors({ general: data.error || 'Failed to save team data. Please try again.' });
         }
-      } catch (error) {
-        console.error('Submit error:', error);
+      } catch {
         setErrors({ general: 'An unexpected error occurred. Please try again.' });
       }
     }
-
-    console.log('Setting isSubmitting to false');
     setIsSubmitting(false);
-  };
+  }, [teamForm, teamLogoFile, coachPhotoFile, uploadFile, getSession]);
 
-  const toggleEdit = () => {
-    if (isEditing && hasTeamData) {
-      // Cancel editing - reload team data
-      loadTeamData(user.id);
-    }
+  const toggleEdit = useCallback(() => {
+    if (isEditing && hasTeamData) loadTeamData(user.id);
     setIsEditing(!isEditing);
     setErrors({});
     setSuccessMessage('');
-  };
+  }, [isEditing, hasTeamData, user, loadTeamData]);
 
   if (isLoading) {
     return (
