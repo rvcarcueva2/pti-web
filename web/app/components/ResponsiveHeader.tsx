@@ -20,15 +20,11 @@ export default function ResponsiveHeader() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const isAuthPage = pathname === '/auth/sign-in' || pathname === '/auth/register';
+  const isAuthPage = ['/auth/sign-in', '/auth/register', '/auth/forgot-password', '/auth/reset-password'].includes(pathname);
   const isDashboard = pathname.startsWith('/user-dashboard');
 
-  if (isAuthPage) {
-    return <ContactHeader />;
-  }
-
-  if (isDashboard) {
-    return null; // ⛔ No header on dashboard
+  if (isAuthPage || isDashboard) {
+    return null;
   }
 
   if (pathname === '/' && !isMobile) {

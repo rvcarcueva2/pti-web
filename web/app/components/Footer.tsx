@@ -33,7 +33,7 @@ const Footer = () => {
 
                 <div className="font-geist col-span-2 max-[1024px]:col-span-1 max-[768px]:text-center">
 
-                    <h4 className="mb-4 text-sm text-gray-800 max-[768px]:mb-3 text-responsive">
+                    <h4 className="mb-4 text-sm text-gray-800 max-[768px]:mb-3 max-[768px]:text-sm text-responsive">
                         Get in touch with us and stay updated.
                     </h4>
 
@@ -42,13 +42,13 @@ const Footer = () => {
                             type="email"
                             placeholder="Enter your email"
                             required
-                            className="flex-1 px-4 py-2 text-sm text-gray-800 bg-transparent outline-none max-[1280px]:px-3 max-[1280px]:py-1.5 max-[768px]:px-2"
+                            className="flex-1 px-4 py-2 text-sm text-gray-800 bg-transparent outline-none max-[1280px]:px-3 max-[1280px]:py-1.5 max-[768px]:px-3 max-[768px]:text-sm"
                         />
                         <button
                             type="submit"
-                            className="px-4 text-[#FED018] hover:text-[#EAB044] cursor-pointer max-[1280px]:px-3 max-[768px]:px-2"
+                            className="px-4 text-[#FED018] hover:text-[#EAB044] cursor-pointer max-[1280px]:px-3 max-[768px]:px-3"
                         >
-                            <FontAwesomeIcon icon={faCircleChevronRight} className="w-5 h-5 max-[1280px]:w-4 max-[1280px]:h-4 max-[768px]:w-3 max-[768px]:h-3" />
+                            <FontAwesomeIcon icon={faCircleChevronRight} className="w-5 h-5 max-[1280px]:w-4 max-[1280px]:h-4 max-[768px]:w-4 max-[768px]:h-4" />
                         </button>
                     </form>
 
@@ -56,7 +56,7 @@ const Footer = () => {
 
 
                 <div className="font-geist flex flex-col items-center max-[768px]:items-center">
-                    <ul className="text-[18px] font-semibold space-y-2 max-[1024px]:space-y-1.5 max-[768px]:space-y-1 max-[768px]:text-center text-responsive">
+                    <ul className="text-[18px] font-semibold space-y-2 max-[1024px]:space-y-1.5 max-[768px]:space-y-1 max-[768px]:text-center max-[768px]:text-base text-responsive">
                         <li>
                             <Link href="/" className="relative group">
                                 <span className="relative transition">
@@ -94,9 +94,9 @@ const Footer = () => {
 
 
                 <div className="font-geist flex flex-col items-center mr-5 max-[1024px]:mr-3 max-[768px]:mr-0">
-                    <h4 className="font-semibold mb-3 max-[1024px]:mb-2 max-[768px]:mb-2 text-responsive">Follow Us</h4>
+                    <h4 className="font-semibold mb-3 max-[1024px]:mb-2 max-[768px]:mb-2 max-[768px]:text-base text-responsive">Follow Us</h4>
                     {/* Social Media */}
-                    <div className="flex items-center gap-1 max-[768px]:gap-0.5">
+                    <div className="flex items-center gap-1 max-[768px]:gap-1">
                         <a
                             href="https://www.facebook.com/profile.php?id=100071547405103"
                             target="_blank"
@@ -108,7 +108,7 @@ const Footer = () => {
                                 alt="Facebook"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition border-0 rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-4 max-[768px]:h-4"
+                                className="hover:opacity-80 transition border-0 rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-5 max-[768px]:h-5"
                             />
                         </a>
 
@@ -123,7 +123,7 @@ const Footer = () => {
                                 alt="Instagram"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-4 max-[768px]:h-4"
+                                className="hover:opacity-80 transition rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-5 max-[768px]:h-5"
                             />
                         </a>
 
@@ -138,7 +138,7 @@ const Footer = () => {
                                 alt="YouTube"
                                 width={26}
                                 height={26}
-                                className="hover:opacity-80 transition rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-4 max-[768px]:h-4"
+                                className="hover:opacity-80 transition rounded-sm max-[1280px]:w-6 max-[1280px]:h-6 max-[1024px]:w-5 max-[1024px]:h-5 max-[768px]:w-5 max-[768px]:h-5"
                             />
                         </a>
                     </div>
@@ -146,30 +146,30 @@ const Footer = () => {
 
 
                 <div className="font-geist max-[768px]:text-center">
-                    <h4 className="font-semibold mb-3 max-[1024px]:mb-2 max-[768px]:mb-2 text-responsive">Contact Us</h4>
+                    <h4 className="font-semibold mb-3 max-[1024px]:mb-2 max-[768px]:mb-2 max-[768px]:text-base text-responsive">Contact Us</h4>
 
                     <div className="flex items-center gap-2 mb-2 max-[1024px]:gap-1.5 max-[1024px]:mb-1.5 max-[768px]:justify-center max-[768px]:mb-1">
-                        <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 max-[1280px]:w-3 max-[1280px]:h-3 max-[768px]:w-2.5 max-[768px]:h-2.5" />
+                        <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 max-[1280px]:w-3 max-[1280px]:h-3 max-[768px]:w-3 max-[768px]:h-3" />
                         <a
                             href="mailto:pilipinastaekwondo@gmail.com"
-                            className="hover:underline text-sm text-gray-800"
+                            className="hover:underline text-sm text-gray-800 max-[768px]:text-sm"
                         >
                             pilipinastaekwondo@gmail.com
                         </a>
                     </div>
 
                     <div className="flex items-center gap-2 mb-2 max-[1024px]:gap-1.5 max-[1024px]:mb-1.5 max-[768px]:justify-center max-[768px]:mb-1">
-                        <FontAwesomeIcon icon={faPhone} className="w-4 h-4 max-[1280px]:w-3 max-[1280px]:h-3 max-[768px]:w-2.5 max-[768px]:h-2.5" />
-                        <span className="text-sm text-responsive">+63 905 815 5032</span>
+                        <FontAwesomeIcon icon={faPhone} className="w-4 h-4 max-[1280px]:w-3 max-[1280px]:h-3 max-[768px]:w-3 max-[768px]:h-3" />
+                        <span className="text-sm max-[768px]:text-sm text-responsive">+63 905 815 5032</span>
                     </div>
                 </div>
 
 
             </div>
 
-            <div className='bg-foreground text-white mt-8 md:mt-10 text-center text-sm font-light py-2 md:py-4 font-geist max-[1024px]:py-1 max-[1024px]:mt-3 max-[1024px]:text-[10px] max-[768px]:py-0.5 max-[768px]:mt-2 max-[768px]:text-[8px]'>
+            <div className='bg-foreground text-white mt-8 md:mt-10 text-center text-sm font-light py-2 md:py-4 font-geist max-[1024px]:py-1 max-[1024px]:mt-3 max-[1024px]:text-xs max-[768px]:py-1 max-[768px]:mt-2 max-[768px]:text-[10px]'>
                 <div>
-                    <p className="max-[1024px]:px-2 max-[768px]:px-1 max-[768px]:leading-none text-responsive">
+                    <p className="max-[1024px]:px-2 max-[768px]:px-1 max-[768px]:leading-tight text-responsive">
                         © Copyright 2025  Pilipinas Taekwondo Incorporated.
                         <span className="hidden max-[768px]:inline"><br /></span>
                         <span className="ml-1">All Rights Reserved</span>
