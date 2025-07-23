@@ -15,6 +15,17 @@ export default function HomeCarousel() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
   const isDragging = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+  const checkScreen = () => {
+    setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+  };
+
+  checkScreen();
+  window.addEventListener('resize', checkScreen);
+  return () => window.removeEventListener('resize', checkScreen);
+}, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -48,19 +59,18 @@ export default function HomeCarousel() {
   return (
     <>
       {/* Section Title */}
-      <section className="text-center -mt-46 mb-6 sm:mt-2 sm:mb-8 md:-mt-26 md:mb-18">
-
+      <section className="text-center -mt-26 mb-6 sm:mt-2 sm:mb-8 md:-mt-26 md:mb-18">
         <div className="text-center">
-        {/* h2 for mobile only */}
-        <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-          COMPETITIONS
-        </h2>
+          {/* h2 for mobile only */}
+          <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            COMPETITIONS
+          </h2>
 
-        {/* h1 for desktop and up */}
-        <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-          COMPETITIONS
-        </h1>
-      </div>
+          {/* h1 for desktop and up */}
+          <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            COMPETITIONS
+          </h1>
+        </div>
       </section>
 
       <div className="relative w-full overflow-hidden pb-6 mb-4">
@@ -69,9 +79,15 @@ export default function HomeCarousel() {
           onClick={() =>
             setCurrent((prev) => (prev - 1 + images.length) % images.length)
           }
-          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 left-[13%] w-4 h-4 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
+          className="bg-[#1A1A1A] absolute z-30 top-[40%] left-[3.5%] md:left-[14.5%] w-6 h-6 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
         >
-          <span className="text-[6px] sm:text-2xl leading-none text-[#FED018] flex items-center justify-center group-hover:scale-110 transition">&#10094;</span>
+          <Image
+            src="/icons/previous_yellow.svg"
+            alt="Previous"
+            width={20}
+            height={20}
+            className="w-3 sm:w-6 transition-transform group-hover:scale-110"
+          />
         </button>
 
         {/* Right Arrow */}
@@ -79,18 +95,26 @@ export default function HomeCarousel() {
           onClick={() =>
             setCurrent((prev) => (prev + 1) % images.length)
           }
-          className="bg-[#1A1A1A] absolute z-30 top-1/2 -translate-y-1/2 right-[12.5%] w-4 h-4 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
+          className="bg-[#1A1A1A] absolute z-30 top-[40%] right-[3.5%] md:right-[13.5%] w-6 h-6 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-opacity-80 hover:bg-opacity-100 transition duration-300 group"
         >
-          <span className="text-[6px] sm:text-2xl leading-none text-[#FED018] flex items-center justify-center group-hover:scale-110 transition">&#10095;</span>
+          <Image
+            src="/icons/next_yellow.svg"
+            alt="Next"
+            width={20}
+            height={20}
+            className="w-3 sm:w-6 transition-transform group-hover:scale-110"
+          />
         </button>
 
         {/* Carousel Content */}
-        <div className="mx-auto w-full max-w-[100%] overflow-hidden">
+        <div className="mx-auto w-full max-w-[100%] overflow-hidden md:pb-10">
           <div
             ref={carouselRef}
             className="flex transition-transform duration-700 ease-in-out"
             style={{
-              transform: `translateX(calc(${-current * 66.66}vw + 16.66vw))`,
+              transform: isMobile
+                ? `translateX(calc(${-current * 85}vw + 7.5vw))`
+                : `translateX(calc(${-current * 66.66}vw + 16.66vw))`,
             }}
             onPointerDown={handleStart}
             onPointerUp={handleEnd}
@@ -99,8 +123,9 @@ export default function HomeCarousel() {
             {images.map((image, index) => (
               <div
                 key={index}
-                className={`w-[66.66vw] flex-shrink-0 transition-all duration-500 ease-in-out px-3 ${index === current ? 'scale-100 z-20' : 'scale-85 opacity-70 z-10'
-                  }`}
+                className={`w-[85vw] md:w-[66.66vw] flex-shrink-0 transition-all duration-500 ease-in-out px-3 md:px-8 ${
+                  index === current ? 'scale-100 z-20' : 'scale-95 opacity-80 z-10'
+                }`}
               >
                 <Link href={image.link}>
                   <div className="border-[3px] border-black overflow-hidden cursor-pointer">
