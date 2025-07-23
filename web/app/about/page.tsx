@@ -515,7 +515,7 @@ export default function About() {
                     alt="Toggle"
                     width={24}
                     height={24}
-                    className={`transition-transform duration-200 ${
+                    className={`cursor-pointer transition-transform duration-200 ${
                       openIndex === index ? 'rotate-45' : ''
                     }`}
                   />
