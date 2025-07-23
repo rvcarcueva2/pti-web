@@ -373,7 +373,7 @@ export default function About() {
             className="absolute md:-left-6 left-1/2 -translate-x-[calc(100%+140px)] top-1/2 -translate-y-1/2 z-10 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 flex items-center justify-center cursor-pointer"
           >
             <Image
-              src="/icons/previous.svg"
+              src="/icons/previous_yellow.svg"
               alt="Previous"
               width={34}
               height={32}
@@ -387,7 +387,7 @@ export default function About() {
             className="absolute md:-right-6 right-1/2 translate-x-[calc(100%+140px)] top-1/2 -translate-y-1/2 z-10 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 flex items-center justify-center cursor-pointer"
           >
             <Image
-              src="/icons/next.svg"
+              src="/icons/next_yellow.svg"
               alt="Next"
               width={34}
               height={32}
@@ -489,7 +489,7 @@ export default function About() {
         <div className="bg-gray-300 w-full h-[300px] md:h-[480px]" />
       </section>
 
-      <section className="bg-black text-white pt-8 pb-16 px-6 md:pt-16 md:px-20">
+      <section className="bg-[#1A1A1A] text-white pt-8 pb-16 px-6 md:pt-16 md:px-20">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start max-w-7xl mx-auto">
           {/* Left: FAQs Title */}
           <div className="mb-8 md:mb-0 md:w-1/2">
