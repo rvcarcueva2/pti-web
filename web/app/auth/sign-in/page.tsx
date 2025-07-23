@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 
 const SignIn: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo') || '/';
+  
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,9 +24,9 @@ const SignIn: React.FC = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          // User is already signed in, redirect to home
+          // User is already signed in, redirect to intended destination
           setIsAuthenticated(true);
-          router.replace('/'); // Use replace instead of push
+          router.replace(redirectTo);
           return;
         }
         setIsAuthenticated(false);
@@ -34,7 +37,7 @@ const SignIn: React.FC = () => {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, redirectTo]);
 
   // Don't render anything while checking authentication or if authenticated
   if (isAuthenticated === null || isAuthenticated === true) {
@@ -111,13 +114,13 @@ const SignIn: React.FC = () => {
           }
         } else {
           // Sign in successful
-          // Clear form and redirect to home page
+          // Clear form and redirect to intended destination
           setEmail('');
           setPassword('');
           
           // Small delay to ensure session is set
           setTimeout(() => {
-            router.push('/');
+            router.push(redirectTo);
           }, 100);
         }
       } catch (error) {
