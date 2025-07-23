@@ -9,6 +9,7 @@ import { faUser, faLock, faArrowLeft, faEdit } from "@fortawesome/free-solid-svg
 import { supabase } from '../../lib/supabaseClient';
 
 const Profile: React.FC = () => {
+    // Declare hooks at the top level (no duplicates)
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -16,56 +17,93 @@ const Profile: React.FC = () => {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
     // Form states
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
-
     const [profileForm, setProfileForm] = useState({
         firstName: '',
         lastName: '',
         mobile: ''
     });
-
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-
     // Error states
     const [passwordErrors, setPasswordErrors] = useState<{ [key: string]: string }>({});
     const [profileErrors, setProfileErrors] = useState<{ [key: string]: string }>({});
     const [successMessage, setSuccessMessage] = useState('');
     const [isProfileLoading, setIsProfileLoading] = useState(false);
+    // Try to refresh session if stuck in loading for more than 10 seconds
+    const [refreshAttempted, setRefreshAttempted] = useState(false);
+    // ...existing code...
+    useEffect(() => {
+        if (isLoading && !refreshAttempted) {
+            const timer = setTimeout(() => {
+                (async () => {
+                    let { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+                        if (refreshError || !refreshed.session) {
+                            await supabase.auth.signOut();
+                            router.push('/auth/sign-in?redirectTo=/profile');
+                            return;
+                        }
+                        setUser(refreshed.session.user);
+                        setIsLoading(false);
+                    }
+                    setRefreshAttempted(true);
+                })();
+            }, 10000); // 10 seconds
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading, refreshAttempted, router]);
+    // ...existing code...
+    useEffect(() => {
+        if (isLoading && !refreshAttempted) {
+            const timer = setTimeout(async () => {
+                let { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+                    if (refreshError || !refreshed.session) {
+                        await supabase.auth.signOut();
+                        router.push('/auth/sign-in?redirectTo=/profile');
+                        return;
+                    }
+                    setUser(refreshed.session.user);
+                    setIsLoading(false);
+                }
+                setRefreshAttempted(true);
+            }, 10000); // 10 seconds
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading, refreshAttempted, router]);
 
     useEffect(() => {
         // Check authentication and get user data
         const checkAuth = async () => {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) {
-                    console.error('Error getting session:', error);
-                    router.push('/auth/sign-in?redirectTo=/profile');
-                    return;
+                // Always refresh session before checking authentication
+                let { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+                    if (refreshError || !refreshed.session) {
+                        await supabase.auth.signOut();
+                        router.push('/auth/sign-in?redirectTo=/profile');
+                        return;
+                    }
+                    session = refreshed.session;
                 }
 
+                // Only proceed if session is valid
                 if (!session?.user) {
-                    router.push('/auth/sign-in?redirectTo=/profile');
-                    return;
-                }
-
-                // Verify the session is still valid by making a test query
-                const { error: testError } = await supabase.auth.getUser();
-                if (testError) {
-                    console.error('Session invalid:', testError);
                     await supabase.auth.signOut();
                     router.push('/auth/sign-in?redirectTo=/profile');
                     return;
                 }
 
                 setUser(session.user);
-                
+
                 // Initialize profile form with existing data from both auth metadata and database
                 try {
                     // Fetch user profile from database

@@ -383,8 +383,9 @@ export default function PlayersPage() {
   return (
     <div className="font-geist p-6 ml-64">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-semibold text-gray-800">Players</h1>
+        
         <div className="flex gap-2">
           <button
             onClick={() => {
@@ -399,6 +400,9 @@ export default function PlayersPage() {
             Add Player
           </button>
         </div>
+      </div>
+      <div className="mb-2">
+        <p className=" text-gray-400">Note: If you don't see your player listed, please refresh the page.</p>
       </div>
 
       {/* Success Message */}
