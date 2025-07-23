@@ -46,12 +46,21 @@ const Profile: React.FC = () => {
                 
                 if (error) {
                     console.error('Error getting session:', error);
-                    router.push('/auth/sign-in');
+                    router.push('/auth/sign-in?redirectTo=/profile');
                     return;
                 }
 
                 if (!session?.user) {
-                    router.push('/auth/sign-in');
+                    router.push('/auth/sign-in?redirectTo=/profile');
+                    return;
+                }
+
+                // Verify the session is still valid by making a test query
+                const { error: testError } = await supabase.auth.getUser();
+                if (testError) {
+                    console.error('Session invalid:', testError);
+                    await supabase.auth.signOut();
+                    router.push('/auth/sign-in?redirectTo=/profile');
                     return;
                 }
 
@@ -93,7 +102,8 @@ const Profile: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Error checking auth:', error);
-                router.push('/auth/sign-in');
+                await supabase.auth.signOut();
+                router.push('/auth/sign-in?redirectTo=/profile');
             } finally {
                 setIsLoading(false);
             }
@@ -103,49 +113,64 @@ const Profile: React.FC = () => {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (event, session) => {
+            async (event, session) => {
                 if (event === 'SIGNED_OUT' || !session?.user) {
-                    router.push('/auth/sign-in');
+                    router.push('/auth/sign-in?redirectTo=/profile');
                 } else if (session?.user) {
-                    setUser(session.user);
+                    // Verify the new session is valid
+                    try {
+                        const { error: testError } = await supabase.auth.getUser();
+                        if (testError) {
+                            console.error('New session invalid:', testError);
+                            await supabase.auth.signOut();
+                            router.push('/auth/sign-in?redirectTo=/profile');
+                            return;
+                        }
+                        
+                        setUser(session.user);
                     
-                    // Initialize profile form with existing data from database
-                    const fetchUserProfile = async () => {
-                        try {
-                            const { data: userProfile, error: fetchError } = await supabase
-                                .from('users')
-                                .select('first_name, last_name, mobile')
-                                .eq('id', session.user.id)
-                                .single();
+                        // Initialize profile form with existing data from database
+                        const fetchUserProfile = async () => {
+                            try {
+                                const { data: userProfile, error: fetchError } = await supabase
+                                    .from('users')
+                                    .select('first_name, last_name, mobile')
+                                    .eq('id', session.user.id)
+                                    .single();
 
-                            if (fetchError) {
-                                console.warn('Failed to fetch user profile from database:', fetchError);
+                                if (fetchError) {
+                                    console.warn('Failed to fetch user profile from database:', fetchError);
+                                    // Fallback to auth metadata
+                                    setProfileForm({
+                                        firstName: session.user.user_metadata?.first_name || '',
+                                        lastName: session.user.user_metadata?.last_name || '',
+                                        mobile: session.user.user_metadata?.mobile || session.user.phone || ''
+                                    });
+                                } else {
+                                    // Use database data as primary source
+                                    setProfileForm({
+                                        firstName: userProfile.first_name || session.user.user_metadata?.first_name || '',
+                                        lastName: userProfile.last_name || session.user.user_metadata?.last_name || '',
+                                        mobile: userProfile.mobile || session.user.user_metadata?.mobile || session.user.phone || ''
+                                    });
+                                }
+                            } catch (dbError) {
+                                console.warn('Database fetch error:', dbError);
                                 // Fallback to auth metadata
                                 setProfileForm({
                                     firstName: session.user.user_metadata?.first_name || '',
                                     lastName: session.user.user_metadata?.last_name || '',
                                     mobile: session.user.user_metadata?.mobile || session.user.phone || ''
                                 });
-                            } else {
-                                // Use database data as primary source
-                                setProfileForm({
-                                    firstName: userProfile.first_name || session.user.user_metadata?.first_name || '',
-                                    lastName: userProfile.last_name || session.user.user_metadata?.last_name || '',
-                                    mobile: userProfile.mobile || session.user.user_metadata?.mobile || session.user.phone || ''
-                                });
                             }
-                        } catch (dbError) {
-                            console.warn('Database fetch error:', dbError);
-                            // Fallback to auth metadata
-                            setProfileForm({
-                                firstName: session.user.user_metadata?.first_name || '',
-                                lastName: session.user.user_metadata?.last_name || '',
-                                mobile: session.user.user_metadata?.mobile || session.user.phone || ''
-                            });
-                        }
-                    };
-                    
-                    fetchUserProfile();
+                        };
+                        
+                        fetchUserProfile();
+                    } catch (authError) {
+                        console.error('Error verifying session:', authError);
+                        await supabase.auth.signOut();
+                        router.push('/auth/sign-in?redirectTo=/profile');
+                    }
                 }
             }
         );
@@ -329,10 +354,12 @@ const Profile: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-[#FED018] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading profile...</p>
+            <div className="font-geist min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="w-full max-w-2xl mx-auto px-4 flex flex-col items-center justify-center" style={{ minHeight: '70vh' }}>
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#EAB044] mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Loading profile...</p>
+                    </div>
                 </div>
             </div>
         );
