@@ -30,7 +30,10 @@ function emptyPlayer(): Player {
     category: '',
     group_name: '',
   };
+
 }
+
+
 
 export default function PlayersPage() {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -276,7 +279,7 @@ export default function PlayersPage() {
       const data = await response.json();
       if (response.ok && data.success) {
         setSuccessMessage(data.message);
-        setTimeout(() => setSuccessMessage(''), 5000);
+        setTimeout(() => setSuccessMessage(''), 3000);
         if (editIndex !== null && players[editIndex]?.id) {
           updatedPlayers = [...players];
           updatedPlayers[editIndex] = { ...updatedPlayers[editIndex], ...playerData };
@@ -302,7 +305,17 @@ export default function PlayersPage() {
   }, []);
 
   const handleEditPlayer = useCallback((index: number) => {
-    setNewPlayer({ ...players[index] });
+    setNewPlayer({
+      last_name: String(players[index].last_name || ''),
+      first_name: String(players[index].first_name || ''),
+      middle_name: String(players[index].middle_name || ''),
+      sex: String(players[index].sex || ''),
+      age: String(players[index].age || ''),
+      height: String(players[index].height || ''),
+      belt: String(players[index].belt || ''),
+      category: String(players[index].category || ''),
+      group_name: String(players[index].group_name || ''),
+    });
     setEditIndex(index);
     setIsModalOpen(true);
   }, [players]);
@@ -327,7 +340,7 @@ export default function PlayersPage() {
       const data = await response.json();
       if (response.ok && data.success) {
         setSuccessMessage(data.message);
-        setTimeout(() => setSuccessMessage(''), 5000);
+        setTimeout(() => setSuccessMessage(''), 3000);
         setPlayers((prev) => prev.filter((_, i) => i !== indexToDelete));
       } else {
         alert(data.error || 'Failed to delete player. Please try again.');
@@ -345,7 +358,7 @@ export default function PlayersPage() {
         </label>
         <input
           type={type}
-          value={value}
+          value={value ?? ''}
           onChange={(e) => onChange(e.target.value)}
           placeholder={`Enter ${label.toLowerCase()}`}
           className={`w-full border border-[rgba(0,0,0,0.2)] rounded p-2 ${disabled ? 'bg-gray-100' : ''}`}
@@ -421,8 +434,9 @@ export default function PlayersPage() {
       <div className="mb-2">
         <p className=" text-gray-400">Note: If you don't see your player listed, please refresh the page.</p>
       </div>
+      {/* Floating Success Message */}
       {successMessage && (
-        <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
           {successMessage}
         </div>
       )}

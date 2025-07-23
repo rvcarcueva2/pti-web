@@ -41,6 +41,14 @@ export default function MyTeamPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Automatically clear success message after 5 seconds, but NOT when toggling edit mode
+  useEffect(() => {
+    if (successMessage && !isEditing) {
+      const timer = setTimeout(() => setSuccessMessage(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, isEditing]);
+
   // Memoized previews
   const teamLogoPreview = useMemo(() => {
     if (teamLogoFile) return URL.createObjectURL(teamLogoFile);
@@ -278,10 +286,9 @@ export default function MyTeamPage() {
             </button>
           )}
         </div>
-
-        {/* Success Message */}
+        {/* Floating Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
             {successMessage}
           </div>
         )}
@@ -304,16 +311,15 @@ export default function MyTeamPage() {
                 {/* Left Form Fields */}
                 <div className="lg:col-span-2 space-y-6">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Team Name *</label>
+                    <label className="block text-sm font-medium mb-1">Team Name <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       name="team_name"
                       placeholder="Enter team name"
                       value={teamForm.team_name}
                       onChange={handleInputChange}
-                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${
-                        errors.team_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
-                      }`}
+                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.team_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
+                        }`}
                       disabled={isSubmitting}
                     />
                     {errors.team_name && (
@@ -329,9 +335,8 @@ export default function MyTeamPage() {
                       placeholder="https://www.facebook.com/teamname or www.teamname.com"
                       value={teamForm.social}
                       onChange={handleInputChange}
-                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${
-                        errors.social ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
-                      }`}
+                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.social ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
+                        }`}
                       disabled={isSubmitting}
                     />
                     {errors.social && (
@@ -340,16 +345,15 @@ export default function MyTeamPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">Coach Name *</label>
+                    <label className="block text-sm font-medium mb-1">Coach Name <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       name="coach_name"
                       placeholder="Enter coach name"
                       value={teamForm.coach_name}
                       onChange={handleInputChange}
-                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${
-                        errors.coach_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
-                      }`}
+                      className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.coach_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
+                        }`}
                       disabled={isSubmitting}
                     />
                     {errors.coach_name && (

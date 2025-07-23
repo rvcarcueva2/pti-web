@@ -9,7 +9,6 @@ import { faUser, faLock, faArrowLeft, faEdit } from "@fortawesome/free-solid-svg
 import { supabase } from '../../lib/supabaseClient';
 
 const Profile: React.FC = () => {
-    // Declare hooks at the top level (no duplicates)
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -17,93 +16,55 @@ const Profile: React.FC = () => {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     // Form states
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
+
     const [profileForm, setProfileForm] = useState({
         firstName: '',
         lastName: '',
         mobile: ''
     });
+
     const [isEditingProfile, setIsEditingProfile] = useState(false);
+
     // Error states
     const [passwordErrors, setPasswordErrors] = useState<{ [key: string]: string }>({});
     const [profileErrors, setProfileErrors] = useState<{ [key: string]: string }>({});
     const [successMessage, setSuccessMessage] = useState('');
     const [isProfileLoading, setIsProfileLoading] = useState(false);
-    // Try to refresh session if stuck in loading for more than 10 seconds
-    const [refreshAttempted, setRefreshAttempted] = useState(false);
-    // ...existing code...
+
+    // Automatically clear success message after 5 seconds
     useEffect(() => {
-        if (isLoading && !refreshAttempted) {
-            const timer = setTimeout(() => {
-                (async () => {
-                    let { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-                        if (refreshError || !refreshed.session) {
-                            await supabase.auth.signOut();
-                            router.push('/auth/sign-in?redirectTo=/profile');
-                            return;
-                        }
-                        setUser(refreshed.session.user);
-                        setIsLoading(false);
-                    }
-                    setRefreshAttempted(true);
-                })();
-            }, 10000); // 10 seconds
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(''), 5000);
             return () => clearTimeout(timer);
         }
-    }, [isLoading, refreshAttempted, router]);
-    // ...existing code...
-    useEffect(() => {
-        if (isLoading && !refreshAttempted) {
-            const timer = setTimeout(async () => {
-                let { data: { session } } = await supabase.auth.getSession();
-                if (!session) {
-                    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-                    if (refreshError || !refreshed.session) {
-                        await supabase.auth.signOut();
-                        router.push('/auth/sign-in?redirectTo=/profile');
-                        return;
-                    }
-                    setUser(refreshed.session.user);
-                    setIsLoading(false);
-                }
-                setRefreshAttempted(true);
-            }, 10000); // 10 seconds
-            return () => clearTimeout(timer);
-        }
-    }, [isLoading, refreshAttempted, router]);
+    }, [successMessage]);
 
     useEffect(() => {
         // Check authentication and get user data
         const checkAuth = async () => {
             try {
-                // Always refresh session before checking authentication
-                let { data: { session } } = await supabase.auth.getSession();
-                if (!session) {
-                    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-                    if (refreshError || !refreshed.session) {
-                        await supabase.auth.signOut();
-                        router.push('/auth/sign-in?redirectTo=/profile');
-                        return;
-                    }
-                    session = refreshed.session;
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Error getting session:', error);
+                    router.push('/auth/sign-in');
+                    return;
                 }
 
-                // Only proceed if session is valid
                 if (!session?.user) {
-                    await supabase.auth.signOut();
-                    router.push('/auth/sign-in?redirectTo=/profile');
+                    router.push('/auth/sign-in');
                     return;
                 }
 
                 setUser(session.user);
-
+                
                 // Initialize profile form with existing data from both auth metadata and database
                 try {
                     // Fetch user profile from database
@@ -140,8 +101,7 @@ const Profile: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Error checking auth:', error);
-                await supabase.auth.signOut();
-                router.push('/auth/sign-in?redirectTo=/profile');
+                router.push('/auth/sign-in');
             } finally {
                 setIsLoading(false);
             }
@@ -151,64 +111,49 @@ const Profile: React.FC = () => {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
+            (event, session) => {
                 if (event === 'SIGNED_OUT' || !session?.user) {
-                    router.push('/auth/sign-in?redirectTo=/profile');
+                    router.push('/auth/sign-in');
                 } else if (session?.user) {
-                    // Verify the new session is valid
-                    try {
-                        const { error: testError } = await supabase.auth.getUser();
-                        if (testError) {
-                            console.error('New session invalid:', testError);
-                            await supabase.auth.signOut();
-                            router.push('/auth/sign-in?redirectTo=/profile');
-                            return;
-                        }
-                        
-                        setUser(session.user);
+                    setUser(session.user);
                     
-                        // Initialize profile form with existing data from database
-                        const fetchUserProfile = async () => {
-                            try {
-                                const { data: userProfile, error: fetchError } = await supabase
-                                    .from('users')
-                                    .select('first_name, last_name, mobile')
-                                    .eq('id', session.user.id)
-                                    .single();
+                    // Initialize profile form with existing data from database
+                    const fetchUserProfile = async () => {
+                        try {
+                            const { data: userProfile, error: fetchError } = await supabase
+                                .from('users')
+                                .select('first_name, last_name, mobile')
+                                .eq('id', session.user.id)
+                                .single();
 
-                                if (fetchError) {
-                                    console.warn('Failed to fetch user profile from database:', fetchError);
-                                    // Fallback to auth metadata
-                                    setProfileForm({
-                                        firstName: session.user.user_metadata?.first_name || '',
-                                        lastName: session.user.user_metadata?.last_name || '',
-                                        mobile: session.user.user_metadata?.mobile || session.user.phone || ''
-                                    });
-                                } else {
-                                    // Use database data as primary source
-                                    setProfileForm({
-                                        firstName: userProfile.first_name || session.user.user_metadata?.first_name || '',
-                                        lastName: userProfile.last_name || session.user.user_metadata?.last_name || '',
-                                        mobile: userProfile.mobile || session.user.user_metadata?.mobile || session.user.phone || ''
-                                    });
-                                }
-                            } catch (dbError) {
-                                console.warn('Database fetch error:', dbError);
+                            if (fetchError) {
+                                console.warn('Failed to fetch user profile from database:', fetchError);
                                 // Fallback to auth metadata
                                 setProfileForm({
                                     firstName: session.user.user_metadata?.first_name || '',
                                     lastName: session.user.user_metadata?.last_name || '',
                                     mobile: session.user.user_metadata?.mobile || session.user.phone || ''
                                 });
+                            } else {
+                                // Use database data as primary source
+                                setProfileForm({
+                                    firstName: userProfile.first_name || session.user.user_metadata?.first_name || '',
+                                    lastName: userProfile.last_name || session.user.user_metadata?.last_name || '',
+                                    mobile: userProfile.mobile || session.user.user_metadata?.mobile || session.user.phone || ''
+                                });
                             }
-                        };
-                        
-                        fetchUserProfile();
-                    } catch (authError) {
-                        console.error('Error verifying session:', authError);
-                        await supabase.auth.signOut();
-                        router.push('/auth/sign-in?redirectTo=/profile');
-                    }
+                        } catch (dbError) {
+                            console.warn('Database fetch error:', dbError);
+                            // Fallback to auth metadata
+                            setProfileForm({
+                                firstName: session.user.user_metadata?.first_name || '',
+                                lastName: session.user.user_metadata?.last_name || '',
+                                mobile: session.user.user_metadata?.mobile || session.user.phone || ''
+                            });
+                        }
+                    };
+                    
+                    fetchUserProfile();
                 }
             }
         );
@@ -392,12 +337,10 @@ const Profile: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="font-geist min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="w-full max-w-2xl mx-auto px-4 flex flex-col items-center justify-center" style={{ minHeight: '70vh' }}>
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#EAB044] mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading profile...</p>
-                    </div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-[#FED018] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading profile...</p>
                 </div>
             </div>
         );
@@ -411,26 +354,26 @@ const Profile: React.FC = () => {
                 
                 {/* Success Message for Profile Updates */}
                 {successMessage && successMessage.includes('Profile') && (
-                    <div className="mt-8 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                    <div className="mt-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
                         {successMessage}
                     </div>
                 )}
 
                 {/* Additional Profile Info */}
-                <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+                <div className="mt-4 bg-white rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#FED018]/10 rounded-full flex items-center justify-center flex-shrink-0">
                                 <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-[#FED018]" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-semibold text-gray-900">Account Information</h3>
+                                <h3 className="font-semibold text-gray-900">Account Information</h3>
                                 <p className="text-sm text-gray-600">Your account details</p>
                             </div>
                         </div>
                         <button
                             onClick={handleEditToggle}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-[#FED018] transition-colors cursor-pointer"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-[#FED018] transition-colors"
                         >
                             <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
                             {isEditingProfile ? 'Cancel' : 'Edit'}
