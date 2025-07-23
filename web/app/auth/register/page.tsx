@@ -164,16 +164,18 @@ const Register: React.FC = () => {
       <Image
         src="/images/1.png"
         alt="Top Left Decoration"
-        width={200}
-        height={200}
-        className="absolute top-0 left-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 120px, 200px"
+        className="absolute top-0 left-0 z-0 w-[120px] md:w-[200px]"
       />
       <Image
         src="/images/2.png"
         alt="Bottom Right Decoration"
-        width={500}
-        height={500}
-        className="absolute bottom-0 right-0 z-0"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 240px, 500px"
+        className="absolute bottom-0 right-0 z-0 w-[240px] md:w-[500px]"
       />
 
       {/* Form */}
