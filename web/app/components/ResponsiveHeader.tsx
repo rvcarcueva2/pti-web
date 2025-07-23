@@ -20,10 +20,22 @@ export default function ResponsiveHeader() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const isAuthPage = ['/auth/sign-in', '/auth/register', '/auth/forgot-password', '/auth/reset-password'].includes(pathname);
-  const isDashboard = pathname.startsWith('/user-dashboard');
+  const authPaths = [
+    '/auth/sign-in',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+  ];
+  const isAuthPage = authPaths.includes(pathname);
 
-  if (isAuthPage || isDashboard) {
+  const isDashboardPage =
+    pathname.startsWith('/user-dashboard') || pathname.startsWith('/admin-dashboard');
+
+  if (isAuthPage) {
+    return <ContactHeader />;
+  }
+
+  if (isDashboardPage) {
     return null;
   }
 
