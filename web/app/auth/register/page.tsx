@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { supabase } from '../../../lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 const Register: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     gender: '',
     mobile: '',
     email: '',
-    username: '',
     password: '',
     confirmPassword: '',
   });
@@ -19,6 +21,34 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  // Check if user is already signed in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // User is already signed in, redirect to home
+          setIsAuthenticated(true);
+          router.replace('/'); // Use replace instead of push
+          return;
+        }
+        setIsAuthenticated(false);
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Don't render anything while checking authentication or if authenticated
+  if (isAuthenticated === null || isAuthenticated === true) {
+    return null; // Return nothing instead of loading spinner
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -27,12 +57,16 @@ const Register: React.FC = () => {
     setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    setIsLoading(true);
+    setErrors({});
 
     const newErrors: { [key: string]: string } = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // Basic validation
     Object.entries(formData).forEach(([key, value]) => {
       if (!value.trim()) {
         newErrors[key] = 'This field is required.';
@@ -51,11 +85,77 @@ const Register: React.FC = () => {
       newErrors.confirmPassword = 'Passwords do not match.';
     }
 
+    if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long.';
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Registering with:', formData);
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            gender: formData.gender,
+            mobile: formData.mobile,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Registration successful
+          console.log('Registration successful:', data);
+          
+          // Now sign in the user automatically
+          try {
+            const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+              email: formData.email,
+              password: formData.password,
+            });
+            
+            if (signInError) {
+              console.error('Auto sign-in failed:', signInError);
+              // Still redirect to home, but user will need to sign in manually
+              window.location.href = '/';
+            } else {
+              console.log('Auto sign-in successful:', authData);
+              // Reset form
+              setFormData({
+                firstName: '',
+                lastName: '',
+                gender: '',
+                mobile: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+              });
+              // Redirect to home page with user signed in
+              window.location.href = '/';
+            }
+          } catch (autoSignInError) {
+            console.error('Auto sign-in error:', autoSignInError);
+            // Still redirect to home page
+            window.location.href = '/';
+          }
+        } else {
+          // Registration failed
+          setErrors({ general: data.error || 'Registration failed. Please try again.' });
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        setErrors({ general: 'Network error. Please check your connection and try again.' });
+      }
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -64,19 +164,16 @@ const Register: React.FC = () => {
       <Image
         src="/images/1.png"
         alt="Top Left Decoration"
-        width={0}
-        height={0}
-        sizes="(max-width: 768px) 100px, 200px"
-        className="absolute top-0 left-0 z-0 w-[100px] md:w-[200px]"
+        width={200}
+        height={200}
+        className="absolute top-0 left-0 z-0"
       />
-
       <Image
         src="/images/2.png"
         alt="Bottom Right Decoration"
-        width={0}
-        height={0}
-        sizes="(max-width: 768px) 200px, 500px"
-        className="absolute bottom-0 right-0 z-0 w-[200px] md:w-[500px]"
+        width={500}
+        height={500}
+        className="absolute bottom-0 right-0 z-0"
       />
 
       {/* Form */}
@@ -86,25 +183,21 @@ const Register: React.FC = () => {
             <Image
               src="/PTI-Logo.png"
               alt="Logo"
-              width={0}
-              height={0}
-              sizes="(max-width: 768px) 80px, 100px"
-              className="w-[80px] md:w-[100px] mx-auto cursor-pointer"
+              width={100}
+              height={100}
+              className="mx-auto cursor-pointer"
             />
           </Link>
         </div>
 
-        <>
-          {/* h4 for mobile only */}
-          <h4 className="block md:hidden text-base font-bold mb-6">
-            Create your account
-          </h4>
+        <h2 className="text-xl font-bold mb-6">Create your account</h2>
 
-          {/* h2 for tablet and up */}
-          <h2 className="hidden md:block text-xl font-bold mb-6">
-            Create your account
-          </h2>
-        </>
+        {/* General Error Display */}
+        {errors.general && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errors.general}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* First Name */}
@@ -144,9 +237,8 @@ const Register: React.FC = () => {
           </div>
 
           {/* Gender & Mobile */}
-          <div className="flex flex-col sm:flex-row gap-4">
-
-            <div className="w-full sm:w-1/2">
+          <div className="flex gap-4">
+            <div className="w-1/2">
               <label className="block text-sm font-semibold mb-1">
                 Gender<span className="text-[#D41716]">*</span>
               </label>
@@ -170,7 +262,7 @@ const Register: React.FC = () => {
               )}
             </div>
 
-            <div className="w-full sm:w-1/2">
+            <div className="w-1/2">
               <label className="block text-sm font-semibold mb-1">
                 Mobile Number<span className="text-[#D41716]">*</span>
               </label>
@@ -206,24 +298,7 @@ const Register: React.FC = () => {
             )}
           </div>
 
-          {/* Username */}
-          <div>
-            <label className="block text-sm font-semibold mb-1">
-              Username<span className="text-[#D41716]">*</span>
-            </label>
-            <input
-              type="text"
-              name="username"
-              placeholder="Create a username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
-            />
-            {errors.username && (
-              <p className="text-sm text-[#D41716] mt-1">{errors.username}</p>
-            )}
-          </div>
-
+          
           {/* Password */}
           <div className="relative">
             <label className="block text-sm font-semibold mb-1">
@@ -299,9 +374,14 @@ const Register: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#1A1A1A] text-white font-semibold py-2 rounded hover:opacity-90 transition cursor-pointer"
+            disabled={isLoading}
+            className={`w-full font-semibold py-2 rounded transition cursor-pointer ${
+              isLoading
+                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                : 'bg-[#1A1A1A] text-white hover:opacity-90'
+            }`}
           >
-            Register
+            {isLoading ? 'Creating Account...' : 'Register'}
           </button>
         </form>
 

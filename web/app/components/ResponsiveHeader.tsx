@@ -20,8 +20,13 @@ export default function ResponsiveHeader() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const isAuthPage =
-    pathname === '/auth/sign-in' || pathname === '/auth/register';
+  const authPaths = [
+    '/auth/sign-in',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+  ];
+  const isAuthPage = authPaths.includes(pathname);
 
   const isDashboardPage =
     pathname.startsWith('/user-dashboard') || pathname.startsWith('/admin-dashboard');
@@ -31,7 +36,7 @@ export default function ResponsiveHeader() {
   }
 
   if (isDashboardPage) {
-    return null; // Don't show any headers on dashboard pages
+    return null;
   }
 
   if (pathname === '/' && !isMobile) {
