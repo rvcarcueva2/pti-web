@@ -20,22 +20,17 @@ export default function ResponsiveHeader() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const isAuthPage = pathname === '/auth/sign-in' || 
-                    pathname === '/auth/register' || 
-                    pathname === '/auth/forgot-password' || 
-                    pathname === '/auth/reset-password';
+  const isAuthPage = ['/auth/sign-in', '/auth/register', '/auth/forgot-password', '/auth/reset-password'].includes(pathname);
+  const isDashboard = pathname.startsWith('/user-dashboard');
 
-  if (isAuthPage) {
-    // Don't show any header on auth pages
+  if (isAuthPage || isDashboard) {
     return null;
   }
 
-  // Home page on desktop
   if (pathname === '/' && !isMobile) {
     return <HomeHeader />;
   }
 
-  // Default: Contact + Main header
   return (
     <>
       <ContactHeader />
