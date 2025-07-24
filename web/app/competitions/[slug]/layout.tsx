@@ -9,7 +9,8 @@ type Props = {
 
 // Generate metadata for each competition post page
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
 
   if (!post) {
     return {

@@ -3,6 +3,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import RegisterModal from '@/app/components/RegisterModal'; // Adjust the import path as needed
 
 type Props = {
     params: { slug: string };
@@ -87,32 +88,18 @@ export default async function CompetitionPost({ params }: Props) {
                                 </span>
                                 <span className="flex items-center gap-3">
                                     <FontAwesomeIcon icon="calendar-days" style={{ fontSize: '20px' }} />
-                                    {formatDate(post.meta.date) || 'TBA'}
+                                    {(post.meta.date) || 'TBA'}
                                 </span>
+                                {post.meta.deadline && (
+                                    <span className="flex items-center gap-3">
+                                        Deadline of registration is {(post.meta.deadline)}
+                                    </span>
+                                )}
                             </div>
+                            
 
                             <div>
-                                <button className="group bg-foreground hover:bg-[#FED018] text-white hover:text-[#1A1A1A] font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11">
-                                    Register
-
-                                    {/* Default icon (visible when not hovered) */}
-                                    <Image
-                                    src="/icons/Forward Button.svg"
-                                    alt="Forward"
-                                    width={24}
-                                    height={24}
-                                    className="w-6 h-6 group-hover:hidden"
-                                    />
-
-                                    {/* Hover icon (visible when hovered) */}
-                                    <Image
-                                    src="/icons/forward-button2.svg"
-                                    alt="Forward Hover"
-                                    width={24}
-                                    height={24}
-                                    className="w-6 h-6 hidden group-hover:inline"
-                                    />
-                                </button>
+                                <RegisterModal />
                             </div>
                         </div>
                     </div>
@@ -123,44 +110,44 @@ export default async function CompetitionPost({ params }: Props) {
                             <div className="flex flex-col items-center gap-1 md:gap-2">
                                 <h4 className="text-responsive font-semibold text-black text-xs md:text-lg">Players</h4>
                                 <Image
-                                src="/icons/Players.svg"
-                                alt="Players"
-                                width={72}
-                                height={72}
-                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
+                                    src="/icons/Players.svg"
+                                    alt="Players"
+                                    width={72}
+                                    height={72}
+                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
 
                             <div className="flex flex-col items-center gap-1 md:gap-2">
                                 <h4 className="text-responsive font-semibold text-[#EAB044] text-xs md:text-lg">Teams</h4>
                                 <Image
-                                src="/icons/Teams.svg"
-                                alt="Teams"
-                                width={72}
-                                height={72}
-                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
+                                    src="/icons/Teams.svg"
+                                    alt="Teams"
+                                    width={72}
+                                    height={72}
+                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
 
                             <div className="flex flex-col items-center gap-1 md:gap-2">
                                 <h4 className="text-responsive font-semibold text-[#D41716] text-xs md:text-lg">Kyorugi</h4>
                                 <Image
-                                src="/icons/Kyorugi.svg"
-                                alt="Kyorugi"
-                                width={72}
-                                height={72}
-                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
+                                    src="/icons/Kyorugi.svg"
+                                    alt="Kyorugi"
+                                    width={72}
+                                    height={72}
+                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
 
                             <div className="flex flex-col items-center gap-1 md:gap-2">
                                 <h4 className="text-responsive font-semibold text-[#040163] text-xs md:text-lg">Poomsae</h4>
                                 <Image
-                                src="/icons/Poomsae.svg"
-                                alt="Poomsae"
-                                width={72}
-                                height={72}
-                                className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
+                                    src="/icons/Poomsae.svg"
+                                    alt="Poomsae"
+                                    width={72}
+                                    height={72}
+                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
                                 />
                             </div>
                         </div>
