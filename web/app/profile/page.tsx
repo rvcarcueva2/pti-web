@@ -339,7 +339,7 @@ const Profile: React.FC = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-[#FED018] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#EAB044] mx-auto"></div>
                     <p className="text-gray-600">Loading profile...</p>
                 </div>
             </div>
