@@ -51,7 +51,7 @@ const Profile: React.FC = () => {
         const checkAuth = async () => {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
-                
+
                 if (error) {
                     console.error('Error getting session:', error);
                     router.push('/auth/sign-in');
@@ -64,7 +64,7 @@ const Profile: React.FC = () => {
                 }
 
                 setUser(session.user);
-                
+
                 // Initialize profile form with existing data from both auth metadata and database
                 try {
                     // Fetch user profile from database
@@ -116,7 +116,7 @@ const Profile: React.FC = () => {
                     router.push('/auth/sign-in');
                 } else if (session?.user) {
                     setUser(session.user);
-                    
+
                     // Initialize profile form with existing data from database
                     const fetchUserProfile = async () => {
                         try {
@@ -152,7 +152,7 @@ const Profile: React.FC = () => {
                             });
                         }
                     };
-                    
+
                     fetchUserProfile();
                 }
             }
@@ -350,11 +350,9 @@ const Profile: React.FC = () => {
         <div className="min-h-screen bg-gray-50 py-8 font-geist">
             <div className="max-w-2xl mx-auto px-4">
 
-                
-                
-                {/* Success Message for Profile Updates */}
-                {successMessage && successMessage.includes('Profile') && (
-                    <div className="mt-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                {/* Floating Success Message */}
+                {successMessage && (
+                    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
                         {successMessage}
                     </div>
                 )}
@@ -400,9 +398,8 @@ const Profile: React.FC = () => {
                                         placeholder="Enter your first name"
                                         value={profileForm.firstName}
                                         onChange={handleProfileChange}
-                                        className={`w-full px-4 py-2.5 rounded-lg border ${
-                                            profileErrors.firstName ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                                        className={`w-full px-4 py-2.5 rounded-lg border ${profileErrors.firstName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
                                     />
                                     {profileErrors.firstName && (
                                         <p className="text-sm text-red-500 mt-1">{profileErrors.firstName}</p>
@@ -418,9 +415,8 @@ const Profile: React.FC = () => {
                                         placeholder="Enter your last name"
                                         value={profileForm.lastName}
                                         onChange={handleProfileChange}
-                                        className={`w-full px-4 py-2.5 rounded-lg border ${
-                                            profileErrors.lastName ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                                        className={`w-full px-4 py-2.5 rounded-lg border ${profileErrors.lastName ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
                                     />
                                     {profileErrors.lastName && (
                                         <p className="text-sm text-red-500 mt-1">{profileErrors.lastName}</p>
@@ -439,17 +435,24 @@ const Profile: React.FC = () => {
                                         name="mobile"
                                         placeholder="Enter your mobile number"
                                         value={profileForm.mobile}
-                                        onChange={handleProfileChange}
-                                        className={`w-full px-4 py-2.5 rounded-lg border ${
-                                            profileErrors.mobile ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                                        onChange={e => {
+                                            // Only allow numbers when editing
+                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                            setProfileForm(prev => ({ ...prev, mobile: value }));
+                                            if (profileErrors.mobile) {
+                                                setProfileErrors(prev => ({ ...prev, mobile: '' }));
+                                            }
+                                            setSuccessMessage('');
+                                        }}
+                                        className={`w-full px-4 py-2.5 rounded-lg border ${profileErrors.mobile ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
                                     />
                                     {profileErrors.mobile && (
                                         <p className="text-sm text-red-500 mt-1">{profileErrors.mobile}</p>
                                     )}
                                 </div>
                             </div>
-                            
+
                             <button
                                 type="submit"
                                 disabled={isProfileLoading}
@@ -494,165 +497,162 @@ const Profile: React.FC = () => {
                 )}
 
                 {/* Update Password Section */}
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-8 mt-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-[#FED018]/10 rounded-full flex items-center justify-center">
-                                <FontAwesomeIcon icon={faLock} className="w-5 h-5 text-[#FED018]" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900">Update Password</h3>
-                                <p className="text-sm text-gray-600">Change your password</p>
-                            </div>
+                <div className="bg-white rounded-lg shadow-md p-6 mb-8 mt-4">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 bg-[#FED018]/10 rounded-full flex items-center justify-center">
+                            <FontAwesomeIcon icon={faLock} className="w-5 h-5 text-[#FED018]" />
                         </div>
-
-                        {/* Password Error Display */}
-                        {passwordErrors.general && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                                {passwordErrors.general}
-                            </div>
-                        )}
-
-                        <form onSubmit={handlePasswordUpdate} className="space-y-4">
-                            {/* Current Password */}
-                            <div className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Current Password <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type={showCurrentPassword ? 'text' : 'password'}
-                                    name="currentPassword"
-                                    placeholder="Enter your current password"
-                                    value={passwordForm.currentPassword}
-                                    onChange={handlePasswordChange}
-                                    className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${
-                                        passwordErrors.currentPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                    className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
-                                >
-                                    {showCurrentPassword ? (
-                                        <Image
-                                            src="/icons/hide-password.svg"
-                                            alt="Hide password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    ) : (
-                                        <Image
-                                            src="/icons/show-password.svg"
-                                            alt="Show password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    )}
-                                </button>
-                                {passwordErrors.currentPassword && (
-                                    <p className="text-sm text-red-500 mt-1">{passwordErrors.currentPassword}</p>
-                                )}
-                            </div>
-
-                            {/* New Password */}
-                            <div className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    New Password <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type={showNewPassword ? 'text' : 'password'}
-                                    name="newPassword"
-                                    placeholder="Enter your new password"
-                                    value={passwordForm.newPassword}
-                                    onChange={handlePasswordChange}
-                                    className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${
-                                        passwordErrors.newPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                    className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
-                                >
-                                    {showNewPassword ? (
-                                        <Image
-                                            src="/icons/hide-password.svg"
-                                            alt="Hide password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    ) : (
-                                        <Image
-                                            src="/icons/show-password.svg"
-                                            alt="Show password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    )}
-                                </button>
-                                {passwordErrors.newPassword && (
-                                    <p className="text-sm text-red-500 mt-1">{passwordErrors.newPassword}</p>
-                                )}
-                            </div>
-
-                            {/* Confirm New Password */}
-                            <div className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Confirm New Password <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    name="confirmPassword"
-                                    placeholder="Confirm your new password"
-                                    value={passwordForm.confirmPassword}
-                                    onChange={handlePasswordChange}
-                                    className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${
-                                        passwordErrors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
-                                >
-                                    {showConfirmPassword ? (
-                                        <Image
-                                            src="/icons/hide-password.svg"
-                                            alt="Hide password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    ) : (
-                                        <Image
-                                            src="/icons/show-password.svg"
-                                            alt="Show password"
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                    )}
-                                </button>
-                                {passwordErrors.confirmPassword && (
-                                    <p className="text-sm text-red-500 mt-1">{passwordErrors.confirmPassword}</p>
-                                )}
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isPasswordLoading}
-                                className="w-full bg-[#FED018] text-black font-semibold py-3 rounded-lg hover:bg-[#FED018]/90 transition-colors disabled:opacity-50 cursor-pointer"
-                            >
-                                {isPasswordLoading ? 'Updating Password...' : 'Update Password'}
-                            </button>
-                        </form>
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-900">Update Password</h3>
+                            <p className="text-sm text-gray-600">Change your password</p>
+                        </div>
                     </div>
 
-               
+                    {/* Password Error Display */}
+                    {passwordErrors.general && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                            {passwordErrors.general}
+                        </div>
+                    )}
+
+                    <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                        {/* Current Password */}
+                        <div className="relative">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Current Password <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type={showCurrentPassword ? 'text' : 'password'}
+                                name="currentPassword"
+                                placeholder="Enter your current password"
+                                value={passwordForm.currentPassword}
+                                onChange={handlePasswordChange}
+                                className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${passwordErrors.currentPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
+                            >
+                                {showCurrentPassword ? (
+                                    <Image
+                                        src="/icons/hide-password.svg"
+                                        alt="Hide password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <Image
+                                        src="/icons/show-password.svg"
+                                        alt="Show password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                )}
+                            </button>
+                            {passwordErrors.currentPassword && (
+                                <p className="text-sm text-red-500 mt-1">{passwordErrors.currentPassword}</p>
+                            )}
+                        </div>
+
+                        {/* New Password */}
+                        <div className="relative">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                New Password <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type={showNewPassword ? 'text' : 'password'}
+                                name="newPassword"
+                                placeholder="Enter your new password"
+                                value={passwordForm.newPassword}
+                                onChange={handlePasswordChange}
+                                className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${passwordErrors.newPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
+                            >
+                                {showNewPassword ? (
+                                    <Image
+                                        src="/icons/hide-password.svg"
+                                        alt="Hide password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <Image
+                                        src="/icons/show-password.svg"
+                                        alt="Show password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                )}
+                            </button>
+                            {passwordErrors.newPassword && (
+                                <p className="text-sm text-red-500 mt-1">{passwordErrors.newPassword}</p>
+                            )}
+                        </div>
+
+                        {/* Confirm New Password */}
+                        <div className="relative">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Confirm New Password <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                name="confirmPassword"
+                                placeholder="Confirm your new password"
+                                value={passwordForm.confirmPassword}
+                                onChange={handlePasswordChange}
+                                className={`w-full px-4 py-2.5 pr-12 rounded-lg border ${passwordErrors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                    } focus:ring-2 focus:ring-[#FED018] focus:border-[#FED018] outline-none transition-colors`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
+                            >
+                                {showConfirmPassword ? (
+                                    <Image
+                                        src="/icons/hide-password.svg"
+                                        alt="Hide password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <Image
+                                        src="/icons/show-password.svg"
+                                        alt="Show password"
+                                        width={20}
+                                        height={20}
+                                        className="object-contain"
+                                    />
+                                )}
+                            </button>
+                            {passwordErrors.confirmPassword && (
+                                <p className="text-sm text-red-500 mt-1">{passwordErrors.confirmPassword}</p>
+                            )}
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isPasswordLoading}
+                            className="w-full bg-[#FED018] text-black font-semibold py-3 rounded-lg hover:bg-[#FED018]/90 transition-colors disabled:opacity-50 cursor-pointer"
+                        >
+                            {isPasswordLoading ? 'Updating Password...' : 'Update Password'}
+                        </button>
+                    </form>
+                </div>
+
+
             </div>
         </div>
     );

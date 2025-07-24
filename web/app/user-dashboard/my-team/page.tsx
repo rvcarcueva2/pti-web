@@ -286,6 +286,9 @@ export default function MyTeamPage() {
             </button>
           )}
         </div>
+        <div className="mb-2">
+          <p className=" text-gray-400">Note: Please fill out your team information before proceeding.</p>
+        </div>
         {/* Floating Success Message */}
         {successMessage && (
           <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">

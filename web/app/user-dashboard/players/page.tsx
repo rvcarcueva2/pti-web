@@ -432,7 +432,7 @@ export default function PlayersPage() {
         </div>
       </div>
       <div className="mb-2">
-        <p className=" text-gray-400">Note: If you don't see your player listed, please refresh the page.</p>
+        <p className=" text-gray-400">Note: This will be your final list of players, players added after registring to a competition will not be included in the registration list.</p>
       </div>
       {/* Floating Success Message */}
       {successMessage && (
