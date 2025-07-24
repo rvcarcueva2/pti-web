@@ -94,7 +94,7 @@ const UserDashboardLayout: React.FC<UserDashboardLayoutProps> = ({ children }) =
       <div className="font-geist min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="w-full max-w-2xl mx-auto px-4 flex flex-col items-center justify-center" style={{ minHeight: '70vh' }}>
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#EAB044] mx-auto"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#EAB044] mx-auto"></div>
             <p className="mt-4 text-gray-600">Verifying access...</p>
           </div>
         </div>
