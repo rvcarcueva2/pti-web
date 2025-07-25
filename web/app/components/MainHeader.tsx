@@ -22,18 +22,22 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [userFirstName, setUserFirstName] = useState<string>('');
+    const [role, setRole] = useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Get current session and user profile
-        const getSession = async () => {
+        const checkUser = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabase.auth.getSession();
+
                 if (session?.user) {
                     setUser(session.user);
 
-                    // Get first name from user metadata or fallback
+                    const userRole = session.user?.user_metadata?.role || session.user?.app_metadata?.role || null;
+                    setRole(userRole);
+
                     const firstName = session.user.user_metadata?.firstName ||
                         session.user.user_metadata?.first_name ||
                         session.user.email?.split('@')[0] ||
@@ -42,17 +46,19 @@ export default function Header() {
                 } else {
                     setUser(null);
                     setUserFirstName('');
+                    setRole(null);
                 }
-            } catch (error) {
-                console.error('Error getting session:', error);
+            } catch (err) {
+                console.error('Error getting session:', err);
                 setUser(null);
                 setUserFirstName('');
+                setRole(null);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        getSession();
+        checkUser();
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
