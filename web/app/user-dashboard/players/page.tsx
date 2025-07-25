@@ -534,7 +534,7 @@ export default function PlayersPage() {
           </div>
         )}
       </div>
-      {/* Pagination UI (static, for future use) */}
+      {/* Pagination */}
       <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
         <p className="justify-self-start">
           Showing 1 to {filteredPlayers.length} of {filteredPlayers.length} results
@@ -666,19 +666,12 @@ export default function PlayersPage() {
               <div className="mt-4 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-[#EAB044] cursor-pointer text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 bg-[#EAB044] text-white rounded hover:bg-[#d49a35] cursor-pointer"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      {editIndex !== null ? 'Updating...' : 'Adding...'}
-                    </>
-                  ) : (
-                    <>
-                      {editIndex !== null ? 'Save Changes' : '+ Add Player'}
-                    </>
-                  )}
+                  {editIndex !== null
+                    ? isSubmitting ? 'Updating...' : 'Save Changes'
+                    : isSubmitting ? 'Adding...' : '+ Add'}
                 </button>
               </div>
             </form>
