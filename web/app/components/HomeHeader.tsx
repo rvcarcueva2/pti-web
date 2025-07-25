@@ -15,7 +15,7 @@ import {
   faChartSimple 
 } from "@fortawesome/free-solid-svg-icons";
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

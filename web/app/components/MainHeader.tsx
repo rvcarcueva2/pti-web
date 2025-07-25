@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown, faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown, faBookmark, faChartSimple } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { usePathname } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -198,6 +198,20 @@ export default function Header() {
                                     {isDropdownOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                             <div className="py-2">
+
+                                                {role === 'Admin' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsDropdownOpen(false);
+                                                            router.push('/admin-dashboard/dashboard');
+                                                        }}
+                                                        className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                                                    >
+                                                        <FontAwesomeIcon icon={faChartSimple} className="w-4 h-4 mr-2" />
+                                                        Dashboard
+                                                    </button>
+                                                )}
+
                                                 <button
                                                     onClick={() => {
                                                         setIsDropdownOpen(false);
@@ -260,7 +274,7 @@ export default function Header() {
                 </div>
 
                 {/* Mobile Navigation Menu - Connected to Header */}
-                <div className={`min-[1081px]:hidden transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                <div className={`min-[1081px]:hidden transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-120 opacity-100' : 'max-h-0 opacity-0'
                     }`}>
                     <div className="bg-white border-t border-gray-200 shadow-lg">
                         <nav className="flex flex-col p-6 space-y-4">
@@ -324,6 +338,19 @@ export default function Header() {
                             {/* Mobile Authentication */}
                             {!isLoading && user ? (
                                 <div className="space-y-2 mt-4">
+                                    {role === 'Admin' && (
+                                        <button
+                                            onClick={() => {
+                                                setIsMobileMenuOpen(false);
+                                                router.push('/admin-dashboard/dashboard');
+                                            }}
+                                            className="flex items-center w-full px-6 py-3 bg-[#FED018] text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-[#FED018]/90"
+                                        >
+                                            <FontAwesomeIcon icon={faChartSimple} className="w-4 h-4 mr-2" />
+                                            Dashboard
+                                        </button>
+                                    )}
+
                                     <button
                                         onClick={() => {
                                             setIsMobileMenuOpen(false);
