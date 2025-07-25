@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from './supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 interface UseAuthReturn {
   user: any;
