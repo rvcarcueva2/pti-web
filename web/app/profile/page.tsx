@@ -489,12 +489,7 @@ const Profile: React.FC = () => {
                     )}
                 </div>
 
-                {/* Success Message for Password Updates */}
-                {successMessage && successMessage.includes('Password') && (
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
-                        {successMessage}
-                    </div>
-                )}
+               
 
                 {/* Update Password Section */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-8 mt-4">
