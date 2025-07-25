@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { faBookmark, faTrophy, faFile,faPenNib, faPen } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const UserDashboardSidebar = () => {
   const pathname = usePathname();
@@ -16,18 +18,18 @@ const UserDashboardSidebar = () => {
 
   useEffect(() => {
     let mounted = true;
-    
+
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (mounted && session?.user) {
         setUser(session.user);
-        
+
         const first = session.user.user_metadata?.first_name || '';
         const last = session.user.user_metadata?.last_name || '';
-        
+
         setFirstName(first);
         setLastName(last);
-        
+
         // Set initials
         if (first && last) {
           setUserInitials(`${first[0]}${last[0]}`.toUpperCase());
@@ -52,13 +54,13 @@ const UserDashboardSidebar = () => {
         if (mounted) {
           if (session?.user) {
             setUser(session.user);
-            
+
             const first = session.user.user_metadata?.first_name || '';
             const last = session.user.user_metadata?.last_name || '';
-            
+
             setFirstName(first);
             setLastName(last);
-            
+
             // Set initials
             if (first && last) {
               setUserInitials(`${first[0]}${last[0]}`.toUpperCase());
@@ -92,20 +94,17 @@ const UserDashboardSidebar = () => {
     {
       label: 'My Team',
       href: '/user-dashboard/my-team',
-      icon: '/icons/my-team.svg',
-      activeIcon: '/icons/my-team2.svg',
+      icon: faBookmark,
     },
     {
       label: 'Players',
       href: '/user-dashboard/players',
-      icon: '/icons/dashboard-players.svg',
-      activeIcon: '/icons/dashboard-players2.svg',
+      icon: faTrophy,
     },
     {
       label: 'Registration',
       href: '/user-dashboard/registration',
-      icon: '/icons/registration.svg',
-      activeIcon: '/icons/registration2.svg',
+      icon: faPenNib,
     },
   ];
 
@@ -124,28 +123,22 @@ const UserDashboardSidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 mt-4 space-y-1 overflow-y-auto scrollbar-hide">
+      <nav className="flex-1 mt-4 space-y-1">
         {navItems.map((item) => {
-          const isDashboard = item.href === '/dashboard';
-          const isActive = isDashboard
-            ? pathname === '/dashboard'
-            : pathname === item.href || pathname.startsWith(item.href);
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href);
 
           return (
-            <Link href={item.href} key={item.label} prefetch={true}>
+            <Link href={item.href} key={item.label}>
               <div
-                className={`flex items-center gap-3 py-3 px-4 pl-8 transition-colors duration-150 cursor-pointer ${
-                  isActive
-                    ? 'bg-[#EAB044] text-white font-medium'
-                    : 'text-black hover:bg-gray-100'
-                }`}
+                className={`flex items-center gap-3 py-3 px-4 pl-8 transition-all cursor-pointer ${isActive
+                  ? 'bg-[#EAB044] text-white font-medium'
+                  : 'text-black hover:bg-gray-100'
+                  }`}
               >
-                <Image
-                  src={isActive ? item.activeIcon : item.icon}
-                  alt={`${item.label} icon`}
-                  width={20}
-                  height={20}
-                  className="w-5 h-5 flex-shrink-0"
+                <FontAwesomeIcon
+                  icon={item.icon}
+                  className="w-4 h-4"
                 />
                 <span>{item.label}</span>
               </div>
@@ -163,7 +156,7 @@ const UserDashboardSidebar = () => {
           <p className="font-medium mb-1 min-h-[16px]">
             {firstName && lastName ? `${firstName} ${lastName}` : firstName || ''}
           </p>
-          <button 
+          <button
             onClick={handleSignOut}
             className="text-gray-500 text-xs hover:underline cursor-pointer"
           >

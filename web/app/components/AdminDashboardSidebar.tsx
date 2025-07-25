@@ -1,30 +1,111 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartSimple, faTrophy, faFile } from '@fortawesome/free-solid-svg-icons';
 
 const AdminDashboardSidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [userInitials, setUserInitials] = useState<string>('U');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+
+  useEffect(() => {
+    let mounted = true;
+
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted && session?.user) {
+        setUser(session.user);
+
+        const first = session.user.user_metadata?.first_name || '';
+        const last = session.user.user_metadata?.last_name || '';
+
+        setFirstName(first);
+        setLastName(last);
+
+        // Set initials
+        if (first && last) {
+          setUserInitials(`${first[0]}${last[0]}`.toUpperCase());
+        } else if (session.user.email) {
+          setUserInitials(session.user.email.substring(0, 2).toUpperCase());
+        } else {
+          setUserInitials('U');
+        }
+      } else if (mounted) {
+        setUser(null);
+        setUserInitials('U');
+        setFirstName('');
+        setLastName('');
+      }
+    };
+
+    getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (mounted) {
+          if (session?.user) {
+            setUser(session.user);
+
+            const first = session.user.user_metadata?.first_name || '';
+            const last = session.user.user_metadata?.last_name || '';
+
+            setFirstName(first);
+            setLastName(last);
+
+            // Set initials
+            if (first && last) {
+              setUserInitials(`${first[0]}${last[0]}`.toUpperCase());
+            } else if (session.user.email) {
+              setUserInitials(session.user.email.substring(0, 2).toUpperCase());
+            } else {
+              setUserInitials('U');
+            }
+          } else {
+            setUser(null);
+            setUserInitials('U');
+            setFirstName('');
+            setLastName('');
+          }
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
 
   const navItems = [
     {
       label: 'Dashboard',
       href: '/admin-dashboard/dashboard',
-      icon: '/icons/dashboard.svg',
-      activeIcon: '/icons/dashboard2.svg',
+      icon: faChartSimple,
     },
     {
       label: 'Competitions',
       href: '/admin-dashboard/competitions',
-      icon: '/icons/competitions.svg',
-      activeIcon: '/icons/competitions2.svg',
+      icon: faTrophy,
     },
     {
       label: 'Results',
       href: '/admin-dashboard/results',
-      icon: '/icons/results.svg',
-      activeIcon: '/icons/results2.svg',
+      icon: faFile,
     },
   ];
 
@@ -44,30 +125,20 @@ const AdminDashboardSidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 mt-4 space-y-1">
         {navItems.map((item) => {
-          const isDashboard = item.href === '/dashboard';
-          const isActive = isDashboard
-            ? pathname === '/dashboard'
-            : pathname === item.href || pathname.startsWith(item.href);
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href);
 
           return (
             <Link href={item.href} key={item.label}>
               <div
-                className={`flex items-center gap-3 py-3 px-4 pl-8 transition-all cursor-pointer ${
-                  isActive
+                className={`flex items-center gap-3 py-3 px-4 pl-8 transition-all cursor-pointer ${isActive
                     ? 'bg-[#EAB044] text-white font-medium'
                     : 'text-black hover:bg-gray-100'
-                }`}
+                  }`}
               >
-                <Image
-                    src={isActive ? item.activeIcon : item.icon}
-                    alt={`${item.label} icon`}
-                    width={['Dashboard', 'Competitions', 'Results'].includes(item.label) ? 16 : 20}
-                    height={['Dashboard', 'Competitions', 'Results'].includes(item.label) ? 16 : 20}
-                    className={`${
-                        ['Dashboard', 'Competitions', 'Results'].includes(item.label)
-                        ? 'w-4 h-4'
-                        : 'w-5 h-5'
-                    }`}
+                <FontAwesomeIcon
+                  icon={item.icon}
+                  className="w-4 h-4"
                 />
                 <span>{item.label}</span>
               </div>
@@ -77,13 +148,18 @@ const AdminDashboardSidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="border-t px-4 py-4 flex items-center gap-3 border-gray-300">
-        <div className="bg-black text-white w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium">
-          A
+      <div className="border-t px-4 py-6 flex items-center gap-3 border-gray-300 flex-shrink-0 h-24">
+        <div className="bg-black text-white w-10 h-10 flex items-center justify-center rounded-full text-xs font-medium flex-shrink-0">
+          {userInitials}
         </div>
-        <div className="text-sm">
-          <p className="font-medium">Admin</p>
-          <button className="text-gray-500 text-xs hover:underline cursor-pointer">
+        <div className="text-sm flex-1 min-w-0">
+          <p className="font-medium mb-1 min-h-[16px]">
+            {firstName && lastName ? `${firstName} ${lastName}` : firstName || ''}
+          </p>
+          <button
+            onClick={handleSignOut}
+            className="text-gray-500 text-xs hover:underline cursor-pointer"
+          >
             Sign out
           </button>
         </div>

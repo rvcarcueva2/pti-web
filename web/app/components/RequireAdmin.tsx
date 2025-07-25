@@ -25,7 +25,7 @@ export default function RequireAdmin({ children }: { children: React.ReactNode }
       if (role === 'Admin') {
         setIsAllowed(true);
       } else {
-        router.push('/not-authorized');
+        router.push('/');
       }
 
       setChecking(false);
@@ -34,7 +34,18 @@ export default function RequireAdmin({ children }: { children: React.ReactNode }
     checkRole();
   }, [router]);
 
-  if (checking) return <div>Loading...</div>;
+  if (checking) {
+    return (
+      <div className="font-geist min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-full max-w-2xl mx-auto px-4 flex flex-col items-center justify-center" style={{ minHeight: '70vh' }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#EAB044] mx-auto"></div>
+            <p className="mt-4 text-gray-600">Verifying access...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return isAllowed ? <>{children}</> : null;
 }

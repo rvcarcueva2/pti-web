@@ -32,12 +32,12 @@ export default function Header() {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user) {
                     setUser(session.user);
-                    
+
                     // Get first name from user metadata or fallback
-                    const firstName = session.user.user_metadata?.firstName || 
-                                    session.user.user_metadata?.first_name || 
-                                    session.user.email?.split('@')[0] || 
-                                    'User';
+                    const firstName = session.user.user_metadata?.firstName ||
+                        session.user.user_metadata?.first_name ||
+                        session.user.email?.split('@')[0] ||
+                        'User';
                     setUserFirstName(firstName);
                 } else {
                     setUser(null);
@@ -59,12 +59,12 @@ export default function Header() {
             (event, session) => {
                 if (session?.user) {
                     setUser(session.user);
-                    
+
                     // Get first name from user metadata or fallback
-                    const firstName = session.user.user_metadata?.firstName || 
-                                    session.user.user_metadata?.first_name || 
-                                    session.user.email?.split('@')[0] || 
-                                    'User';
+                    const firstName = session.user.user_metadata?.firstName ||
+                        session.user.user_metadata?.first_name ||
+                        session.user.email?.split('@')[0] ||
+                        'User';
                     setUserFirstName(firstName);
                 } else {
                     setUser(null);
