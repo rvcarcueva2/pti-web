@@ -1,31 +1,32 @@
 import type { Metadata } from 'next';
-import { getNewsBySlug} from '@/lib/news';
-import React from 'react';
+import { supabase } from '@/lib/supabaseClient'; // ✅ already configured
 
-// ✅ Make sure Props is declared before using it
 type Props = {
-  params: { slug: string };
+  children: React.ReactNode;
+  params: { id: string }; // UUID
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const news = getNewsBySlug(params.slug);
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const { id } = params;
 
-    if (!news) {
-        return {
-            title: 'News Not Found',
-        };
-    }
+  const { data: competition, error } = await supabase
+    .from('competitions')
+    .select('competition, description')
+    .eq('id', id)
+    .maybeSingle();
 
+  if (error || !competition) {
     return {
-        title: `${news.meta.title} | Pilipinas Taekwondo Inc.`,
-        description: news.meta.description || '', // Optional: if you have a meta description
+      title: 'Competition Not Found',
     };
+  }
+
+  return {
+    title: `${competition.competition} | Pilipinas Taekwondo Inc.`,
+    description: competition.description || '',
+  };
 }
 
-export default function NewsSlugLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>; // or wrap in a layout wrapper if needed
+export default function CompetitionLayout({ children }: Props) {
+  return <>{children}</>;
 }
