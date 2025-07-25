@@ -1,159 +1,119 @@
-import { getPostBySlug, getPostSlugs, formatDate } from '@/lib/posts';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RegisterModal from '@/app/components/RegisterModal'; // Adjust the import path as needed
+import RegisterModal from '@/app/components/RegisterModal';
+import { createClient } from "@supabase/supabase-js";
+import { format } from 'date-fns';
+
 
 type Props = {
-    params: { slug: string };
+  params: { slug: string }; 
 };
 
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
+
+// Static params generation for pre-rendering (optional if using dynamic)
 export async function generateStaticParams() {
-    const slugs = getPostSlugs();
-    return slugs.map(slug => ({ slug: slug.replace(/\.mdx$/, '') }));
+  const { data, error } = await supabase.from('competitions').select('uuid');
+  if (error || !data) return [];
+  return data.map((row) => ({ slug: row.uuid }));
 }
 
 export default async function CompetitionPost({ params }: Props) {
-    const { slug } = await params;
-    const post = getPostBySlug(slug);
+  const { slug } = params;
 
-    if (!post) return notFound();
+  const { data: comp, error } = await supabase
+    .from('competitions')
+    .select('*')
+    .eq('uuid', slug)
+    .single();
 
-    // Custom MDX components to match competition page styling
-    const components = {
-        img: (props: any) => (
+  if (error || !comp) return notFound();
+
+  // Generate public image URL
+  const { data: imgData } = supabase.storage
+    .from('poster')
+    .getPublicUrl(comp.photo_url || '');
+
+  const imageUrl = imgData?.publicUrl ?? '';
+
+  return (
+    <main className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
+      <div className="text-center">
+        <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+          COMPETITIONS
+        </h2>
+        <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+          COMPETITIONS
+        </h1>
+      </div>
+
+      {/* Competition Content */}
+      <div className="font-geist mx-auto my-4 md:my-8 max-w-6xl">
+        <h2 className="text-2xl font-bold mb-4 text-center">{comp.title}</h2>
+
+        {comp.photo_url && (
+          <div className="mb-6">
             <Image
-                src={props.src}
-                alt={props.alt || 'Competition Image'}
-                width={1500}
-                height={700}
-                className="w-full h-auto mx-auto my-4 mb-1 md:my-8"
+              src={comp.photo_url}
+              alt={comp.title}
+              width={1500}
+              height={700}
+              className="w-full h-auto rounded-lg object-cover"
             />
-        ),
-        p: ({ children, ...props }: any) => {
-            if (
-                children &&
-                typeof children === 'object' &&
-                (children.type === 'img' ||
-                    (Array.isArray(children) && children.some((child: any) => child?.type === 'img')))
-            ) {
-                return <>{children}</>;
-            }
-            return <p {...props}>{children}</p>;
-        },
-    };
+          </div>
+        )}
 
-    return (
-        <main className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
-            <div className="text-center">
-                {/* h3 for mobile only */}
-                <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-                    COMPETITIONS
-                </h2>
-
-                {/* h1 for desktop and up */}
-                <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-                    COMPETITIONS
-                </h1>
+        <div className="p-4 mx-auto max-w-6xl mt-2 md:mt-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col text-black gap-4 text-left font-geist text-x">
+                <p>{comp.description}</p>
+              <span className="flex items-center gap-3">
+                <FontAwesomeIcon icon="location-dot" style={{ fontSize: '20px' }} />
+                {comp.location || 'TBA'}
+              </span>
+              <span className="flex items-center gap-3">
+                <FontAwesomeIcon icon="calendar-days" style={{ fontSize: '20px' }} />
+                {format(new Date(comp.date), "MMMM d, yyyy")}
+              </span>
+              {comp.deadline && (
+                <span className="flex items-center gap-3">
+                  Deadline of registration is {format(new Date(comp.deadline), "MMMM d, yyyy")}
+                </span>
+              )}
             </div>
-
-            {/* Competition Post Container */}
-            <div className="font-geist mx-auto my-4 md:my-8 max-w-6xl">
-                <div className="max-w-none">
-                    <>
-                        {/* h4 for mobile */}
-                        <h4 className="block md:hidden text-xl font-bold mb-4 text-center">
-                            {post.meta.title}
-                        </h4>
-
-                        {/* h2 for desktop */}
-                        <h2 className="hidden md:block text-2xl font-bold mb-4 text-center">
-                            {post.meta.title}
-                        </h2>
-                    </>
-
-                    {/* Render MDX content */}
-                    <div className="max-w-none">
-                        <MDXRemote source={post.content} components={components} />
-                    </div>
-
-                    {/* Competition Meta Info (SAFE from hydration issues) */}
-                    <div className="p-4 mx-auto max-w-6xl mt-2 md:mt-4">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div className="flex flex-col text-black gap-4 text-left font-geist text-x">
-                                <span className="flex items-center gap-3">
-                                    <FontAwesomeIcon icon="location-dot" style={{ fontSize: '20px' }} />
-                                    {post.meta.location || 'TBA'}
-                                </span>
-                                <span className="flex items-center gap-3">
-                                    <FontAwesomeIcon icon="calendar-days" style={{ fontSize: '20px' }} />
-                                    {(post.meta.date) || 'TBA'}
-                                </span>
-                                {post.meta.deadline && (
-                                    <span className="flex items-center gap-3">
-                                        Deadline of registration is {(post.meta.deadline)}
-                                    </span>
-                                )}
-                            </div>
-                            
-
-                            <div>
-                                <RegisterModal />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Competition Categories */}
-                    <div className="bg-white rounded-lg p-2 md:p-4 mt-4 md:mt-6 max-w-6xl mx-4 md:mx-auto shadow-sm">
-                        <div className="grid grid-cols-4 gap-2 md:gap-4 text-center">
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
-                                <h4 className="text-responsive font-semibold text-black text-xs md:text-lg">Players</h4>
-                                <Image
-                                    src="/icons/Players.svg"
-                                    alt="Players"
-                                    width={72}
-                                    height={72}
-                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
-                                />
-                            </div>
-
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
-                                <h4 className="text-responsive font-semibold text-[#EAB044] text-xs md:text-lg">Teams</h4>
-                                <Image
-                                    src="/icons/Teams.svg"
-                                    alt="Teams"
-                                    width={72}
-                                    height={72}
-                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
-                                />
-                            </div>
-
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
-                                <h4 className="text-responsive font-semibold text-[#D41716] text-xs md:text-lg">Kyorugi</h4>
-                                <Image
-                                    src="/icons/Kyorugi.svg"
-                                    alt="Kyorugi"
-                                    width={72}
-                                    height={72}
-                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
-                                />
-                            </div>
-
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
-                                <h4 className="text-responsive font-semibold text-[#040163] text-xs md:text-lg">Poomsae</h4>
-                                <Image
-                                    src="/icons/Poomsae.svg"
-                                    alt="Poomsae"
-                                    width={72}
-                                    height={72}
-                                    className="w-7 h-7 md:w-18 md:h-18 items-center justify-center mx-auto"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <RegisterModal />
             </div>
-        </main>
-    );
+          </div>
+        </div>
+
+        {/* Categories or Extra Info (static for now) */}
+        <div className="bg-white rounded-lg p-2 md:p-4 mt-4 md:mt-6 max-w-6xl mx-4 md:mx-auto shadow-sm">
+          <div className="grid grid-cols-4 gap-2 md:gap-4 text-center">
+            {[
+              ['Players', '/icons/Players.svg', 'text-black'],
+              ['Teams', '/icons/Teams.svg', 'text-[#EAB044]'],
+              ['Kyorugi', '/icons/Kyorugi.svg', 'text-[#D41716]'],
+              ['Poomsae', '/icons/Poomsae.svg', 'text-[#040163]'],
+            ].map(([label, icon, color]) => (
+              <div key={label} className="flex flex-col items-center gap-1 md:gap-2">
+                <h4 className={`text-responsive font-semibold ${color} text-xs md:text-lg`}>{label}</h4>
+                <Image
+                  src={icon}
+                  alt={label as string}
+                  width={72}
+                  height={72}
+                  className="w-7 h-7 md:w-18 md:h-18 mx-auto"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
 }
