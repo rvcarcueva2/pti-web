@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { supabase } from '../../../lib/supabaseClient';
 
 // Updated Competition type
 type Competition = {
-  id: number;
+  uuid: string;
   title: string;
   date: string;
   description: string;
   location: string;
   deadline: string;
+  photo_url?: string;
   players: number;
   teams: number;
   kyorugi: number;
@@ -21,64 +23,103 @@ type Competition = {
 export default function CompetitionPage() {
   const router = useRouter();
 
-  // State from players page
-  const [competitions, setCompetitions] = useState<Competition[]>([
-    {
-      id: 1,
-      title: 'National Championship',
-      date: '2025-08-15',
-      description: 'The biggest national event of the year.',
-      location: 'Manila',
-      deadline: '2025-07-15',
-      players: 120,
-      teams: 30,
-      kyorugi: 75,
-      poomsae: 45,
-    },
-    {
-      id: 2,
-      title: 'Regional Open',
-      date: '2025-09-20',
-      description: 'An open tournament for all regions.',
-      location: 'Cebu',
-      deadline: '2025-08-20',
-      players: 85,
-      teams: 22,
-      kyorugi: 50,
-      poomsae: 35,
-    },
-    {
-      id: 3,
-      title: 'Summer Invitational',
-      date: '2025-05-10',
-      description: 'An invitational event to kick off the summer.',
-      location: 'Davao',
-      deadline: '2025-04-10',
-      players: 60,
-      teams: 15,
-      kyorugi: 40,
-      poomsae: 20,
-    },
-  ]);
-
+  // Competitions loaded from Supabase
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+
+  // Modal and form state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [existingPosterUrl, setExistingPosterUrl] = useState<string | null>(null);
+  const [previewSize, setPreviewSize] = useState<{ width: number; height: number } | null>(null);
 
   // Form state
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
+  const [posterFile, setPosterFile] = useState<File | null>(null);
   const [location, setLocation] = useState('');
   const [deadline, setDeadline] = useState('');
+
+
+  // Fetch competitions from Supabase
+  const fetchCompetitions = async () => {
+    const { data, error } = await supabase.from('competitions').select('*');
+    if (error) {
+      console.error('Error fetching competitions:', error);
+    } else {
+      setCompetitions(data as Competition[]);
+    }
+  };
+
+  useEffect(() => {
+    fetchCompetitions();
+  }, []);
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  // Filter competitions by search term
+  const filteredCompetitions = competitions.filter((comp) =>
+    Object.values(comp)
+      .join(' ')
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  // Sort filtered competitions
+  if (sortColumn) {
+    filteredCompetitions.sort((a, b) => {
+      const valueA = a[sortColumn as keyof Competition];
+      const valueB = b[sortColumn as keyof Competition];
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return sortDirection === 'asc'
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      }
+      return sortDirection === 'asc'
+        ? Number(valueA) - Number(valueB)
+        : Number(valueB) - Number(valueA);
+    });
+  }
+
+  // Poster preview (new or existing)
+  const posterPreview = useMemo(() => {
+    if (posterFile) {
+      const url = URL.createObjectURL(posterFile);
+      const img = new window.Image();
+      img.src = url;
+      img.onload = () => {
+        setPreviewSize({ width: img.width, height: img.height });
+      };
+      return url;
+    }
+
+    if (editIndex !== null && existingPosterUrl) {
+      const img = new window.Image();
+      img.src = existingPosterUrl;
+      img.onload = () => {
+        setPreviewSize({ width: img.width, height: img.height });
+      };
+      return existingPosterUrl;
+    }
+
+    return null;
+  }, [posterFile, editIndex, existingPosterUrl]);
 
   // Columns updated to use 'title'
   const columns = [
@@ -118,11 +159,14 @@ export default function CompetitionPage() {
     setSuccessMessage('');
     setEditIndex(null);
     resetForm();
+    setExistingPosterUrl(null);
+    setPosterFile(null);
+    setPreviewSize(null);
   };
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
-    const originalIndex = competitions.findIndex(c => c.id === filteredCompetitions[index].id);
+    const originalIndex = competitions.findIndex(c => c.uuid === filteredCompetitions[index].uuid);
     const comp = competitions[originalIndex];
     if (comp) {
       setTitle(comp.title);
@@ -130,11 +174,13 @@ export default function CompetitionPage() {
       setDescription(comp.description);
       setLocation(comp.location);
       setDeadline(comp.deadline);
+      setExistingPosterUrl(comp.photo_url || null); // <-- add this line
+      setPosterFile(null); // <-- important to reset new uploads
     }
     openModal();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -150,80 +196,86 @@ export default function CompetitionPage() {
       return;
     }
 
-    const newCompetitionData = {
-      title,
-      date,
-      description,
-      location,
-      deadline,
-    };
-
-    if (editIndex !== null) {
-      // Update existing competition
-      const updatedCompetitions = [...competitions];
-      const originalIndex = competitions.findIndex(c => c.id === filteredCompetitions[editIndex].id);
-      const existingComp = updatedCompetitions[originalIndex];
-      updatedCompetitions[originalIndex] = { ...existingComp, ...newCompetitionData };
-      setCompetitions(updatedCompetitions);
-      setSuccessMessage('Competition updated successfully!');
-    } else {
-      // Add new competition
-      const newId = competitions.length > 0 ? Math.max(...competitions.map(c => c.id)) + 1 : 1;
-      setCompetitions([...competitions, {
-        id: newId,
-        ...newCompetitionData,
-        players: 0, // Default values for new competitions
-        teams: 0,
-        kyorugi: 0,
-        poomsae: 0,
-      }]);
-      setSuccessMessage('Competition added successfully!');
+    // upload poster if provided
+    let photo_url = '';
+    if (posterFile) {
+      const filePath = `${Date.now()}_${posterFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('poster')
+        .upload(filePath, posterFile);
+      if (uploadError) console.error('Upload error:', uploadError);
+      else {
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('poster')
+          .getPublicUrl(uploadData.path);
+        photo_url = publicUrlData.publicUrl;
+      }
     }
 
+    // payload for insert/update, allow optional photo_url
+    const newCompetitionData: any = { title, date, description, location, deadline };
+    if (photo_url) newCompetitionData.photo_url = photo_url;
+
+    if (editIndex !== null) {
+      const compToEdit = filteredCompetitions[editIndex];
+      const { data, error } = await supabase
+        .from('competitions')
+        .update(newCompetitionData)
+        .eq('uuid', compToEdit.uuid);
+      if (!error) {
+        await fetchCompetitions();
+        setIsSubmitting(false);
+        closeModal();
+        setSuccessMessage('Competition updated successfully!');
+        return;
+      }
+    } else {
+      const { data, error } = await supabase
+        .from('competitions')
+        .insert([{ ...newCompetitionData }]);
+      if (!error) {
+        await fetchCompetitions();
+        setIsSubmitting(false);
+        closeModal();
+        setSuccessMessage('Competition added successfully!');
+        return;
+      }
+    }
+
+
     setIsSubmitting(false);
+    // Refresh list
+    await fetchCompetitions();
     closeModal();
   };
 
   const handleDelete = (index: number) => {
-    const originalIndex = competitions.findIndex(c => c.id === filteredCompetitions[index].id);
-    setDeleteIndex(originalIndex);
+    setDeleteIndex(index);
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    if (deleteIndex !== null) {
-      const updatedCompetitions = competitions.filter((_, i) => i !== deleteIndex);
-      setCompetitions(updatedCompetitions);
-      setDeleteIndex(null);
+  const confirmDelete = async () => {
+    if (deleteIndex === null) return;
+    const compToDelete = filteredCompetitions[deleteIndex];
+    const { error } = await supabase.from('competitions').delete().eq('uuid', compToDelete.uuid);
+    if (!error) {
       setIsDeleteModalOpen(false);
+      setDeleteIndex(null);
       setSuccessMessage('Competition deleted successfully!');
+      fetchCompetitions();
+    } else {
+      console.error('Delete error:', error);
     }
   };
 
-  let filteredCompetitions = competitions.filter((comp) =>
-    Object.values(comp)
-      .join(' ')
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
 
-  if (sortColumn) {
-    filteredCompetitions.sort((a, b) => {
-      const valueA = a[sortColumn as keyof Competition];
-      const valueB = b[sortColumn as keyof Competition];
-      if (typeof valueA === 'string' && typeof valueB === 'string') {
-        return sortDirection === 'asc'
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      }
-      return sortDirection === 'asc'
-        ? Number(valueA) - Number(valueB)
-        : Number(valueB) - Number(valueA);
-    });
-  }
 
+  // (Duplicate fetch removed)
   return (
     <div className="font-geist p-6 ml-64">
+      {/* Load competitions on mount */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Competitions</h1>
         <div className="flex gap-2">
@@ -237,8 +289,9 @@ export default function CompetitionPage() {
         </div>
       </div>
 
+      {/* Floating Success Message */}
       {successMessage && (
-        <div className="mb-4 px-4 py-2 text-green-700 bg-green-100 border border-green-300 rounded-md">
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
           {successMessage}
         </div>
       )}
@@ -286,12 +339,13 @@ export default function CompetitionPage() {
           </thead>
           <tbody>
             {filteredCompetitions.map((comp, index) => (
-              <tr key={comp.id} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
+              <tr key={comp.uuid} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
                 <td className="p-3 min-w-[300px]">{comp.title}</td>
                 <td className="p-3">{comp.players}</td>
                 <td className="p-3">{comp.teams}</td>
                 <td className="p-3">{comp.kyorugi}</td>
                 <td className="p-3">{comp.poomsae}</td>
+
                 <td className="p-3 text-left">
                   <div className="flex items-center gap-5 -ml-8">
                     <button
@@ -341,64 +395,124 @@ export default function CompetitionPage() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-2xl">
+          <div className="bg-white p-6 rounded-md w-full max-w-4xl">
             <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Title</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2 py-1"
-                />
-                {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Poster Upload Column */}
+                <div className="flex flex-col items-center gap-4">
+                  <div
+                    className="w-full borde flex items-center justify-center overflow-auto max-w-full"
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-2 py-1"
-                  />
-                  {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+                  >
+                    {posterPreview ? (
+                      <img
+                        src={posterPreview}
+                        alt="Poster"
+                        className="object-contain"
+                        style={{ maxWidth: '100%', maxHeight: '24rem' }}
+                      />
+                    ) : (
+                      <p className="text-sm text-gray-500 text-center p-4">No Poster</p>
+                    )}
+                  </div>
+                  <label className="block w-full">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert('Poster image must be 5MB or smaller.');
+                            return;
+                          }
+                          setPosterFile(file);
+                        }
+                      }}
+
+                      className="hidden"
+                      disabled={isSubmitting}
+                    />
+                    <div className="bg-black text-white w-full py-2 rounded text-center cursor-pointer hover:bg-gray-800 flex items-center justify-center gap-2">
+                      <img src="/icons/upload-file.svg" alt="Upload" className="w-4 h-4" />
+                      <span className="text-sm font-normal">Upload Poster</span>
+                    </div>
+                  </label>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">Deadline</label>
-                  <input
-                    type="date"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-2 py-1"
-                  />
-                  {errors.deadline && <p className="text-red-500 text-sm">{errors.deadline}</p>}
+                {/* Form Fields Column (spans 2 columns) */}
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Title */}
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1">
+                      Title <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1"
+                    />
+                    {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+                  </div>
+                  {/* Date */}
+                  <div>
+                     <label className="block text-sm font-medium mb-1">
+                      Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={date}
+                      min={new Date().toISOString().split('T')[0]} // today
+                      onChange={(e) => setDate(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1"
+                    />
+                    {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+                  </div>
+
+                  {/* Deadline */}
+                  <div>
+                     <label className="block text-sm font-medium mb-1">
+                      Deadline <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={deadline}
+                      min={new Date().toISOString().split('T')[0]} // today
+                      onChange={(e) => setDeadline(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1"
+                    />
+                    {errors.deadline && <p className="text-red-500 text-sm">{errors.deadline}</p>}
+                  </div>
+
+                  {/* Location */}
+                  <div className="col-span-2">
+                     <label className="block text-sm font-medium mb-1">
+                      Location <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1"
+                    />
+                    {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+                  </div>
+
+                  {/* Description */}
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1">Description</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 resize-y min-h-[80px]"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2 py-1 resize-y min-h-[80px]"
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Location</label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2 py-1"
-                />
-                {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
-              </div>
-
-              <div className="flex justify-end gap-2">
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2 mt-6">
                 <button
                   type="button"
                   onClick={closeModal}
@@ -411,13 +525,14 @@ export default function CompetitionPage() {
                   disabled={isSubmitting}
                   className="px-4 py-2 bg-[#EAB044] text-white rounded hover:bg-[#d49a35] cursor-pointer"
                 >
-                  {isSubmitting ? 'Adding...' : '+ Add'}
+                  {isSubmitting ? (editIndex !== null ? 'Updating...' : 'Adding...') : editIndex !== null ? 'Update' : '+ Add'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
 
 
       {/* Delete Modal */}
@@ -436,8 +551,8 @@ export default function CompetitionPage() {
                 Cancel
               </button>
               <button
+                onClick={confirmDelete}
                 className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 cursor-pointer"
-
               >
                 Confirm
               </button>
