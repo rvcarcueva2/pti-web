@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export default async function CompetitionPost({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
 
   const { data: comp, error } = await supabase
     .from('competitions')
