@@ -86,7 +86,7 @@ export default async function CompetitionPost({ params }: Props) {
               )}
             </div>
             <div>
-              <RegisterModal />
+              <RegisterModal competitionId={comp.uuid} />
             </div>
           </div>
         </div>

@@ -3,41 +3,101 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient'; // adjust path as needed
 import Image from 'next/image';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
-export default function RegisterModal() {
+
+export default function RegisterModal({ competitionId }: { competitionId: string }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [teamName, setTeamName] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [teamId, setTeamId] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isDuplicate, setIsDuplicate] = useState(false);
+    const [agreeChecked, setAgreeChecked] = useState(false);
+    const [agreeError, setAgreeError] = useState('');
+
 
     const fetchTeam = async () => {
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError || !userData?.user) {
-            setIsLoading(false); // Stop loading even on error
+            setIsLoading(false);
             return;
         }
 
         const userId = userData.user.id;
+        setUserEmail(userData.user.email ?? null);
 
         const { data, error } = await supabase
             .from('teams')
-            .select('team_name')
+            .select('id, team_name')
             .eq('user_id', userId)
-            .maybeSingle(); // Use maybeSingle to avoid throwing if no rows
+            .maybeSingle();
 
         if (error) {
             console.error('Failed to fetch team:', error.message);
             setTeamName(null);
+            setTeamId(null);
         } else {
             setTeamName(data?.team_name ?? null);
+            setTeamId(data?.id ?? null);
         }
 
-        setIsLoading(false); // Always stop loading after fetch
+        setIsLoading(false);
     };
 
     const handleClick = () => {
         setIsModalOpen(true);
         fetchTeam();
     };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!agreeChecked) {
+            setAgreeError('Please check the box to agree.');
+            return;
+        }
+
+        if (!teamId || !userEmail || !competitionId) {
+            alert("Missing required data.");
+            return;
+        }
+
+        // Check if the team is already registered for this competition
+        const { data: existing, error: existingError } = await supabase
+            .from('registrations')
+            .select('id')
+            .eq('competition_id', competitionId)
+            .eq('team_id', teamId)
+            .maybeSingle();
+
+        if (existing) {
+            setIsDuplicate(true);
+            setErrorMessage("The team has already been registered.");
+            return;
+        }
+
+        const { error } = await supabase.from('registrations').insert([
+            {
+                competition_id: competitionId,
+                team_id: teamId,
+                user_email: userEmail,
+            },
+        ]);
+
+        if (error) {
+            console.error('Registration failed:', error.message);
+            alert("Failed to register team.");
+        } else {
+            setSuccessMessage("Team successfully registered!");
+            setIsModalOpen(false);
+        }
+
+    };
+
 
     return (
         <>
@@ -62,6 +122,13 @@ export default function RegisterModal() {
                     className="w-6 h-6 hidden group-hover:inline"
                 />
             </button>
+
+            {/* Floating Success Message */}
+            {successMessage && (
+                <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
+                    {successMessage}
+                </div>
+            )}
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 ">
@@ -88,31 +155,43 @@ export default function RegisterModal() {
                                 <input
                                     type="text"
                                     name="teamName"
-                                    placeholder=" Your team name"
+                                    placeholder="Your team name"
                                     value={teamName}
                                     disabled
-                                    className="mb-3 w-full px-4 py-2.5 rounded-lg bg-gray-200"
+                                    className={`w-full px-4 py-2.5 rounded-lg bg-gray-200 border ${isDuplicate ? 'border-red-500' : 'border-transparent'}`}
                                 />
+                                {isDuplicate && (
+                                    <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+                                )}
 
-                                <div className="mt-2 flex items-start gap-3">
+                                <div className="mt-2 flex items-start gap-3 mt-3">
                                     <input
                                         type="checkbox"
                                         id="agree"
-                                        className="mt-1 accent-black text-white border-gray-300 rounded"
+                                        className={`mt-1 accent-black text-white border-gray-300 rounded ${agreeError ? 'ring-2 ring-red-500' : ''}`}
+                                        checked={agreeChecked}
+                                        onChange={(e) => {
+                                            setAgreeChecked(e.target.checked);
+                                            if (e.target.checked) setAgreeError('');
+                                        }}
                                     />
                                     <label htmlFor="agree" className="font-geist text-sm text-gray-700">
                                         I agree that all the information I provided is correct and true.
                                     </label>
                                 </div>
+                                {agreeError && <p className=" text-red-500"><FontAwesomeIcon icon={faCircleExclamation} className="mr-1" />{agreeError}</p>}
 
-                                <button className="mt-3 px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] cursor-pointer">
+                                <button
+                                    onClick={handleSubmit}
+                                    className="mt-3 px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] cursor-pointer"
+                                >
                                     Confirm
                                 </button>
                             </>
                         ) : (
                             <div className="mb-5 w-full px-4 py-3 ">
                                 <p className="text-gray-500 mb-3">You haven't created a team yet.</p>
-                            
+
                                 <button
                                     onClick={() => window.location.href = "/user-dashboard/my-team"}
                                     className="mt-3 px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] cursor-pointer">
