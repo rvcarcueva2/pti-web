@@ -1,44 +1,73 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! // Make sure this is available in your .env file
+);
 
 type Registration = {
-  competition: string;
+  competitionTitle: string;
   dateRegistered: string;
   status: string;
 };
 
 export default function RegistrationPage() {
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [search, setSearch] = useState('');
-  const [sortColumn, setSortColumn] = useState('');
+  const [sortColumn, setSortColumn] = useState<keyof Registration | ''>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const columns = [
-    { label: 'Competition', key: 'competition', minWidth: 'min-w-[340px]' },
+    { label: 'Competition', key: 'competitionTitle', minWidth: 'min-w-[340px]' },
     { label: 'Date Registered', key: 'dateRegistered', minWidth: 'min-w-[120px]' },
     { label: 'Status', key: 'status', minWidth: 'min-w-[100px]' },
   ];
 
-  const registrations: Registration[] = [
-    {
-      competition: 'National Championship',
-      dateRegistered: '2025-07-20',
-      status: 'Approved',
-    },
-    {
-      competition: 'Regional Open',
-      dateRegistered: '2025-07-15',
-      status: 'Closed',
-    },
-    {
-      competition: 'Summer Invitational',
-      dateRegistered: '2025-07-10',
-      status: 'Closed',
-    },
-  ];
+  useEffect(() => {
+    const fetchRegistrations = async () => {
+      try {
+        setLoading(true);
+
+        // Get logged-in user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error('User not authenticated.');
+        }
+
+        // Get registrations for the current user
+        const { data: registrationsData, error } = await supabase
+          .from('registrations')
+          .select('status, created_at, competitions(title)')
+          .eq('user_email', user.email) // or .eq('user_id', user.id) if available
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const mappedData = (registrationsData || []).map((r) => ({
+          competitionTitle: r.competitions?.title ?? 'Unknown',
+          dateRegistered: r.created_at,
+          status: r.status ?? 'Pending',
+        }));
+
+        setRegistrations(mappedData);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || 'Failed to fetch registrations.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRegistrations();
+  }, []);
 
   const handleSort = (column: keyof Registration) => {
     if (sortColumn === column) {
@@ -59,8 +88,8 @@ export default function RegistrationPage() {
 
   if (sortColumn) {
     filteredRegistrations = [...filteredRegistrations].sort((a, b) => {
-      const valueA = a[sortColumn as keyof Registration];
-      const valueB = b[sortColumn as keyof Registration];
+      const valueA = a[sortColumn];
+      const valueB = b[sortColumn];
       return sortDirection === 'asc'
         ? String(valueA).localeCompare(String(valueB))
         : String(valueB).localeCompare(String(valueA));
@@ -70,6 +99,7 @@ export default function RegistrationPage() {
   const getStatusColor = (status: string) => {
     if (status.toLowerCase() === 'approved') return 'text-green-600 font-medium';
     if (status.toLowerCase() === 'closed') return 'text-red-600 font-medium';
+    if (status.toLowerCase() === 'pending') return 'text-yellow-600 font-medium';
     return 'text-gray-700';
   };
 
@@ -95,60 +125,69 @@ export default function RegistrationPage() {
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-[rgba(0,0,0,0.2)]">
-            <tr>
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth}`}
-                  onClick={() => handleSort(column.key as keyof Registration)}
-                >
-                  <div className="flex items-center gap-1">
-                    {column.label}
-                    <Image
-                      src="/icons/down-arrow.svg"
-                      alt="Sort"
-                      width={10}
-                      height={10}
-                      className={`transition-transform ${
-                        sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </div>
-                </th>
-              ))}
-              <th className="p-3 w-[60px]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRegistrations.map((reg, index) => (
-              <tr
-                key={index}
-                onClick={handleRowClick}
-                className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer"
-              >
-                <td className="p-3 min-w-[340px]">{reg.competition}</td>
-                <td className="p-3 min-w-[120px]">{reg.dateRegistered}</td>
-                <td className={`p-3 min-w-[100px] ${getStatusColor(reg.status)}`}>
-                  {reg.status}
-                </td>
-                <td className="p-3 text-center w-[60px]">
-                  <Image
-                    src="/icons/information.svg"
-                    alt="Info"
-                    width={18}
-                    height={18}
-                    className="mx-auto"
-                  />
-                </td>
+        {loading ? (
+          <div className="text-center p-6 text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="text-red-500 p-6">{error}</div>
+        ) : filteredRegistrations.length === 0 ? (
+          <div className="p-6 text-gray-500">No registrations found.</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-[rgba(0,0,0,0.2)]">
+              <tr>
+                {columns.map((column, index) => (
+                  <th
+                    key={index}
+                    className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth}`}
+                    onClick={() => handleSort(column.key as keyof Registration)}
+                  >
+                    <div className="flex items-center gap-1">
+                      {column.label}
+                      <Image
+                        src="/icons/down-arrow.svg"
+                        alt="Sort"
+                        width={10}
+                        height={10}
+                        className={`transition-transform ${
+                          sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
+                  </th>
+                ))}
+                <th className="p-3 w-[60px]"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRegistrations.map((reg, index) => (
+                <tr
+                  key={index}
+                  onClick={handleRowClick}
+                  className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer"
+                >
+                  <td className="p-3 min-w-[340px]">{reg.competitionTitle}</td>
+                  <td className="p-3 min-w-[120px]">
+                    {new Date(reg.dateRegistered).toLocaleDateString()}
+                  </td>
+                  <td className={`p-3 min-w-[100px] ${getStatusColor(reg.status)}`}>
+                    {reg.status}
+                  </td>
+                  <td className="p-3 text-center w-[60px]">
+                    <Image
+                      src="/icons/information.svg"
+                      alt="Info"
+                      width={18}
+                      height={18}
+                      className="mx-auto"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Pagination */}
       <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
         <p className="justify-self-start">
           Showing 1 to {filteredRegistrations.length} of {filteredRegistrations.length} results
