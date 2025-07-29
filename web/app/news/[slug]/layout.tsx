@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { supabase } from '@/lib/supabaseClient'; // ✅ already configured
+import { supabase } from '@/lib/supabaseClient';
 
 type Props = {
   children: React.ReactNode;
