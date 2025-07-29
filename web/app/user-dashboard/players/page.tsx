@@ -228,6 +228,7 @@ export default function PlayersPage() {
         setIsSubmitting(false);
         return;
       }
+
       const ageNum = parseInt(newPlayer.age);
       const generatedGroup = !isNaN(ageNum) && newPlayer.category ? getGroup(ageNum, newPlayer.category) : '';
       if (!generatedGroup) {
@@ -246,6 +247,7 @@ export default function PlayersPage() {
         category: newPlayer.category.trim(),
         group_name: generatedGroup.trim(),
       };
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
       let response;
@@ -280,13 +282,8 @@ export default function PlayersPage() {
       if (response.ok && data.success) {
         setSuccessMessage(data.message);
         setTimeout(() => setSuccessMessage(''), 3000);
-        if (editIndex !== null && players[editIndex]?.id) {
-          updatedPlayers = [...players];
-          updatedPlayers[editIndex] = { ...updatedPlayers[editIndex], ...playerData };
-          setPlayers(updatedPlayers);
-        } else {
-          setPlayers((prev) => [...prev, { ...playerData, id: data.id }]);
-        }
+
+        await loadPlayers(); // reliable and fresh source
         setNewPlayer(emptyPlayer());
         setIsModalOpen(false);
         setEditIndex(null);

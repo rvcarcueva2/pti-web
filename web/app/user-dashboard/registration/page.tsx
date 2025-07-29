@@ -107,6 +107,15 @@ export default function RegistrationPage() {
     <div className="font-geist p-6 ml-64">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Registration</h1>
+        </div>
+        <div className="mb-2">
+          <p className="text-gray-400">
+            Note: Be advised that your registration is still pending, please contact <span className='text-gray-500'>(+63) 905 815 5032</span> or send us an email at{' '}
+            <a href="mailto:pilipinastaekwondo@gmail.com" className="text-gray-500 underline">
+              pilipinastaekwondo@gmail.com
+            </a>{' '}
+            for approval.
+          </p>
       </div>
 
       <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
@@ -148,9 +157,8 @@ export default function RegistrationPage() {
                         alt="Sort"
                         width={10}
                         height={10}
-                        className={`transition-transform ${
-                          sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''
-                        }`}
+                        className={`transition-transform ${sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''
+                          }`}
                       />
                     </div>
                   </th>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
 
 type Player = {
   id?: string;
@@ -140,9 +141,19 @@ export default function CompetitionPage() {
   return (
     <div className="font-geist p-6 ml-64">
       {/* Header */}
+
+      <Link
+        href="/user-dashboard/registration"
+        className="font-medium group text-md text-[#EAB044] flex items-center"
+      >
+        <span className="font-bold mr-1 transition-transform duration-200 group-hover:-translate-x-1">
+          ←
+        </span>
+        <span>Back</span>
+      </Link>
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Registered Players</h1>
-
       </div>
 
       <div className="mb-2">
@@ -202,8 +213,7 @@ export default function CompetitionPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length + 1} className="text-center p-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#EAB044] mx-auto mb-2" />
+                <td colSpan={columns.length + 1} className="text-center p-4 text-gray-500">
                   <p>Loading players...</p>
                 </td>
               </tr>
