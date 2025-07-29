@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 
+
 // Updated Competition type
 type Competition = {
   uuid: string;
@@ -21,11 +22,12 @@ type Competition = {
 };
 
 export default function CompetitionPage() {
-  const router = useRouter();
 
   // Competitions loaded from Supabase
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Modal and form state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -50,18 +52,42 @@ export default function CompetitionPage() {
 
 
   // Fetch competitions from Supabase
-  const fetchCompetitions = async () => {
-    const { data, error } = await supabase.from('competitions').select('*');
-    if (error) {
-      console.error('Error fetching competitions:', error);
+
+  const loadCompetitionData = async () => {
+    setLoading(true);
+
+    const { data: competitionsData, error: competitionsError } = await supabase
+      .from('competitions')
+      .select('*');
+
+    const { data: countsData, error: countsError } = await supabase
+      .rpc('get_competition_data');
+
+    if (competitionsError || countsError) {
+      console.error('Error fetching data:', competitionsError || countsError);
     } else {
-      setCompetitions(data as Competition[]);
+      const mergedData = competitionsData.map(comp => {
+        const counts = countsData.find((c: { uuid: any; }) => c.uuid === comp.uuid);
+        return {
+          ...comp,
+          title: comp.title,
+          players: counts?.players_count || 0,
+          teams: counts?.teams_count || 0,
+          kyorugi: counts?.kyorugi_count || 0,
+          poomsae: counts?.poomsae_count || 0,
+        };
+      });
+
+      setCompetitions(mergedData);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchCompetitions();
+    loadCompetitionData();
   }, []);
+
 
   useEffect(() => {
     if (successMessage) {
@@ -225,7 +251,7 @@ export default function CompetitionPage() {
         .update(newCompetitionData)
         .eq('uuid', compToEdit.uuid);
       if (!error) {
-        await fetchCompetitions();
+        loadCompetitionData();
         setIsSubmitting(false);
         closeModal();
         setSuccessMessage('Competition updated successfully!');
@@ -236,7 +262,7 @@ export default function CompetitionPage() {
         .from('competitions')
         .insert([{ ...newCompetitionData }]);
       if (!error) {
-        await fetchCompetitions();
+        await newCompetitionData();
         setIsSubmitting(false);
         closeModal();
         setSuccessMessage('Competition added successfully!');
@@ -247,7 +273,7 @@ export default function CompetitionPage() {
 
     setIsSubmitting(false);
     // Refresh list
-    await fetchCompetitions();
+    await newCompetitionData();
     closeModal();
   };
 
@@ -264,15 +290,17 @@ export default function CompetitionPage() {
       setIsDeleteModalOpen(false);
       setDeleteIndex(null);
       setSuccessMessage('Competition deleted successfully!');
-      fetchCompetitions();
+      await loadCompetitionData();
     } else {
       console.error('Delete error:', error);
     }
   };
 
+  const handleRowClick = (uuid: string) => {
+    router.push(`/admin-dashboard/competitions/${uuid}`);
+  };
 
 
-  // (Duplicate fetch removed)
   return (
     <div className="font-geist p-6 ml-64">
       {/* Load competitions on mount */}
@@ -337,35 +365,56 @@ export default function CompetitionPage() {
 
             </tr>
           </thead>
-          <tbody>
-            {filteredCompetitions.map((comp, index) => (
-              <tr key={comp.uuid} className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50">
-                <td className="p-3 min-w-[300px]">{comp.title}</td>
-                <td className="p-3">{comp.players}</td>
-                <td className="p-3">{comp.teams}</td>
-                <td className="p-3">{comp.kyorugi}</td>
-                <td className="p-3">{comp.poomsae}</td>
 
-                <td className="p-3 text-left">
-                  <div className="flex items-center gap-5 -ml-8">
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
-                    >
-                      <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-red-500"
-                    >
-                      <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
-                      Delete
-                    </button>
-                  </div>
+
+          <tbody>
+            {loading ? (
+              <tr>
+                <td className="p-3 text-center text-gray-500" colSpan={6}>
+                  Loading competitions...
                 </td>
               </tr>
-            ))}
+            ) : competitions.length === 0 ? (
+              <tr>
+                <td className="p-3 text-center text-gray-500" colSpan={6}>
+                  No competitions found.
+                </td>
+              </tr>
+            ) : (
+
+              filteredCompetitions.map((comp, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleRowClick(comp.uuid)}
+                >
+                  <td className="p-3 min-w-[300px]">{comp.title}</td>
+                  <td className="p-3">{comp.players}</td>
+                  <td className="p-3">{comp.teams}</td>
+                  <td className="p-3">{comp.kyorugi}</td>
+                  <td className="p-3">{comp.poomsae}</td>
+
+                  <td className="p-3 text-left" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-5 -ml-8">
+                      <button
+                        onClick={() => handleEdit(index)}
+                        className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
+                      >
+                        <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-red-500"
+                      >
+                        <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -457,7 +506,7 @@ export default function CompetitionPage() {
                   </div>
                   {/* Date */}
                   <div>
-                     <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1">
                       Date <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -472,7 +521,7 @@ export default function CompetitionPage() {
 
                   {/* Deadline */}
                   <div>
-                     <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1">
                       Deadline <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -487,7 +536,7 @@ export default function CompetitionPage() {
 
                   {/* Location */}
                   <div className="col-span-2">
-                     <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1">
                       Location <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -563,3 +612,9 @@ export default function CompetitionPage() {
     </div>
   );
 }
+
+
+function loadCompetitionData() {
+  throw new Error('Function not implemented.');
+}
+
