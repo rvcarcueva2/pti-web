@@ -149,6 +149,7 @@ export default function CompetitionPage() {
                 className="border-b border-[rgba(0,0,0,0.2)] hover:bg-gray-50 cursor-pointer"
                 onClick={() => router.push('/admin-dashboard/results/competition')}
               >
+                {/*/ Render each competition's data in the table row 
                 <td className="p-3 min-w-[150px]">{comp.competition}</td>
                 <td className="p-3 min-w-[80px]">{comp.gold}</td>
                 <td className="p-3 min-w-[80px]">{comp.silver}</td>
@@ -167,7 +168,7 @@ export default function CompetitionPage() {
                     }}
                     className="cursor-pointer mx-auto"
                   />
-                </td>
+                </td>*/}
               </tr>
             ))}
           </tbody>

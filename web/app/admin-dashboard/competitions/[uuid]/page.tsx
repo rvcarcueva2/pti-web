@@ -5,12 +5,16 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 type TeamPlayerCount = {
+    registration_id: string;
     team: string;
     registered_players_count: number;
     kyorugi_count: number;
     poomsae_count: number;
+    status: string;
 };
 
 type Column = {
@@ -24,6 +28,7 @@ const columns: Column[] = [
     { key: 'registered_players_count', label: 'Players', minWidth: 'min-w-[100px]' },
     { key: 'kyorugi_count', label: 'Kyorugi', minWidth: 'min-w-[100px]' },
     { key: 'poomsae_count', label: 'Poomsae', minWidth: 'min-w-[100px]' },
+    { key: 'status', label: 'Status', minWidth: 'min-w-[100px]' },
 
 ];
 
@@ -35,41 +40,52 @@ export default function CompetitionTeamsPage() {
     const [competitionName, setCompetitionName] = useState<string>('');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [loading, setLoading] = useState(true);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [pendingStatusChange, setPendingStatusChange] = useState<{
+        registrationId: string;
+        newStatus: string;
+    } | null>(null);
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+    const handleToggle = () => {
+        setIsOpen((prev) => !prev);
+    };
+ 
 
-    useEffect(() => {
+
+    const fetchData = async () => {
         if (!uuid) return;
 
-        const fetchData = async () => {
+        const { data: teamData, error: teamError } = await supabase.rpc(
+            'get_team_data_by_competition',
+            { comp_uuid: uuid }
+        );
 
-            const { data: teamData, error: teamError } = await supabase.rpc(
-                'get_team_data_by_competition',
-                { comp_uuid: uuid }
-            );
+        if (teamError) {
+            console.error('Error fetching team data:', teamError);
+        } else {
+            setData(teamData);
+        }
 
-            if (teamError) {
-                console.error('Error fetching team data:', teamError);
-            } else {
-                setData(teamData);
-            }
+        const { data: compData, error: compError } = await supabase
+            .from('competitions')
+            .select('title')
+            .eq('uuid', uuid)
+            .single();
 
+        if (compError) {
+            console.error('Error fetching competition title:', compError);
+        } else {
+            setCompetitionName(compData.title);
+        }
 
-            const { data: compData, error: compError } = await supabase
-                .from('competitions')
-                .select('title')
-                .eq('uuid', uuid)
-                .single();
+        setLoading(false);
+    };
 
-            if (compError) {
-                console.error('Error fetching competition title:', compError);
-            } else {
-                setCompetitionName(compData.title);
-            }
-
-            setLoading(false);
-        };
-
+    useEffect(() => {
         fetchData();
     }, [uuid]);
+
 
 
     const handleSort = (column: keyof TeamPlayerCount) => {
@@ -104,6 +120,44 @@ export default function CompetitionTeamsPage() {
                 : Number(valueB) - Number(valueA);
         });
     }
+
+    const handleStatusChange = async (registrationId: string, newStatus: string) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log("Authenticated user:", user);
+        console.log('Attempting update', registrationId, newStatus);
+
+        const { data, error } = await supabase
+            .from('registrations')
+            .update({ status: newStatus })
+            .eq('id', registrationId)
+            .select(); // ⬅ returns the updated row
+
+        if (error) {
+            console.error('❌ Update failed:', error.message);
+        } else if (!data || data.length === 0) {
+            console.warn('⚠️ No rows updated. Check ID and RLS.');
+        } else {
+            console.log('✅ Update success:', data);
+
+            setData((prevData) =>
+                prevData.map((item) =>
+                    item.registration_id === registrationId
+                        ? { ...item, status: newStatus }
+                        : item
+                )
+            );
+        }
+    };
+
+
+    const getStatusColor = (status: string) => {
+        if (status.toLowerCase() === 'pending') return 'text-yellow-600 font-medium';
+        if (status.toLowerCase() === 'approved') return 'text-green-600 font-medium';
+        if (status.toLowerCase() === 'closed') return 'text-red-600 font-medium';
+        if (status.toLowerCase() === 'denied') return 'text-red-600 font-medium';
+       
+        return 'text-gray-700';
+    };
 
     return (
         <div className="font-geist p-6 ml-64">
@@ -195,6 +249,52 @@ export default function CompetitionTeamsPage() {
                                     <td className="p-3">{item.registered_players_count}</td>
                                     <td className="p-3">{item.kyorugi_count}</td>
                                     <td className="p-3">{item.poomsae_count}</td>
+                                    <td className="p-3">
+                                        <div className="flex items-center gap-1">
+                                            {/* Status Text */}
+                                            <span className={`font-medium ${getStatusColor(item.status)}`}>
+                                                {item.status}
+                                            </span>
+
+                                            {/* Icon-only Dropdown */}
+                                            <div className="relative inline-block w-8 h-8 hover:bg-gray-200 rounded cursor-pointer">
+                                                {/* Invisible select element */}
+                                                <select
+                                                    value={item.status || "Pending"}
+                                                     onChange={(e) => {
+                                                        setSelectedStatus(e.target.value);
+                                                        setPendingStatusChange({
+                                                            registrationId: item.registration_id,
+                                                            newStatus: e.target.value,
+                                                        });
+                                                        setIsStatusModalOpen(true);
+                                                        setIsOpen(false); // close dropdown after selection
+                                                    }}
+                                                    onClick={handleToggle}
+                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                >
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Approved">Approved</option>
+                                                    <option value="Denied">Denied</option>
+                                                    <option value="Closed">Closed</option>
+                                                </select>
+
+                                                {/* Visible icon container */}
+                                                <div
+                                                    onClick={handleToggle}
+                                                    className="w-full h-full flex items-center justify-center rounded hover:bg-gray-200 transition cursor-pointer z-0"
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faChevronDown}
+                                                        className={`text-gray-700 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
                                     <td className="p-3 text-center w-[60px]">
                                         <Image
                                             src="/icons/information.svg"
@@ -210,6 +310,39 @@ export default function CompetitionTeamsPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Status Change Confirmation Modal */}
+            {isStatusModalOpen && pendingStatusChange && (
+                <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border border-gray-200 relative">
+                        <p className="mb-6 text-gray-800 leading-relaxed">
+                            Are you sure you want to change the status to
+                            <span className="font-bold uppercase text-black"> {pendingStatusChange.newStatus}</span>?
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition cursor-pointer"
+                                onClick={() => {
+                                    setIsStatusModalOpen(false);
+                                    setPendingStatusChange(null);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleStatusChange(pendingStatusChange.registrationId, pendingStatusChange.newStatus);
+                                    setIsStatusModalOpen(false);
+                                    setPendingStatusChange(null);
+                                }}
+                                className="px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] transition cursor-pointer"
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Pagination UI */}
             <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
@@ -248,3 +381,5 @@ export default function CompetitionTeamsPage() {
         </div>
     );
 }
+
+
