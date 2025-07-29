@@ -13,6 +13,7 @@ export default function RegisterModal({ competitionId }: { competitionId: string
   const [isLoading, setIsLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [teamId, setTeamId] = useState<string | null>(null);
   const [players, setPlayers] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,6 +30,7 @@ export default function RegisterModal({ competitionId }: { competitionId: string
     }
 
     const userId = userData.user.id;
+    setUserId(userId);
     setUserEmail(userData.user.email ?? null);
 
     const { data, error } = await supabase
@@ -91,7 +93,7 @@ export default function RegisterModal({ competitionId }: { competitionId: string
 
     const { data: regData, error: regError } = await supabase
       .from('registrations')
-      .insert([{ competition_id: competitionId, team_id: teamId, user_email: userEmail }])
+      .insert([{ competition_id: competitionId, team_id: teamId, user_email: userEmail, user_id: userId }])
       .select()
       .single();
 
