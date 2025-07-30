@@ -102,11 +102,13 @@ const AdminDashboardSidebar = () => {
       href: '/admin-dashboard/competitions',
       icon: faTrophy,
     },
-    {
-      label: 'Results',
-      href: '/admin-dashboard/results',
-      icon: faFile,
-    },
+
+
+    // {
+    //   label: 'Results',
+    //   href: '/admin-dashboard/results',
+    //   icon: faFile,
+    // },
   ];
 
   return (
@@ -132,8 +134,8 @@ const AdminDashboardSidebar = () => {
             <Link href={item.href} key={item.label}>
               <div
                 className={`flex items-center gap-3 py-3 px-4 pl-8 transition-all cursor-pointer ${isActive
-                    ? 'bg-[#EAB044] text-white font-medium'
-                    : 'text-black hover:bg-gray-100'
+                  ? 'bg-[#EAB044] text-white font-medium'
+                  : 'text-black hover:bg-gray-100'
                   }`}
               >
                 <FontAwesomeIcon
