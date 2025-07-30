@@ -6,10 +6,21 @@ import Footer from '@/app/components/Footer';
 const FooterWrapper = () => {
   const pathname = usePathname();
 
-  // Hide footer on these paths
-  const hideFooterOn = ['/auth/sign-in', '/auth/register'];
+  // Combined list of exact paths to hide the footer
+  const hideFooterOn = [
+    '/auth/sign-in',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+  ];
 
-  if (hideFooterOn.includes(pathname)) return null;
+  // Hide on any path that starts with these base routes
+  const hideIfStartsWith = ['/user-dashboard', '/admin-dashboard'];
+
+  const shouldHideFooter =
+    hideFooterOn.includes(pathname) || hideIfStartsWith.some((path) => pathname.startsWith(path));
+
+  if (shouldHideFooter) return null;
 
   return <Footer />;
 };

@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
 import { getFeaturedBySlug } from '@/lib/featured';
 import React from 'react';
+import { headers } from 'next/headers';
 
-// ✅ Make sure Props is declared before using it
+
 type Props = {
   params: { slug: string };
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const news = getFeaturedBySlug(params.slug);
+export async function generateMetadata(): Promise<Metadata> {
+    const headersList = headers();
+    const url = (await headersList).get('x-next-url') || '';
+    const slug = url.split('/').pop() || ''; // Extract the slug from the URL
+
+    const news = await getFeaturedBySlug(slug);
 
     if (!news) {
         return {
