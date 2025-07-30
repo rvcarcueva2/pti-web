@@ -38,7 +38,7 @@ export default function CompetitionPage() {
     { label: 'Height (cm)', key: 'height', width: 'w-[120px]' },
     { label: 'Belt', key: 'belt', width: 'w-[130px]' },
     { label: 'Category', key: 'category', width: 'w-[100px]' },
-    { label: 'Group', key: 'group_name', width: 'w-[100px]' }, 
+    { label: 'Group', key: 'group_name', width: 'w-[100px]' },
   ];
 
   useEffect(() => {
@@ -78,8 +78,11 @@ export default function CompetitionPage() {
       {/* Heading */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
-          <Link href={`/admin-dashboard/competitions/${competitionId}`} className="font-medium group text-md text-[#EAB044] flex items-center">
-            <span className="mr-1 transition-transform duration-200 group-hover:-translate-x-1">←</span>
+          <Link href={`/admin-dashboard/competitions/${competitionId}`}
+            className="font-medium group text-md text-[#EAB044] flex items-center">
+            <span className="font-bold mr-1 transition-transform duration-200 group-hover:-translate-x-1">
+              ←
+            </span>
             <span>Back</span>
           </Link>
         </div>
