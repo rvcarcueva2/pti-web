@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! // Make sure this is available in your .env file
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! 
 );
 
 type Registration = {
