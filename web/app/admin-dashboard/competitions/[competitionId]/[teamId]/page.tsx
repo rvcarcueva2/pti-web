@@ -26,7 +26,6 @@ export default function CompetitionPage() {
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [players, setPlayers] = useState<RegisteredPlayer[]>([]);
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   const columns = [

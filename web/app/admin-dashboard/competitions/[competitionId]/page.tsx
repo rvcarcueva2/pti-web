@@ -11,7 +11,7 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 type TeamPlayerCount = {
     registration_id: string;
-    team_id: string; 
+    team_id: string;
     team: string;
     registered_players_count: number;
     kyorugi_count: number;
@@ -59,35 +59,44 @@ export default function CompetitionTeamsPage() {
     const fetchData = async () => {
         if (!competitionId) return;
 
-        const { data: teamData, error: teamError } = await supabase.rpc(
-            'get_team_data_by_competition',
-            { comp_uuid: competitionId }
-        );
+        setLoading(true); // Make sure to indicate loading before fetching
 
-        if (teamError) {
-            console.error('Error fetching team data:', teamError);
-        } else {
-            setData(teamData);
+        try {
+            // Call the RPC
+            const { data: teamData, error: teamError } = await supabase.rpc(
+                'get_team_data_by_competition',
+                { comp_uuid: competitionId }
+            );
+
+            if (teamError) {
+                console.error('Error fetching team data:', teamError);
+            } else {
+                setData(teamData);
+            }
+
+            // Fetch the competition name
+            const { data: compData, error: compError } = await supabase
+                .from('competitions')
+                .select('title')
+                .eq('uuid', competitionId)
+                .single();
+
+            if (compError) {
+                console.error('Error fetching competition title:', compError);
+            } else {
+                setCompetitionName(compData.title);
+            }
+        } catch (err) {
+            console.error('Unexpected error:', err);
+        } finally {
+            setLoading(false);
         }
-
-        const { data: compData, error: compError } = await supabase
-            .from('competitions')
-            .select('title')
-            .eq('uuid', competitionId)
-            .single();
-
-        if (compError) {
-            console.error('Error fetching competition title:', compError);
-        } else {
-            setCompetitionName(compData.title);
-        }
-
-        setLoading(false);
     };
 
     useEffect(() => {
         fetchData();
     }, [competitionId]);
+
 
 
 
@@ -151,9 +160,9 @@ export default function CompetitionTeamsPage() {
             );
         }
     };
- const clickInfo = (teamId: string) => {
-    router.push(`/admin-dashboard/competitions/${competitionId}/${teamId}`);
-};
+    const clickInfo = (teamId: string) => {
+        router.push(`/admin-dashboard/competitions/${competitionId}/${teamId}`);
+    };
 
 
     const getStatusColor = (status: string) => {

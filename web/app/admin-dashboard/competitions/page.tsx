@@ -19,6 +19,7 @@ type Competition = {
   teams: number;
   kyorugi: number;
   poomsae: number;
+  poomsae_team: number;
 };
 
 export default function CompetitionPage() {
@@ -56,29 +57,25 @@ export default function CompetitionPage() {
   const loadCompetitionData = async () => {
     setLoading(true);
 
-    const { data: competitionsData, error: competitionsError } = await supabase
-      .from('competitions')
-      .select('*');
+    const { data: statsData, error: statsError } = await supabase
+      .rpc('get_competition_stats');
 
-    const { data: countsData, error: countsError } = await supabase
-      .rpc('get_competition_data');
-
-    if (competitionsError || countsError) {
-      console.error('Error fetching data:', competitionsError || countsError);
+    if (statsError) {
+      console.error('Error fetching competition stats:', statsError);
+      setCompetitions([]); // optional: show empty state
     } else {
-      const mergedData = competitionsData.map(comp => {
-        const counts = countsData.find((c: { uuid: any; }) => c.uuid === comp.uuid);
-        return {
-          ...comp,
-          title: comp.title,
-          players: counts?.players_count || 0,
-          teams: counts?.teams_count || 0,
-          kyorugi: counts?.kyorugi_count || 0,
-          poomsae: counts?.poomsae_count || 0,
-        };
-      });
 
-      setCompetitions(mergedData);
+      const formattedData = statsData.map((stat: any) => ({
+        uuid: stat.competition_id,
+        title: stat.competition_name,
+        players: stat.players_count,
+        teams: stat.teams_count,
+        kyorugi: stat.kyorugi_count,
+        poomsae: stat.poomsae_count,
+        poomsae_team: stat.poomsae_team_count,
+      }));
+
+      setCompetitions(formattedData);
     }
 
     setLoading(false);
@@ -87,6 +84,7 @@ export default function CompetitionPage() {
   useEffect(() => {
     loadCompetitionData();
   }, []);
+
 
 
   useEffect(() => {
@@ -393,6 +391,7 @@ export default function CompetitionPage() {
                   <td className="p-3">{comp.teams}</td>
                   <td className="p-3">{comp.kyorugi}</td>
                   <td className="p-3">{comp.poomsae}</td>
+                  <td className="p-3">{comp.poomsae_team}</td>
 
                   <td className="p-3 text-left" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-5 -ml-8">
