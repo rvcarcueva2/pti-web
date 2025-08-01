@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
+
 
 type Competition = {
   uuid: string;
@@ -21,6 +23,7 @@ type Competition = {
 
 export default function CompetitionPage() {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -45,123 +48,35 @@ export default function CompetitionPage() {
   const router = useRouter();
 
   // Add sample data on component mount
+  const loadCompetitionData = async () => {
+    setLoading(true);
+
+    const { data: statsData, error: statsError } = await supabase
+      .rpc('get_competition_stats');
+
+    if (statsError) {
+      console.error('Error fetching competition stats:', statsError);
+      setCompetitions([]); // optional: show empty state
+    } else {
+
+      const formattedData = statsData.map((stat: any) => ({
+        uuid: stat.competition_id,
+        title: stat.competition_name,
+        players: stat.players_count,
+        teams: stat.teams_count,
+        kyorugi: stat.kyorugi_count,
+        poomsae: stat.poomsae_count,
+        poomsae_team: stat.poomsae_team_count,
+      }));
+
+      setCompetitions(formattedData);
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const sampleCompetitions: Competition[] = [
-      {
-        uuid: '1',
-        title: 'National Taekwondo Championship 2025',
-        date: '2025-09-15',
-        description: 'Annual national championship featuring the best taekwondo athletes from across the country. Categories include Kyorugi, Poomsae, and Poomsae Team for all age groups.',
-        location: 'Manila Sports Complex, Manila',
-        deadline: '2025-08-15',
-        photo_url: '/images/competition1.jpg',
-        players: 280,
-        teams: 18,
-        kyorugi: 145,
-        poomsae: 100,
-        poomsae_team: 35,
-      },
-      {
-        uuid: '2',
-        title: 'Regional Kyorugi Tournament',
-        date: '2025-08-20',
-        description: 'Regional competition focusing on sparring techniques and combat skills. Open to all belt levels.',
-        location: 'Cebu City Sports Center, Cebu',
-        deadline: '2025-07-20',
-        photo_url: '/images/competition2.jpg',
-        players: 180,
-        teams: 8,
-        kyorugi: 180,
-        poomsae: 0,
-        poomsae_team: 0,
-      },
-      {
-        uuid: '3',
-        title: 'Intercollegiate Poomsae Event',
-        date: '2025-10-05',
-        description: 'University-level poomsae competition showcasing technical forms and artistic expression.',
-        location: 'University of the Philippines, Diliman',
-        deadline: '2025-09-05',
-        photo_url: '/images/competition3.jpg',
-        players: 125,
-        teams: 16,
-        kyorugi: 0,
-        poomsae: 95,
-        poomsae_team: 30,
-      },
-      {
-        uuid: '4',
-        title: 'Youth Development Cup',
-        date: '2025-11-12',
-        description: 'Competition designed for young athletes aged 8-17. Focus on skill development and sportsmanship.',
-        location: 'Makati Sports Club, Makati',
-        deadline: '2025-10-12',
-        photo_url: '/images/competition4.jpg',
-        players: 145,
-        teams: 9,
-        kyorugi: 70,
-        poomsae: 50,
-        poomsae_team: 25,
-      },
-      {
-        uuid: '5',
-        title: 'Masters International Open',
-        date: '2025-12-08',
-        description: 'International tournament for senior practitioners (35+). Categories for both recreational and competitive divisions.',
-        location: 'World Trade Center, Pasay',
-        deadline: '2025-11-08',
-        photo_url: '/images/competition5.jpg',
-        players: 105,
-        teams: 6,
-        kyorugi: 45,
-        poomsae: 40,
-        poomsae_team: 20,
-      },
-      {
-        uuid: '6',
-        title: 'Provincial Championships - Luzon',
-        date: '2025-08-30',
-        description: 'Provincial level championship for Luzon region. Qualifier for national competitions.',
-        location: 'Baguio Convention Center, Baguio',
-        deadline: '2025-07-30',
-        photo_url: '/images/competition6.jpg',
-        players: 235,
-        teams: 14,
-        kyorugi: 120,
-        poomsae: 80,
-        poomsae_team: 35,
-      },
-      {
-        uuid: '7',
-        title: 'Team Poomsae Showcase',
-        date: '2025-09-25',
-        description: 'Specialized competition focusing on synchronized team poomsae performances.',
-        location: 'SM Mall of Asia Arena, Pasay',
-        deadline: '2025-08-25',
-        photo_url: '/images/competition7.jpg',
-        players: 180,
-        teams: 30,
-        kyorugi: 0,
-        poomsae: 60,
-        poomsae_team: 120,
-      },
-      {
-        uuid: '8',
-        title: 'Beginner Friendly Tournament',
-        date: '2025-10-18',
-        description: 'Entry-level competition for white to green belt practitioners. Emphasis on learning and participation.',
-        location: 'Quezon City Sports Complex, Quezon City',
-        deadline: '2025-09-18',
-        photo_url: '/images/competition8.jpg',
-        players: 90,
-        teams: 5,
-        kyorugi: 40,
-        poomsae: 35,
-        poomsae_team: 15,
-      },
-    ];
-    
-    setCompetitions(sampleCompetitions);
+    loadCompetitionData();
   }, []);
 
   useEffect(() => {
@@ -330,7 +245,7 @@ export default function CompetitionPage() {
   };
 
   const handleRowClick = (uuid: string) => {
-    router.push(`/admin-panel/competitions/competition`);
+    router.push(`/admin-panel/competitions/${uuid}`);
   };
 
   return (
@@ -345,11 +260,10 @@ export default function CompetitionPage() {
 
       {/* Success Message */}
       {successMessage && (
-        <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 border rounded shadow-lg text-m font-regular transition-all duration-300 ${
-          successType === 'add' ? 'bg-green-100 border-green-400 text-green-700' :
-          successType === 'update' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
-          'bg-red-100 border-red-400 text-red-700'
-        }`}>
+        <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 border rounded shadow-lg text-m font-regular transition-all duration-300 ${successType === 'add' ? 'bg-green-100 border-green-400 text-green-700' :
+            successType === 'update' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
+              'bg-red-100 border-red-400 text-red-700'
+          }`}>
           {successMessage}
         </div>
       )}
@@ -400,9 +314,8 @@ export default function CompetitionPage() {
               <tr
                 key={index}
                 onClick={() => handleRowClick(comp.uuid)}
-                className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${
-                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                }`}
+                className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  }`}
               >
                 <td className="p-3">{comp.title}</td>
                 <td className="p-3">{comp.players}</td>
