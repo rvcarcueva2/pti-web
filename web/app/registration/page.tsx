@@ -81,7 +81,7 @@ export default function RegistrationPage() {
   };
 
   const handleRowClick = () => {
-    router.push('/registration/players');
+    router.push('/registration/registered-players');
   };
 
   let filteredRegistrations = registrations.filter((reg) =>
