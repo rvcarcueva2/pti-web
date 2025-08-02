@@ -146,7 +146,6 @@ export default function CompetitionPage() {
   const columns = [
     { label: 'Competition', key: 'title', minWidth: 'min-w-[200px]' },
     { label: 'Date', key: 'date', minWidth: 'min-w-[120px]' },
-    { label: 'Location', key: 'location', minWidth: 'min-w-[150px]' },
     { label: 'Players', key: 'players', minWidth: 'min-w-[80px]' },
     { label: 'Teams', key: 'teams', minWidth: 'min-w-[80px]' },
     { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[80px]' },
@@ -389,7 +388,6 @@ export default function CompetitionPage() {
                 >
                   <td className="p-3">{comp.title}</td>
                   <td className="p-3">{new Date(comp.date).toLocaleDateString()}</td>
-                  <td className="p-3">{comp.location}</td>
                   <td className="p-3">{comp.players}</td>
                   <td className="p-3">{comp.teams}</td>
                   <td className="p-3">{comp.kyorugi}</td>
