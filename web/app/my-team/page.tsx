@@ -261,7 +261,7 @@ export default function MyTeamPage() {
 
   if (isLoading) {
     return (
-      <div className="ml-64 font-geist p-8 min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="font-geist min-h-screen mt-40">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#EAB044] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading team data...</p>
@@ -271,9 +271,9 @@ export default function MyTeamPage() {
   }
 
   return (
-    <div className="ml-64 font-geist p-8 min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+    <div className="font-geist p-8 min-h-[80vh]">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mt-10">
           <h1 className="text-2xl font-bold">My Team</h1>
           {hasTeamData && (
             <button
@@ -287,7 +287,7 @@ export default function MyTeamPage() {
           )}
         </div>
         <div className="mb-2">
-          <p className=" text-gray-400">Note: Please fill out your team information before proceeding.</p>
+          <p className=" text-gray-400">Note: Please fill out your team information before you register to competitions.</p>
         </div>
         {/* Floating Success Message */}
         {successMessage && (
@@ -420,7 +420,7 @@ export default function MyTeamPage() {
                   {/* Save Changes Button */}
                   <button
                     type="submit"
-                    className="mt-6 w-[304px] bg-[#EAB044] text-white py-2 rounded text-sm hover:bg-[#d49a35] font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="mt-6 w-[304px] bg-[#FED018] text-black py-2 rounded text-sm hover:bg-yellow-400 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

@@ -39,7 +39,7 @@ export default function CompetitionTeamsPage() {
   const [data, setData] = useState<TeamPlayerCount[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState<keyof TeamPlayerCount | null>(null);
-  const [competitionName, setCompetitionName] = useState<string>('Sample Competition');
+  const [competitionName, setCompetitionName] = useState<string>('Loading...');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [loading, setLoading] = useState(true);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -197,6 +197,21 @@ export default function CompetitionTeamsPage() {
         return 'text-red-700 bg-red-100';
       default:
         return 'text-gray-700 bg-gray-100';
+    }
+  };
+
+  const updateRegistrationStatus = async (registrationId: string, newStatus: string) => {
+    const { error } = await supabase
+      .from('registrations')
+      .update({ status: newStatus })
+      .eq('id', registrationId);
+
+    if (error) {
+      console.error('Error updating status:', error);
+      setSuccessMessage('Failed to update status.');
+    } else {
+      handleStatusChange(registrationId, newStatus); // Update UI
+      setSuccessMessage('Status updated successfully!');
     }
   };
 
@@ -396,10 +411,11 @@ export default function CompetitionTeamsPage() {
               </button>
               <button
                 onClick={() => {
-                  handleStatusChange(pendingStatusChange.registrationId, pendingStatusChange.newStatus);
-                  setSuccessMessage('Status updated successfully!');
-                  setIsStatusModalOpen(false);
-                  setPendingStatusChange(null);
+                  if (pendingStatusChange) {
+                    updateRegistrationStatus(pendingStatusChange.registrationId, pendingStatusChange.newStatus);
+                    setIsStatusModalOpen(false);
+                    setPendingStatusChange(null);
+                  }
                 }}
                 className="px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] transition cursor-pointer"
               >

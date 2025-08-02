@@ -5,15 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEnvelope,
-  faPhone,
-  faUser,
-  faChevronDown,
-  faSignOutAlt,
-  faBookmark,
-  faChartSimple 
-} from "@fortawesome/free-solid-svg-icons";
+import {faEnvelope, faPhone, faUser, faChevronDown, faSignOutAlt, faBookmark, faChartSimple, faPenNib  } from "@fortawesome/free-solid-svg-icons";
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -215,7 +207,7 @@ export default function HomeHeader() {
                         <button
                           onClick={() => {
                             setIsDropdownOpen(false);
-                            router.push('/admin-dashboard/dashboard');
+                            router.push('/admin-panel/dashboard');
                           }}
                           className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
                         >
@@ -226,13 +218,25 @@ export default function HomeHeader() {
                       <button
                         onClick={() => {
                           setIsDropdownOpen(false);
-                          router.push('/user-dashboard/my-team');
+                          router.push('/my-team');
                         }}
                         className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faBookmark} className="w-4 h-4 mr-2" />
                         My Team
                       </button>
+
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          router.push('/registration');
+                        }}
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors cursor-pointer"
+                      >
+                        <FontAwesomeIcon icon={faPenNib} className="w-4 h-4 mr-2" />
+                        Registration
+                      </button>
+
                       <button
                         onClick={() => {
                           setIsDropdownOpen(false);
