@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 import Image from 'next/image';
 
 type Registration = {
+  id: string;
   competitionTitle: string;
   dateRegistered: string;
   status: string;
@@ -15,6 +17,8 @@ export default function RegistrationPage() {
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<keyof Registration | ''>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const columns = [
@@ -24,26 +28,48 @@ export default function RegistrationPage() {
   ];
 
   useEffect(() => {
-    // Simulate static data
-    const mockData: Registration[] = [
-      {
-        competitionTitle: 'National Taekwondo Championship',
-        dateRegistered: '2025-07-30T12:00:00Z',
-        status: 'Approved',
-      },
-      {
-        competitionTitle: 'Intercollegiate Poomsae Event',
-        dateRegistered: '2025-07-25T15:30:00Z',
-        status: 'Pending',
-      },
-      {
-        competitionTitle: 'Regional Kyorugi Tournament',
-        dateRegistered: '2025-07-20T09:45:00Z',
-        status: 'Closed',
-      },
-    ];
-    setRegistrations(mockData);
-  }, []);
+    const fetchRegistrations = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Get current user session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.user) {
+          setError('Please sign in to view your registrations');
+          router.push('/auth/sign-in?redirectTo=/registration');
+          return;
+        }
+
+        // Get access token for API call
+        const accessToken = session.access_token;
+
+        // Fetch registrations from API
+        const response = await fetch('/api/registrations', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch registrations');
+        }
+
+        const data = await response.json();
+        setRegistrations(data);
+      } catch (err) {
+        console.error('Error fetching registrations:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load registrations');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRegistrations();
+  }, [router]);
 
   const handleSort = (column: keyof Registration) => {
     if (sortColumn === column) {
@@ -105,6 +131,7 @@ export default function RegistrationPage() {
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              disabled={isLoading}
             />
             <div className="absolute top-1/2 left-3 -translate-y-1/2">
               <Image src="/icons/search.svg" alt="Search Icon" width={16} height={16} />
@@ -112,15 +139,21 @@ export default function RegistrationPage() {
           </div>
         </div>
 
-        {filteredRegistrations.length === 0 ? (
-          <div className="p-6 text-gray-500">No registrations found.</div>
+        {isLoading ? (
+          <div className="p-6 text-center text-gray-500">Loading registrations...</div>
+        ) : error ? (
+          <div className="p-6 text-center text-red-600">Error: {error}</div>
+        ) : filteredRegistrations.length === 0 ? (
+          <div className="p-6 text-gray-500">
+            {search.trim() ? 'No registrations found matching your search.' : 'You have no registrations yet.'}
+          </div>
         ) : (
           <table className="w-full text-sm">
             <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
               <tr>
-                {columns.map((column, index) => (
+                {columns.map((column) => (
                   <th
-                    key={index}
+                    key={column.key}
                     className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth}`}
                     onClick={() => handleSort(column.key as keyof Registration)}
                   >
@@ -144,7 +177,7 @@ export default function RegistrationPage() {
             <tbody>
               {filteredRegistrations.map((reg, index) => (
                 <tr
-                  key={index}
+                  key={reg.id || `registration-${index}`}
                   onClick={handleRowClick}
                   className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
