@@ -55,6 +55,7 @@ export default function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [activeTab, setActiveTab] = useState<'Kyorugi' | 'Poomsae' | 'Poomsae Team'>('Kyorugi');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Filter states
   const [filters, setFilters] = useState<FilterState>({
@@ -444,6 +445,7 @@ export default function PlayersPage() {
   useEffect(() => {
     const fetchPlayers = async () => {
       console.log('Team ID:', teamId);
+      setIsLoading(true);
       const { data, error } = await supabase
         .rpc('get_registered_players_by_team', {
           team_uuid: teamId,
@@ -464,6 +466,7 @@ export default function PlayersPage() {
         }));
         setPlayers(formatted);
       }
+      setIsLoading(false);
     };
 
     if (teamId) {
@@ -536,7 +539,7 @@ export default function PlayersPage() {
 
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold text-gray-800">
-            {players[0]?.team_name ?? 'Team Name'}
+            {players[0]?.team_name ?? 'Loading Team Name...'}
           </h1>
           <div className="flex gap-2">
             <button
@@ -634,7 +637,13 @@ export default function PlayersPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredPlayers.length === 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                  Loading players...
+                </td>
+              </tr>
+            ) : filteredPlayers.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="p-8 text-center text-gray-500">
                   No players found in {activeTab} category.

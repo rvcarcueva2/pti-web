@@ -47,27 +47,42 @@ export default function CompetitionPage() {
 
   const router = useRouter();
 
-  // Add sample data on component mount
+  // Load competitions from database
   const loadCompetitionData = async () => {
     setLoading(true);
 
+    // Fetch competition details
+    const { data: competitionsData, error: competitionsError } = await supabase
+      .from('competitions')
+      .select('uuid, title, date, description, location, deadline, photo_url')
+      .order('date', { ascending: true });
+
+    // Fetch competition statistics
     const { data: statsData, error: statsError } = await supabase
       .rpc('get_competition_stats');
 
-    if (statsError) {
-      console.error('Error fetching competition stats:', statsError);
+    if (competitionsError || statsError) {
+      console.error('Error fetching data:', { competitionsError, statsError });
       setCompetitions([]); // optional: show empty state
     } else {
-
-      const formattedData = statsData.map((stat: any) => ({
-        uuid: stat.competition_id,
-        title: stat.competition_name,
-        players: stat.players_count,
-        teams: stat.teams_count,
-        kyorugi: stat.kyorugi_count,
-        poomsae: stat.poomsae_count,
-        poomsae_team: stat.poomsae_team_count,
-      }));
+      // Merge competition details with statistics
+      const formattedData = competitionsData.map((comp: any) => {
+        const stats = statsData.find((stat: any) => stat.competition_id === comp.uuid);
+        return {
+          uuid: comp.uuid,
+          title: comp.title,
+          date: comp.date,
+          description: comp.description,
+          location: comp.location,
+          deadline: comp.deadline,
+          photo_url: comp.photo_url,
+          players: stats?.players_count || 0,
+          teams: stats?.teams_count || 0,
+          kyorugi: stats?.kyorugi_count || 0,
+          poomsae: stats?.poomsae_count || 0,
+          poomsae_team: stats?.poomsae_team_count || 0,
+        };
+      });
 
       setCompetitions(formattedData);
     }
@@ -129,12 +144,14 @@ export default function CompetitionPage() {
   }, [posterFile, editIndex, existingPosterUrl]);
 
   const columns = [
-    { label: 'Competition', key: 'title', minWidth: 'min-w-[300px]' },
-    { label: 'Players', key: 'players', minWidth: 'min-w-[100px]' },
-    { label: 'Teams', key: 'teams', minWidth: 'min-w-[100px]' },
-    { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[100px]' },
-    { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-[100px]' },
-    { label: 'Poomsae Team', key: 'poomsae_team', minWidth: 'min-w-[120px]' },
+    { label: 'Competition', key: 'title', minWidth: 'min-w-[200px]' },
+    { label: 'Date', key: 'date', minWidth: 'min-w-[120px]' },
+    { label: 'Location', key: 'location', minWidth: 'min-w-[150px]' },
+    { label: 'Players', key: 'players', minWidth: 'min-w-[80px]' },
+    { label: 'Teams', key: 'teams', minWidth: 'min-w-[80px]' },
+    { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[80px]' },
+    { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-[80px]' },
+    { label: 'Poomsae Team', key: 'poomsae_team', minWidth: 'min-w-[100px]' },
   ];
 
   const handleSort = (column: keyof Competition) => {
@@ -146,7 +163,7 @@ export default function CompetitionPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -162,34 +179,62 @@ export default function CompetitionPage() {
       return;
     }
 
-    const newData: Competition = {
-      uuid: editIndex !== null ? competitions[editIndex].uuid : crypto.randomUUID(),
-      title,
-      date,
-      description,
-      location,
-      deadline,
-      photo_url: posterPreview || '',
-      players: Math.floor(Math.random() * 50),
-      teams: Math.floor(Math.random() * 10),
-      kyorugi: Math.floor(Math.random() * 30),
-      poomsae: Math.floor(Math.random() * 20),
-      poomsae_team: Math.floor(Math.random() * 15),
-    };
+    // Upload poster if provided
+    let photo_url = existingPosterUrl; // Keep existing URL if no new file
+    if (posterFile) {
+      const filePath = `${Date.now()}_${posterFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('poster')
+        .upload(filePath, posterFile);
 
-    if (editIndex !== null) {
-      const updated = [...competitions];
-      updated[editIndex] = newData;
-      setCompetitions(updated);
-      setSuccessMessage('Competition updated successfully!');
-      setSuccessType('update');
-    } else {
-      setCompetitions([...competitions, newData]);
-      setSuccessMessage('Competition added successfully!');
-      setSuccessType('add');
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+      } else {
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('poster')
+          .getPublicUrl(uploadData.path);
+        photo_url = publicUrlData.publicUrl;
+      }
     }
 
-    closeModal();
+    // Payload for insert/update
+    const newCompetitionData: any = { title, date, description, location, deadline };
+    if (photo_url) newCompetitionData.photo_url = photo_url;
+
+    if (editIndex !== null) {
+      // Update existing competition
+      const compToEdit = competitions[editIndex];
+      const { data, error } = await supabase
+        .from('competitions')
+        .update(newCompetitionData)
+        .eq('uuid', compToEdit.uuid);
+
+      if (!error) {
+        await loadCompetitionData();
+        setSuccessMessage('Competition updated successfully!');
+        setSuccessType('update');
+        closeModal();
+      } else {
+        console.error('Update error:', error);
+      }
+    } else {
+      // Insert new competition
+      const { data, error } = await supabase
+        .from('competitions')
+        .insert([{ ...newCompetitionData }]);
+
+      if (!error) {
+        await loadCompetitionData();
+        setSuccessMessage('Competition added successfully!');
+        setSuccessType('add');
+        closeModal();
+      } else {
+        console.error('Insert error:', error);
+      }
+    }
+
     setIsSubmitting(false);
   };
 
@@ -225,6 +270,7 @@ export default function CompetitionPage() {
     setLocation(comp.location);
     setDeadline(comp.deadline);
     setExistingPosterUrl(comp.photo_url || null);
+    setPosterFile(null); // Reset new uploads
     openModal();
   };
 
@@ -233,15 +279,24 @@ export default function CompetitionPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteIndex === null) return;
-    const updated = [...competitions];
-    updated.splice(deleteIndex, 1);
-    setCompetitions(updated);
-    setDeleteIndex(null);
-    setIsDeleteModalOpen(false);
-    setSuccessMessage('Competition deleted successfully!');
-    setSuccessType('delete');
+
+    const compToDelete = competitions[deleteIndex];
+    const { error } = await supabase
+      .from('competitions')
+      .delete()
+      .eq('uuid', compToDelete.uuid);
+
+    if (!error) {
+      await loadCompetitionData();
+      setSuccessMessage('Competition deleted successfully!');
+      setSuccessType('delete');
+      setDeleteIndex(null);
+      setIsDeleteModalOpen(false);
+    } else {
+      console.error('Delete error:', error);
+    }
   };
 
   const handleRowClick = (uuid: string) => {
@@ -253,16 +308,18 @@ export default function CompetitionPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Competitions</h1>
-        <button onClick={openModal} className="cursor-pointer bg-[#EAB044] text-white px-4 py-2 rounded-md text-sm hover:bg-[#d49a35]">
-          <span>Add Competition</span>
-        </button>
+        <div className="flex gap-2">
+          <button onClick={openModal} className="cursor-pointer bg-[#EAB044] text-white px-4 py-2 rounded-md text-sm hover:bg-[#d49a35]">
+            <span>Add Competition</span>
+          </button>
+        </div>
       </div>
 
       {/* Success Message */}
       {successMessage && (
         <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 border rounded shadow-lg text-m font-regular transition-all duration-300 ${successType === 'add' ? 'bg-green-100 border-green-400 text-green-700' :
-            successType === 'update' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
-              'bg-red-100 border-red-400 text-red-700'
+          successType === 'update' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
+            'bg-red-100 border-red-400 text-red-700'
           }`}>
           {successMessage}
         </div>
@@ -310,35 +367,73 @@ export default function CompetitionPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredCompetitions.map((comp, index) => (
-              <tr
-                key={index}
-                onClick={() => handleRowClick(comp.uuid)}
-                className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}
-              >
-                <td className="p-3">{comp.title}</td>
-                <td className="p-3">{comp.players}</td>
-                <td className="p-3">{comp.teams}</td>
-                <td className="p-3">{comp.kyorugi}</td>
-                <td className="p-3">{comp.poomsae}</td>
-                <td className="p-3">{comp.poomsae_team}</td>
-                <td className="p-3" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex items-center gap-4">
-                    <button onClick={() => handleEdit(index)} className="cursor-pointer text-[#EAB044] hover:underline flex items-center gap-1">
-                      <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(index)} className="cursor-pointer text-red-500 hover:underline flex items-center gap-1">
-                      <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
-                      Delete
-                    </button>
-                  </div>
+            {loading ? (
+              <tr>
+                <td className="p-3 text-center text-gray-500" colSpan={8}>
+                  Loading competitions...
                 </td>
               </tr>
-            ))}
+            ) : competitions.length === 0 ? (
+              <tr>
+                <td className="p-3 text-center text-gray-500" colSpan={8}>
+                  No competitions found.
+                </td>
+              </tr>
+            ) : (
+              filteredCompetitions.map((comp, index) => (
+                <tr
+                  key={index}
+                  onClick={() => handleRowClick(comp.uuid)}
+                  className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    }`}
+                >
+                  <td className="p-3">{comp.title}</td>
+                  <td className="p-3">{new Date(comp.date).toLocaleDateString()}</td>
+                  <td className="p-3">{comp.location}</td>
+                  <td className="p-3">{comp.players}</td>
+                  <td className="p-3">{comp.teams}</td>
+                  <td className="p-3">{comp.kyorugi}</td>
+                  <td className="p-3">{comp.poomsae}</td>
+                  <td className="p-3">{comp.poomsae_team}</td>
+                  <td className="p-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-4">
+                      <button onClick={() => handleEdit(index)} className="cursor-pointer text-[#EAB044] hover:underline flex items-center gap-1">
+                        <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(index)} className="cursor-pointer text-red-500 hover:underline flex items-center gap-1">
+                        <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
+        <p>Showing 1 to {filteredCompetitions.length} of {competitions.length} results</p>
+        <div className="flex justify-center items-center gap-2">
+          <select className="border border-[rgba(0,0,0,0.2)] rounded-md px-3 py-1 text-sm text-center pr-6 cursor-pointer">
+            <option value="10">10</option>
+          </select>
+          <span>per page</span>
+        </div>
+        <div className="flex justify-end items-center gap-3">
+          <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
+            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer">
+              <Image src="/icons/previous.svg" alt="Previous" width={20} height={20} />
+            </button>
+            <div className="px-4 bg-[#00000010] text-[#EAB044] font-semibold text-sm h-full flex items-center">1</div>
+            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer">
+              <Image src="/icons/next.svg" alt="Next" width={20} height={20} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Modal */}
