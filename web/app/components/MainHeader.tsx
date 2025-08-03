@@ -352,7 +352,7 @@ export default function Header() {
                                         <button
                                             onClick={() => {
                                                 setIsMobileMenuOpen(false);
-                                                router.push('/admin-dashboard/dashboard');
+                                                router.push('/admin-panel/dashboard');
                                             }}
                                             className="flex items-center w-full px-6 py-3 bg-[#FED018] text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-[#FED018]/90"
                                         >
@@ -364,12 +364,22 @@ export default function Header() {
                                     <button
                                         onClick={() => {
                                             setIsMobileMenuOpen(false);
-                                            router.push('/user-dashboard/my-team');
+                                            router.push('/my-team');
                                         }}
                                         className="flex items-center w-full px-6 py-3 bg-[#FED018] text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-[#FED018]/90"
                                     >
                                         <FontAwesomeIcon icon={faBookmark} className="w-4 h-4 mr-2" />
                                         My Team
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            router.push('/registration');
+                                        }}
+                                        className="flex items-center w-full px-6 py-3 bg-[#FED018] text-black rounded-lg text-sm uppercase transition-all duration-300 text-left cursor-pointer hover:bg-[#FED018]/90"
+                                    >
+                                        <FontAwesomeIcon icon={faPenNib} className="w-4 h-4 mr-2" />
+                                        Registration
                                     </button>
                                     <button
                                         onClick={() => {
