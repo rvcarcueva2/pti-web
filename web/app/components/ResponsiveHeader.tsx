@@ -29,8 +29,6 @@ export default function ResponsiveHeader() {
   const isAuthPage = authPaths.includes(pathname);
 
   const isDashboardPage =
-    pathname.startsWith('/user-dashboard') ||
-    pathname.startsWith('/admin-dashboard') ||
     pathname.startsWith('/admin-panel');
 
   if (isAuthPage) {
@@ -46,6 +44,14 @@ export default function ResponsiveHeader() {
   }
 
   if (pathname.startsWith('/registration')) {
+    return (
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+        <MainHeader />
+      </div>
+    );
+  }
+
+  if (pathname.startsWith('/players')) {
     return (
       <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
         <MainHeader />
