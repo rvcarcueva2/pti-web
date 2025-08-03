@@ -164,31 +164,52 @@ export default function CompetitionPost({ params }: Props) {
 
         {/* Categories or Extra Info with stats */}
         <div className="bg-white rounded-lg p-2 md:p-4 mt-4 md:mt-6 max-w-6xl mx-4 md:mx-auto shadow-sm">
-          <div className="grid grid-cols-5 gap-2 md:gap-4 text-center">
-            {([
-              ['Players', '/icons/Players.svg', 'text-black', competitionStats?.players_count || 0],
-              ['Teams', '/icons/Teams.svg', 'text-[#EAB044]', competitionStats?.teams_count || 0],
-              ['Kyorugi', '/icons/Kyorugi.svg', 'text-[#D41716]', competitionStats?.kyorugi_count || 0],
-              ['Poomsae', '/icons/Poomsae.svg', 'text-[#040163]', competitionStats?.poomsae_count || 0],
-              ['Poomsae Team', '/icons/Poomsae-team.svg', 'text-[#040163]', competitionStats?.poomsae_team_count || 0],
-            ] as [string, string, string, number][]).map(([label, icon, color, count]) => (
-              <div key={label} className="flex flex-col items-center gap-1 md:gap-2">
-                <h4 className={`text-responsive font-semibold ${color} text-xs md:text-lg`}>{label}</h4>
-                <Image
-                  src={icon}
-                  alt={label}
-                  width={72}
-                  height={72}
-                  className={`mx-auto w-7 h-7 md:w-18 md:h-18 ${label === 'Poomsae Team' ? 'scale-125 md:scale-150' : ''
-                    }`}
-                />
-
-
-                <div className="text-sm md:text-base font-medium text-gray-700">
-                  {competitionStats ? count : '...'}
+          {/* Mobile layout: 3 items on top, 2 below. Desktop stays in a row of 5 */}
+          <div className="md:grid md:grid-cols-5 gap-1 md:gap-4 text-center flex flex-col">
+            {/* First Row (Players, Teams, Kyorugi) */}
+            <div className="flex md:contents justify-center gap-2 md:gap-0 mb-2 md:mb-0">
+              {([
+                ['Players', '/icons/Players.svg', 'text-black', competitionStats?.players_count || 0],
+                ['Teams', '/icons/Teams.svg', 'text-[#EAB044]', competitionStats?.teams_count || 0],
+                ['Kyorugi', '/icons/Kyorugi.svg', 'text-[#D41716]', competitionStats?.kyorugi_count || 0],
+              ] as [string, string, string, number][]).map(([label, icon, color, count]) => (
+                <div key={label} className="flex flex-col items-center gap-1 md:gap-2 flex-1">
+                  <h4 className={`text-responsive font-semibold ${color} text-xs md:text-lg mt-1 md:mt-0`}>{label}</h4>
+                  <Image
+                    src={icon}
+                    alt={label}
+                    width={72}
+                    height={72}
+                    className={`mx-auto w-7 h-7 md:w-18 md:h-18`}
+                  />
+                  <div className="text-sm md:text-base font-medium text-gray-700">
+                    {competitionStats ? count : '...'}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Second Row (Poomsae, Poomsae Team) */}
+            <div className="flex md:contents justify-center gap-2 md:gap-0">
+              {([
+                ['Poomsae', '/icons/Poomsae.svg', 'text-[#040163]', competitionStats?.poomsae_count || 0],
+                ['Poomsae Team', '/icons/Poomsae-team.svg', 'text-[#040163]', competitionStats?.poomsae_team_count || 0],
+              ] as [string, string, string, number][]).map(([label, icon, color, count]) => (
+                <div key={label} className="flex flex-col items-center gap-1 md:gap-2 flex-1">
+                  <h4 className={`text-responsive font-semibold ${color} text-xs md:text-lg mt-1 md:mt-0`}>{label}</h4>
+                  <Image
+                    src={icon}
+                    alt={label}
+                    width={72}
+                    height={72}
+                    className={`mx-auto w-7 h-7 md:w-18 md:h-18 ${label === 'Poomsae Team' ? 'scale-125 md:scale-150' : ''}`}
+                  />
+                  <div className="text-sm md:text-base font-medium text-gray-700">
+                    {competitionStats ? count : '...'}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
