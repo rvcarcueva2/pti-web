@@ -710,11 +710,11 @@ export default function PlayersPage() {
     const isKyorugiSelected = newPlayer.categories.includes('Kyorugi');
 
     return (
-        <div className="font-geist p-6 ml-10 mr-10 mt-5 min-h-screen">
+        <div className="font-geist px-6 py-3 lg:p-6 lg:ml-10 lg:mr-10 min-h-screen">
             {/* Header */}
-            <div className="flex justify-between items-start mb-4">
+            <div className="md:mt-30 mt-25 flex justify-between items-start">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
+                    <h1 className="text-xl lg:text-2xl font-semibold text-gray-800">
                         {competitionTitle || 'Loading...'}
                     </h1>
                 </div>
@@ -722,7 +722,7 @@ export default function PlayersPage() {
 
             {/* Success Message */}
             {successMessage && (
-                <div className={`fixed top-30 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 border rounded shadow-lg text-m font-regular transition-all duration-300 ${successType === 'add' ? 'bg-green-100 border-green-400 text-green-700' :
+                <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 lg:px-6 lg:py-3 border rounded shadow-lg text-sm lg:text-base font-regular transition-all duration-300 whitespace-nowrap ${successType === 'add' ? 'bg-green-100 border-green-400 text-green-700' :
                     successType === 'update' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
                         'bg-red-100 border-red-400 text-red-700'
                     }`}>
@@ -731,13 +731,13 @@ export default function PlayersPage() {
             )}
 
             {isCheckingRegistration ? (
-                <div className="text-center py-16 h-60">
+                <div className="text-center py-8 lg:py-16 h-40 lg:h-60">
                     <p className="text-gray-600">Checking registration status...</p>
 
                 </div>
             ) : isTeamRegistered ? (
-                <div className="text-center py-16 h-60">
-                    <p className="text-xl font-semibold text-gray-800 mb-6">
+                <div className="text-center py-8 lg:py-16 h-40 lg:h-60">
+                    <p className="text-lg lg:text-xl font-semibold text-gray-800 mb-4 lg:mb-6">
                         Your team has already been registered in this competition.
                     </p>
 
@@ -745,7 +745,7 @@ export default function PlayersPage() {
 
                     <button
                         onClick={() => router.push('/registration')}
-                        className="px-6 py-3 bg-[#EAB044] text-white rounded-md font-bold hover:bg-[#d49a35] transition-colors mr-4 cursor-pointer"
+                        className="px-4 py-2 lg:px-6 lg:py-3 bg-[#EAB044] text-white rounded-md font-bold hover:bg-[#d49a35] transition-colors cursor-pointer"
                     >
                         REGISTRATION
                     </button>
@@ -753,13 +753,13 @@ export default function PlayersPage() {
                 </div>
             ) : (
                 <>
-                    <div className="mb-2 flex justify-between items-center">
+                    <div className="mb-4 lg:mb-2 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
                         <div>
-                            <p className="text-gray-400">
+                            <p className=" text-gray-400 text-sm lg:text-base mb-3 md:mb-1">
                                 Note: Add players to their respective categories.
                             </p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex justify-end lg:justify-start gap-2 -mb-1 md:mb-2">
                             <button
                                 onClick={() => {
                                     setNewPlayer(emptyPlayer());
@@ -770,7 +770,7 @@ export default function PlayersPage() {
                                     setFieldErrors({}); // Clear field errors
                                     setIsModalOpen(true);
                                 }}
-                                className="cursor-pointer font-bold bg-[#EAB044] text-white px-4 py-2 rounded-md text-sm hover:bg-[#d49a35]"
+                                className="cursor-pointer font-bold bg-[#EAB044] text-white px-3 py-2 lg:px-4 lg:py-2 rounded-md text-xs lg:text-sm hover:bg-[#d49a35]"
                             >
                                 ADD PLAYER
                             </button>
@@ -778,14 +778,14 @@ export default function PlayersPage() {
                     </div>
 
                     {/* Search + Table */}
-                    <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+                    <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-hidden">
                         {/* Search Bar */}
-                        <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
-                            <div className="relative w-full max-w-xs">
+                        <div className="flex justify-end p-3 lg:p-4 border-b border-[rgba(0,0,0,0.2)]">
+                            <div className="relative w-full lg:max-w-xs">
                                 <input
                                     type="text"
                                     placeholder="Search"
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044] text-sm"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
@@ -797,18 +797,18 @@ export default function PlayersPage() {
 
                         {/* Tabs */}
                         <div className="border-b border-[rgba(0,0,0,0.2)]">
-                            <div className="flex">
+                            <div className="flex overflow-x-auto">
                                 {tabs.map((tab) => (
                                     <button
                                         key={tab.key}
                                         onClick={() => setActiveTab(tab.key as 'Kyorugi' | 'Poomsae' | 'Poomsae Team')}
-                                        className={`cursor-pointer relative flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.key
+                                        className={`cursor-pointer relative flex items-center gap-2 px-4 lg:px-6 py-3 text-xs lg:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.key
                                             ? 'border-[#EAB044] text-[#EAB044] bg-orange-50'
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                             }`}
                                     >
                                         <span>{tab.label}</span>
-                                        <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#EAB044] rounded-full">
+                                        <span className="inline-flex items-center justify-center w-4 h-4 lg:w-5 lg:h-5 text-xs font-semibold text-white bg-[#EAB044] rounded-full">
                                             {getPlayerCount(tab.key)}
                                         </span>
                                     </button>
@@ -817,70 +817,128 @@ export default function PlayersPage() {
                         </div>
 
                         <div className={`w-full ${filteredPlayers.length > 8 ? 'max-h-[310px] overflow-y-auto' : ''}`}>
-                            <table className="w-full table-fixed text-sm">
-                                <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
-                                    <tr>
-                                        {columns.map((col) => (
-                                            <th
-                                                key={col.key}
-                                                className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer`}
-                                                onClick={() => handleSort(col.key)}
-                                            >
-                                                <div className="flex items-center gap-1">
-                                                    {col.label}
-                                                    <Image
-                                                        src="/icons/down-arrow.svg"
-                                                        alt="Sort"
-                                                        width={12}
-                                                        height={12}
-                                                        className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
-                                                            }`}
-                                                    />
-                                                </div>
-                                            </th>
-                                        ))}
-                                        <th className="p-3 w-[120px] text-left text-gray-700 font-medium"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredPlayers.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={columns.length + 1} className="p-8 text-center text-gray-500">
-                                                No players found in {activeTab} category.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        filteredPlayers.map((player, index) => (
-                                            <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                                                }`}>
-                                                {columns.map((col) => (
-                                                    <td key={col.key} className="p-3">
-                                                        {player[col.key as keyof typeof player]}
-                                                    </td>
+                            {/* Mobile Table View */}
+                            <div className="lg:hidden">
+                                {filteredPlayers.length === 0 ? (
+                                    <div className="p-8 text-center text-gray-500">
+                                        No players found in {activeTab} category.
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <table className="w-full text-xs">
+                                            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
+                                                <tr>
+                                                    <th className="p-2 text-left text-gray-700 font-medium w-[45%]">Name</th>
+                                                    <th className="p-2 text-left text-gray-700 font-medium w-[35%]">Group</th>
+                                                    <th className="p-2 w-[20%]"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredPlayers.map((player, index) => (
+                                                    <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                        <td className="p-2 w-[45%]">
+                                                            <div className="text-xs font-medium text-gray-900 leading-tight break-words">
+                                                                {player.firstName} {player.lastName}
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-2 text-xs w-[35%]">
+                                                            <div className="break-words text-xs leading-tight">
+                                                                {player.group}
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-2 w-[20%]">
+                                                            <div className="flex gap-1 justify-center">
+                                                                <button
+                                                                    onClick={() => handleEditPlayer(players.indexOf(player))}
+                                                                    className="cursor-pointer p-1"
+                                                                    title="Edit"
+                                                                >
+                                                                    <Image src="/icons/edit.svg" alt="Edit" width={16} height={16} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeletePlayer(players.indexOf(player))}
+                                                                    className="cursor-pointer p-1"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Image src="/icons/delete.svg" alt="Delete" width={16} height={16} />
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 ))}
-                                                <td className="p-3 text-left">
-                                                    <div className="flex items-center gap-3 -ml-8">
-                                                        <button
-                                                            onClick={() => handleEditPlayer(players.indexOf(player))}
-                                                            className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
-                                                        >
-                                                            <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeletePlayer(players.indexOf(player))}
-                                                            className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-red-500"
-                                                        >
-                                                            <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
-                                                            Delete
-                                                        </button>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Desktop Table View */}
+                            <div className="hidden lg:block">
+                                <table className="w-full table-fixed text-sm">
+                                    <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
+                                        <tr>
+                                            {columns.map((col) => (
+                                                <th
+                                                    key={col.key}
+                                                    className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer`}
+                                                    onClick={() => handleSort(col.key)}
+                                                >
+                                                    <div className="flex items-center gap-1">
+                                                        {col.label}
+                                                        <Image
+                                                            src="/icons/down-arrow.svg"
+                                                            alt="Sort"
+                                                            width={12}
+                                                            height={12}
+                                                            className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
+                                                                }`}
+                                                        />
                                                     </div>
+                                                </th>
+                                            ))}
+                                            <th className="p-3 w-[120px] text-left text-gray-700 font-medium"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredPlayers.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={columns.length + 1} className="p-8 text-center text-gray-500">
+                                                    No players found in {activeTab} category.
                                                 </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ) : (
+                                            filteredPlayers.map((player, index) => (
+                                                <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                                                    }`}>
+                                                    {columns.map((col) => (
+                                                        <td key={col.key} className="p-3">
+                                                            {player[col.key as keyof typeof player]}
+                                                        </td>
+                                                    ))}
+                                                    <td className="p-3 text-left">
+                                                        <div className="flex items-center gap-3 -ml-8">
+                                                            <button
+                                                                onClick={() => handleEditPlayer(players.indexOf(player))}
+                                                                className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
+                                                            >
+                                                                <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeletePlayer(players.indexOf(player))}
+                                                                className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-red-500"
+                                                            >
+                                                                <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
 
@@ -906,17 +964,17 @@ export default function PlayersPage() {
                     <div className="mt-4 flex justify-end">
                         <button
                             onClick={handleSubmitPlayers}
-                            className="px-4 py-2 bg-[#EAB044] font-bold text-white rounded-md text-sm hover:bg-[#d49a35] cursor-pointer"
+                            className="px-3 py-2 lg:px-4 lg:py-2 bg-[#EAB044] font-bold text-white rounded-md text-xs lg:text-sm hover:bg-[#d49a35] cursor-pointer"
                         >
                             SUBMIT
                         </button>
                     </div>
                     {/* Modal */}
                     {isModalOpen && (
-                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-md w-full mx-20 border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
+                            <div className="bg-white p-4 lg:p-6 rounded-md w-full max-w-[1400px] max-h-[90vh] overflow-y-auto border border-[rgba(0,0,0,0.2)] shadow-lg relative">
                                 <button
-                                    className="absolute top-2 right-3 text-xl font-bold text-gray-600 cursor-pointer"
+                                    className="absolute top-2 right-3 text-xl font-bold text-gray-600 cursor-pointer z-10"
                                     onClick={() => {
                                         setIsModalOpen(false);
                                         setEditIndex(null);
@@ -934,7 +992,7 @@ export default function PlayersPage() {
                                         handleAddPlayer();
                                     }}
                                 >
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                                         {inputField({ label: 'Last Name', value: newPlayer.lastName, onChange: (v: string) => setNewPlayer({ ...newPlayer, lastName: v }), required: true })}
                                         {inputField({ label: 'First Name', value: newPlayer.firstName, onChange: (v: string) => setNewPlayer({ ...newPlayer, firstName: v }), required: true })}
                                         {inputField({ label: 'Middle Name', value: newPlayer.middleName, onChange: (v: string) => setNewPlayer({ ...newPlayer, middleName: v }) })}
@@ -992,9 +1050,9 @@ export default function PlayersPage() {
                                             disabled: true,
                                         })}
                                     </div>
-                                    <div className="mt-4 flex justify-end">
-                                        <button type="submit" className="font-bold bg-[#EAB044] cursor-pointer text-white px-6 py-2 rounded-md text-sm hover:bg-[#d49a35]">
-                                            {editIndex !== null ? 'SAVE' : '+ ADD '}
+                                    <div className="mt-4 lg:mt-6 flex justify-end">
+                                        <button type="submit" className="font-bold bg-[#EAB044] cursor-pointer text-white px-4 py-2 lg:px-6 lg:py-2 rounded-md text-sm hover:bg-[#d49a35] w-full md:w-auto">
+                                            {editIndex !== null ? 'SAVE CHANGES' : 'ADD PLAYER'}
                                         </button>
                                     </div>
                                 </form>
@@ -1004,12 +1062,12 @@ export default function PlayersPage() {
 
                     {/* Delete Modal */}
                     {isDeleteModalOpen && deleteIndex !== null && (
-                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-md w-full max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
-                                <p className="mb-6 text-gray-700">Are you sure you want to <span className="font-bold text-red-600">DELETE</span> this player? This action cannot be undone.</p>
-                                <div className="flex justify-end gap-3">
+                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
+                            <div className="bg-white p-3 lg:p-6 rounded-md w-full max-w-xs lg:max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+                                <p className="mb-3 lg:mb-6 text-gray-700 text-xs lg:text-base">Are you sure you want to <span className="font-bold text-red-600">DELETE</span> this player? This action cannot be undone.</p>
+                                <div className="flex flex-col md:flex-row justify-end gap-2 lg:gap-3">
                                     <button
-                                        className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
+                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer text-xs lg:text-base order-2 md:order-1"
                                         onClick={() => {
                                             setIsDeleteModalOpen(false);
                                             setDeleteIndex(null);
@@ -1019,7 +1077,7 @@ export default function PlayersPage() {
                                     </button>
                                     <button
                                         onClick={confirmDelete}
-                                        className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-red-600 text-white hover:bg-red-700 cursor-pointer text-xs lg:text-base order-1 md:order-2"
                                     >
                                         Confirm
                                     </button>
@@ -1030,14 +1088,14 @@ export default function PlayersPage() {
 
                     {/* Submit Confirmation Modal */}
                     {showSubmitConfirmModal && (
-                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-md w-full max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
-                                <h3 className="text-xl font-semibold mb-4 text-gray-800">Confirm Registration</h3>
-                                <p className="mb-6 text-gray-700">
+                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
+                            <div className="bg-white p-3 lg:p-6 rounded-md w-full max-w-xs lg:max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+                                <h3 className="text-base lg:text-xl font-semibold mb-2 lg:mb-4 text-gray-800">Confirm Registration</h3>
+                                <p className="mb-3 lg:mb-6 text-gray-700 text-xs lg:text-base">
                                     These players will be registered to the competition, you cannot edit or delete them after submission.
                                 </p>
 
-                                <div className="mb-6">
+                                <div className="mb-3 lg:mb-6">
                                     <label className="flex items-start space-x-3 cursor-pointer">
                                         <input
                                             type="checkbox"
@@ -1052,20 +1110,20 @@ export default function PlayersPage() {
                                             className={`mt-1 rounded border-gray-300 text-[#EAB044] focus:ring-[#EAB044] ${showCheckboxError ? 'ring-2 ring-red-500' : ''
                                                 }`}
                                         />
-                                        <span className="text-sm text-gray-700 leading-relaxed">
+                                        <span className="text-xs lg:text-sm text-gray-700 leading-relaxed">
                                             I agree that the information I provided is correct and true.
                                         </span>
                                     </label>
                                     {showCheckboxError && (
-                                        <span className="text-red-500 text-sm mt-2 ml-6">
+                                        <span className="text-red-500 text-xs mt-2 ml-6">
                                             Please agree to the terms before submitting.
                                         </span>
                                     )}
                                 </div>
 
-                                <div className="flex justify-end gap-3">
+                                <div className="flex flex-col md:flex-row justify-end gap-2 lg:gap-3">
                                     <button
-                                        className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
+                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer text-xs lg:text-base order-2 md:order-1"
                                         onClick={() => {
                                             setShowSubmitConfirmModal(false);
                                             setAgreeToTerms(false);
@@ -1076,7 +1134,7 @@ export default function PlayersPage() {
                                     </button>
                                     <button
                                         onClick={confirmSubmitPlayers}
-                                        className="px-6 py-2 rounded bg-[#EAB044] hover:bg-[#d49a35] text-white cursor-pointer"
+                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-[#EAB044] hover:bg-[#d49a35] text-white cursor-pointer text-xs lg:text-base order-1 md:order-2"
                                     >
                                         Confirm
                                     </button>
@@ -1087,16 +1145,16 @@ export default function PlayersPage() {
 
                     {/* Reload Warning Modal */}
                     {showReloadWarningModal && (
-                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-                            <div className="bg-white p-6 rounded-md w-full max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
-                                <h3 className="text-xl font-semibold mb-4 text-gray-800">Warning</h3>
-                                <p className="mb-6 text-gray-700">
+                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
+                            <div className="bg-white p-4 lg:p-6 rounded-md w-full max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+                                <h3 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4 text-gray-800">Warning</h3>
+                                <p className="mb-4 lg:mb-6 text-gray-700 text-sm lg:text-base">
                                     Your team will not be saved if you reload the page. All unsaved changes will be lost.
                                 </p>
 
-                                <div className="flex justify-end gap-3">
+                                <div className="flex flex-col md:flex-row justify-end gap-3">
                                     <button
-                                        className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
+                                        className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer text-sm lg:text-base order-2 md:order-1"
                                         onClick={() => {
                                             setShowReloadWarningModal(false);
                                         }}
@@ -1108,7 +1166,7 @@ export default function PlayersPage() {
                                             setShowReloadWarningModal(false);
                                             window.location.reload();
                                         }}
-                                        className="px-6 py-2 rounded bg-[#EAB044] hover:bg-[#d49a35] text-white cursor-pointer"
+                                        className="px-4 lg:px-6 py-2 rounded bg-[#EAB044] hover:bg-[#d49a35] text-white cursor-pointer text-sm lg:text-base order-1 md:order-2"
                                     >
                                         Continue
                                     </button>
