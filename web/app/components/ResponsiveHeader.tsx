@@ -8,16 +8,10 @@ import MainHeader from './MainHeader';
 
 export default function ResponsiveHeader() {
   const pathname = usePathname();
-  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 1080);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    setIsClient(true);
   }, []);
 
   const authPaths = [
@@ -29,8 +23,6 @@ export default function ResponsiveHeader() {
   const isAuthPage = authPaths.includes(pathname);
 
   const isDashboardPage =
-    pathname.startsWith('/user-dashboard') ||
-    pathname.startsWith('/admin-dashboard') ||
     pathname.startsWith('/admin-panel');
 
   if (isAuthPage) {
@@ -41,13 +33,34 @@ export default function ResponsiveHeader() {
     return null;
   }
 
-  if (pathname === '/' && !isMobile) {
-    return <HomeHeader />;
+  // Use CSS classes instead of JavaScript for responsive behavior
+  if (pathname === '/') {
+    return (
+      <div>
+        <div className="hidden xl:block">
+          <HomeHeader />
+        </div>
+        <div className="block xl:hidden">
+          <ContactHeader />
+          <MainHeader />
+        </div>
+      </div>
+    );
   }
 
   if (pathname.startsWith('/registration')) {
     return (
       <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+        <ContactHeader />
+        <MainHeader />
+      </div>
+    );
+  }
+
+  if (pathname.startsWith('/players')) {
+    return (
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+        <ContactHeader />
         <MainHeader />
       </div>
     );

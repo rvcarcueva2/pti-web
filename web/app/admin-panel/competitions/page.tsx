@@ -412,28 +412,6 @@ export default function CompetitionPage() {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="grid grid-cols-3 items-center mt-4 text-sm text-gray-600">
-        <p>Showing 1 to {filteredCompetitions.length} of {competitions.length} results</p>
-        <div className="flex justify-center items-center gap-2">
-          <select className="border border-[rgba(0,0,0,0.2)] rounded-md px-3 py-1 text-sm text-center pr-6 cursor-pointer">
-            <option value="10">10</option>
-          </select>
-          <span>per page</span>
-        </div>
-        <div className="flex justify-end items-center gap-3">
-          <div className="flex items-center border border-[rgba(0,0,0,0.2)] rounded overflow-hidden h-[36px]">
-            <button className="px-3 h-full border-r border-[rgba(0,0,0,0.2)] cursor-pointer">
-              <Image src="/icons/previous.svg" alt="Previous" width={20} height={20} />
-            </button>
-            <div className="px-4 bg-[#00000010] text-[#EAB044] font-semibold text-sm h-full flex items-center">1</div>
-            <button className="px-3 h-full border-l border-[rgba(0,0,0,0.2)] cursor-pointer">
-              <Image src="/icons/next.svg" alt="Next" width={20} height={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">

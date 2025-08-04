@@ -295,7 +295,14 @@ export default function PlayersPage() {
   }
 
   return (
-    <div className="font-geist p-6 ml-10 mr-10 mt-30">
+    <div className="font-geist px-6 py-3 lg:p-6 lg:ml-10 lg:mr-10 min-h-screen">
+      {/* Header */}
+      <div className="md:mt-40 mt-25 flex justify-between items-start">
+        <div>
+          <h1 className="text-xl lg:text-2xl font-semibold text-gray-800">Registered Players</h1>
+        </div>
+      </div>
+
       {/* Error State */}
       {error && !isLoading && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -303,28 +310,23 @@ export default function PlayersPage() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="mb-4 lg:mb-2 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Registered Players</h1>
+          <p className="text-gray-400 text-sm lg:text-base mb-3 md:mb-1">
+            View your registered players by category.
+          </p>
         </div>
       </div>
 
-      <div className="mb-2 flex justify-between items-center">
-        <p className="text-gray-400">
-          View your registered players by category.
-        </p>
-      </div>
-
       {/* Search + Table */}
-      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-hidden">
         {/* Search Bar */}
-        <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
-          <div className="relative w-full max-w-xs">
+        <div className="flex justify-end p-3 lg:p-4 border-b border-[rgba(0,0,0,0.2)]">
+          <div className="relative w-full lg:max-w-xs">
             <input
               type="text"
               placeholder="Search"
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044]"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#EAB044] text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               disabled={isLoading}
@@ -337,19 +339,19 @@ export default function PlayersPage() {
 
         {/* Tabs */}
         <div className="border-b border-[rgba(0,0,0,0.2)]">
-          <div className="flex">
+          <div className="flex overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as 'Kyorugi' | 'Poomsae' | 'Poomsae Team')}
-                className={`cursor-pointer relative flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.key
+                className={`cursor-pointer relative flex items-center gap-2 px-4 lg:px-6 py-3 text-xs lg:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.key
                     ? 'border-[#EAB044] text-[#EAB044] bg-orange-50'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 disabled={isLoading}
               >
                 <span>{tab.label}</span>
-                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#EAB044] rounded-full">
+                <span className="inline-flex items-center justify-center w-4 h-4 lg:w-5 lg:h-5 text-xs font-semibold text-white bg-[#EAB044] rounded-full">
                   {getPlayerCount(tab.key)}
                 </span>
               </button>
@@ -357,9 +359,57 @@ export default function PlayersPage() {
           </div>
         </div>
 
-            {/* Table */}
+        <div className={`w-full ${filteredPlayers.length >= 7 ? 'max-h-[310px] overflow-y-auto' : ''}`}>
+          {/* Mobile Table View */}
+          <div className="lg:hidden">
+            {isLoading ? (
+              <div className="p-8 text-center text-gray-500">Loading players...</div>
+            ) : error ? (
+              <div className="p-8 text-center text-red-600">Error: {error}</div>
+            ) : filteredPlayers.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                {search.trim() ? `No players found matching "${search}" in ${activeTab} category.` : `No players found in ${activeTab} category.`}
+              </div>
+            ) : (
+              <div>
+                <table className="w-full text-xs">
+                  <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
+                    <tr>
+                      <th className="p-2 text-left text-gray-700 font-medium w-[35%]">Name</th>
+                      <th className="p-2 text-left text-gray-700 font-medium w-[20%]">Belt</th>
+                      <th className="p-2 text-left text-gray-700 font-medium w-[45%]">Group</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredPlayers.map((player, index) => (
+                      <tr key={player.id || `player-${index}`} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                        <td className="p-2 w-[35%]">
+                          <div className="text-xs font-medium text-gray-900 leading-tight break-words">
+                            {player.first_name} {player.last_name}
+                          </div>
+                        </td>
+                        <td className="p-2 text-xs w-[20%]">
+                          <div className="break-words text-xs leading-tight">
+                            {player.belt}
+                          </div>
+                        </td>
+                        <td className="p-2 text-xs w-[45%]">
+                          <div className="break-words text-xs leading-tight">
+                            {player.group_name}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden lg:block">
             <table className="w-full table-fixed text-sm">
-              <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
+              <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
                 <tr>
                   {columns.map((col) => (
                     <th
@@ -416,6 +466,8 @@ export default function PlayersPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
     </div>
   );
 }

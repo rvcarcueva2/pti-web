@@ -284,9 +284,31 @@ export default function PlayersPage() {
         worksheet['!ref'] = `A1:K${lastRow}`;
       }
 
-      // 4. Generate filename with current date and active tab
-      const currentDate = new Date().toISOString().split('T')[0];
-      const filename = `Team_Players_${activeTab}_${currentDate}.xlsx`;
+      // 4. Generate filename with team name, category, and filters
+      const teamName = players[0]?.team_name?.replace(/[^a-zA-Z0-9]/g, '') || 'UnknownTeam';
+      const category = activeTab.replace(/\s+/g, '');
+      
+      // Build filter string from active filters
+      const filterParts = [];
+      if (filters.sex) filterParts.push(filters.sex);
+      if (filters.belt) filterParts.push(filters.belt);
+      if (filters.level) filterParts.push(filters.level);
+      if (filters.group) filterParts.push(filters.group.replace(/\s+/g, ''));
+      if (filters.ageMin || filters.ageMax) {
+        const ageRange = `Age${filters.ageMin || '0'}-${filters.ageMax || '99'}`;
+        filterParts.push(ageRange);
+      }
+      if (filters.heightMin || filters.heightMax) {
+        const heightRange = `Height${filters.heightMin || '0'}-${filters.heightMax || '999'}`;
+        filterParts.push(heightRange);
+      }
+      if (filters.weightMin || filters.weightMax) {
+        const weightRange = `Weight${filters.weightMin || '0'}-${filters.weightMax || '999'}`;
+        filterParts.push(weightRange);
+      }
+      
+      const filterString = filterParts.length > 0 ? `_${filterParts.join('_')}` : '';
+      const filename = `${teamName}_${category}${filterString}.xlsx`;
 
       // 5. Download the file with formatting preservation
       XLSX.writeFile(workbook, filename, {
@@ -612,57 +634,59 @@ export default function PlayersPage() {
         </div>
 
         {/* Table */}
-        <table className="w-full table-fixed text-sm">
-          <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
-            <tr>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer`}
-                  onClick={() => handleSort(col.key)}
-                >
-                  <div className="flex items-center gap-1">
-                    {col.label}
-                    <Image
-                      src="/icons/down-arrow.svg"
-                      alt="Sort"
-                      width={12}
-                      height={12}
-                      className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
-                        }`}
-                    />
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+        <div className={`w-full ${filteredPlayers.length > 8 ? 'max-h-[400px] overflow-y-auto' : ''}`}>
+          <table className="w-full table-fixed text-sm">
+            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
               <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-gray-500">
-                  Loading players...
-                </td>
+                {columns.map((col) => (
+                  <th
+                    key={col.key}
+                    className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer`}
+                    onClick={() => handleSort(col.key)}
+                  >
+                    <div className="flex items-center gap-1">
+                      {col.label}
+                      <Image
+                        src="/icons/down-arrow.svg"
+                        alt="Sort"
+                        width={12}
+                        height={12}
+                        className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
+                          }`}
+                      />
+                    </div>
+                  </th>
+                ))}
               </tr>
-            ) : filteredPlayers.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-gray-500">
-                  No players found in {activeTab} category.
-                </td>
-              </tr>
-            ) : (
-              filteredPlayers.map((player, index) => (
-                <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}>
-                  {columns.map((col) => (
-                    <td key={col.key} className="p-3">
-                      {player[col.key as keyof typeof player]}
-                    </td>
-                  ))}
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                    Loading players...
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredPlayers.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                    No players found in {activeTab} category.
+                  </td>
+                </tr>
+              ) : (
+                filteredPlayers.map((player, index) => (
+                  <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    }`}>
+                    {columns.map((col) => (
+                      <td key={col.key} className="p-3">
+                        {player[col.key as keyof typeof player]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Filter Modal */}

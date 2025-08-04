@@ -85,7 +85,12 @@ export default function MyTeamPage() {
       });
       const data = await response.json();
       if (response.ok && data.team) {
-        setTeamForm(data.team);
+        setTeamForm({
+          ...data.team,
+          team_name: data.team.team_name || '',
+          social: data.team.social || '',
+          coach_name: data.team.coach_name || ''
+        });
         setHasTeamData(true);
         setIsEditing(false);
       } else {
@@ -135,7 +140,13 @@ export default function MyTeamPage() {
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTeamForm(prev => ({ ...prev, [name]: value }));
+    console.log('Input change:', name, value); // Debug log
+    setTeamForm(prev => {
+      console.log('Previous form state:', prev); // Debug log
+      const newState = { ...prev, [name]: value };
+      console.log('New form state:', newState); // Debug log
+      return newState;
+    });
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     setSuccessMessage('');
   }, [errors]);
@@ -273,12 +284,12 @@ export default function MyTeamPage() {
   return (
     <div className="font-geist p-8 min-h-[80vh]">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mt-10">
+        <div className="flex items-center justify-between mt-1 lg:mt-10">
           <h1 className="text-2xl font-bold">My Team</h1>
           {hasTeamData && (
             <button
               onClick={toggleEdit}
-              className="flex items-center gap-2 px-4 py-2 bg-[#EAB044] text-white rounded hover:bg-[#d49a35] transition-colors"
+              className="cursor-pointer flex items-center gap-2 px-3 py-2 lg:px-4 lg:py-2 bg-[#EAB044] text-white rounded hover:bg-[#d49a35] transition-colors text-sm lg:text-base"
               disabled={isSubmitting}
             >
               <FontAwesomeIcon icon={isEditing ? faTimes : faEdit} className="w-4 h-4" />
@@ -291,7 +302,7 @@ export default function MyTeamPage() {
         </div>
         {/* Floating Success Message */}
         {successMessage && (
-          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-m font-regular transition-all duration-300">
+          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 lg:px-6 lg:py-3 bg-green-100 border border-green-400 text-green-700 rounded shadow-lg text-sm lg:text-base font-regular transition-all duration-300 whitespace-nowrap">
             {successMessage}
           </div>
         )}
@@ -319,7 +330,7 @@ export default function MyTeamPage() {
                       type="text"
                       name="team_name"
                       placeholder="Enter team name"
-                      value={teamForm.team_name}
+                      value={teamForm.team_name ?? ''}
                       onChange={handleInputChange}
                       className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.team_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
                         }`}
@@ -336,7 +347,7 @@ export default function MyTeamPage() {
                       type="text"
                       name="social"
                       placeholder="https://www.facebook.com/teamname or www.teamname.com"
-                      value={teamForm.social}
+                      value={teamForm.social ?? ''}
                       onChange={handleInputChange}
                       className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.social ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
                         }`}
@@ -353,7 +364,7 @@ export default function MyTeamPage() {
                       type="text"
                       name="coach_name"
                       placeholder="Enter coach name"
-                      value={teamForm.coach_name}
+                      value={teamForm.coach_name ?? ''}
                       onChange={handleInputChange}
                       className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#EAB044] ${errors.coach_name ? 'border-red-500' : 'border-[rgba(0,0,0,0.2)]'
                         }`}
@@ -366,18 +377,18 @@ export default function MyTeamPage() {
                 </div>
 
                 {/* Uploads + Save Button */}
-                <div className="w-[304px] flex flex-col justify-between items-center">
-                  <div className="flex gap-4">
+                <div className="w-full lg:w-[304px] flex flex-col justify-between items-center">
+                  <div className="flex gap-2 lg:gap-4 w-full justify-center">
                     {/* Team Logo */}
-                    <div className="flex flex-col items-center gap-2 w-36">
-                      <div className="w-36 h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
+                    <div className="flex flex-col items-center gap-2 w-[calc(50%-4px)] lg:w-36">
+                      <div className="w-full aspect-square lg:w-36 lg:h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
                         {teamLogoPreview ? (
                           <img src={teamLogoPreview} alt="Team Logo" className="w-full h-full object-cover" />
                         ) : (
                           <p>Team Logo</p>
                         )}
                       </div>
-                      <label className="block w-36">
+                      <label className="block w-full lg:w-36">
                         <input
                           type="file"
                           accept="image/*"
@@ -387,21 +398,21 @@ export default function MyTeamPage() {
                         />
                         <div className="bg-black text-white w-full py-2 rounded text-center cursor-pointer hover:bg-gray-800 flex items-center justify-center gap-2">
                           <img src="/icons/upload-file.svg" alt="Upload" className="w-4 h-4" />
-                          <span className="text-sm font-normal">Upload Logo</span>
+                          <span className="text-xs lg:text-sm font-normal">Upload Logo</span>
                         </div>
                       </label>
                     </div>
 
                     {/* Coach Photo */}
-                    <div className="flex flex-col items-center gap-2 w-36">
-                      <div className="w-36 h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
+                    <div className="flex flex-col items-center gap-2 w-[calc(50%-4px)] lg:w-36">
+                      <div className="w-full aspect-square lg:w-36 lg:h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
                         {coachPhotoPreview ? (
                           <img src={coachPhotoPreview} alt="Coach Photo" className="w-full h-full object-cover" />
                         ) : (
                           <p>Coach Photo</p>
                         )}
                       </div>
-                      <label className="block w-36">
+                      <label className="block w-full lg:w-36">
                         <input
                           type="file"
                           accept="image/*"
@@ -411,7 +422,7 @@ export default function MyTeamPage() {
                         />
                         <div className="bg-black text-white w-full py-2 rounded text-center cursor-pointer hover:bg-gray-800 flex items-center justify-center gap-2">
                           <img src="/icons/upload-file.svg" alt="Upload" className="w-4 h-4" />
-                          <span className="text-sm font-normal">Upload Photo</span>
+                          <span className="text-xs lg:text-sm font-normal">Upload Photo</span>
                         </div>
                       </label>
                     </div>
@@ -420,7 +431,7 @@ export default function MyTeamPage() {
                   {/* Save Changes Button */}
                   <button
                     type="submit"
-                    className="mt-6 w-[304px] bg-[#FED018] text-black py-2 rounded text-sm hover:bg-yellow-400 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="mt-6 w-full lg:w-[304px] bg-[#FED018] text-black py-2 rounded text-sm hover:bg-yellow-400 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -477,30 +488,30 @@ export default function MyTeamPage() {
               </div>
 
               {/* Image Display */}
-              <div className="w-[304px] flex flex-col items-center">
-                <div className="flex gap-4">
+              <div className="w-full lg:w-[304px] flex flex-col items-center">
+                <div className="flex gap-2 lg:gap-4 w-full justify-center">
                   {/* Team Logo Display */}
-                  <div className="flex flex-col items-center gap-2 w-36">
-                    <div className="w-36 h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
+                  <div className="flex flex-col items-center gap-2 w-[calc(50%-4px)] lg:w-36">
+                    <div className="w-full aspect-square lg:w-36 lg:h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
                       {teamForm.team_logo ? (
                         <img src={teamForm.team_logo} alt="Team Logo" className="w-full h-full object-cover" />
                       ) : (
                         <p>No team logo</p>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 text-center">Team Logo</p>
+                    <p className="text-xs lg:text-sm text-gray-600 text-center">Team Logo</p>
                   </div>
 
                   {/* Coach Photo Display */}
-                  <div className="flex flex-col items-center gap-2 w-36">
-                    <div className="w-36 h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
+                  <div className="flex flex-col items-center gap-2 w-[calc(50%-4px)] lg:w-36">
+                    <div className="w-full aspect-square lg:w-36 lg:h-36 bg-gray-100 border border-[rgba(0,0,0,0.2)] rounded flex items-center justify-center text-sm text-gray-600 text-center overflow-hidden">
                       {teamForm.coach_photo ? (
                         <img src={teamForm.coach_photo} alt="Coach Photo" className="w-full h-full object-cover" />
                       ) : (
                         <p>No coach photo</p>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 text-center">Coach Photo</p>
+                    <p className="text-xs lg:text-sm text-gray-600 text-center">Coach Photo</p>
                   </div>
                 </div>
               </div>
