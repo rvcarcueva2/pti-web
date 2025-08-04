@@ -107,7 +107,7 @@ export default function RegistrationPage() {
 
   return (
     <div className="font-geist px-6 py-3 lg:p-6 lg:ml-10 lg:mr-10 min-h-screen">
-      <div className="md:mt-30 mt-25 flex justify-between items-start">
+      <div className="md:mt-40 mt-25 flex justify-between items-start">
         <div>
           <h1 className="text-xl lg:text-2xl font-semibold text-gray-800">Registration</h1>
         </div>

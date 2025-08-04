@@ -712,7 +712,7 @@ export default function PlayersPage() {
     return (
         <div className="font-geist px-6 py-3 lg:p-6 lg:ml-10 lg:mr-10 min-h-screen">
             {/* Header */}
-            <div className="md:mt-30 mt-25 flex justify-between items-start">
+            <div className="md:mt-40 mt-25 flex justify-between items-start">
                 <div>
                     <h1 className="text-xl lg:text-2xl font-semibold text-gray-800">
                         {competitionTitle || 'Loading...'}
@@ -816,7 +816,7 @@ export default function PlayersPage() {
                             </div>
                         </div>
 
-                        <div className={`w-full ${filteredPlayers.length > 8 ? 'max-h-[310px] overflow-y-auto' : ''}`}>
+                        <div className={`w-full ${filteredPlayers.length >= 5 ? 'max-h-[310px] overflow-y-auto' : ''}`}>
                             {/* Mobile Table View */}
                             <div className="lg:hidden">
                                 {filteredPlayers.length === 0 ? (
@@ -826,7 +826,7 @@ export default function PlayersPage() {
                                 ) : (
                                     <div>
                                         <table className="w-full text-xs">
-                                            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
+                                            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
                                                 <tr>
                                                     <th className="p-2 text-left text-gray-700 font-medium w-[45%]">Name</th>
                                                     <th className="p-2 text-left text-gray-700 font-medium w-[35%]">Group</th>
@@ -875,7 +875,7 @@ export default function PlayersPage() {
                             {/* Desktop Table View */}
                             <div className="hidden lg:block">
                                 <table className="w-full table-fixed text-sm">
-                                    <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
+                                    <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
                                         <tr>
                                             {columns.map((col) => (
                                                 <th

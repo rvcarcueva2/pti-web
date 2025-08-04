@@ -2,6 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { createClient } from "@supabase/supabase-js";
@@ -113,18 +114,26 @@ export default function CompetitionPost({ params }: Props) {
 
   return (
     <main className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
-      <div className="text-center">
-        <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-          COMPETITIONS
-        </h2>
-        <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
-          COMPETITIONS
-        </h1>
+
+      {/* Back to Competitions Link */}
+      <div className="mt-4 mb-6 text-left max-w-6xl mx-auto px-4">
+        <Link
+          href="/competitions"
+          className="text-responsive font-geist font-semibold inline-flex items-center text-[#EAB044] hover:text-[#D4A73C] transition-colors duration-200 group text-lg"
+        >
+          <span className="text-responsive mr-1 transition-transform duration-200 group-hover:-translate-x-0.5 text-xl">
+            ←
+          </span>
+          Back to Competitions
+        </Link>
       </div>
 
       {/* Competition Content */}
       <div className="font-geist mx-auto my-4 md:my-8 max-w-6xl">
-        <h2 className="text-2xl font-bold mb-4 text-center">{competition.title}</h2>
+        <>
+          <h2 className="text-2xl font-bold mb-4 text-center hidden sm:block">{competition.title}</h2>
+          <h4 className="text-base font-bold mb-4 text-center sm:hidden">{competition.title}</h4>
+        </>
 
         {competition.photo_url && (
           <div className="mb-6">

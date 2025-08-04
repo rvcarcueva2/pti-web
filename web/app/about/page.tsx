@@ -4,12 +4,9 @@ import "@/app/globals.css";
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper'; // ✅ Fix TypeError
+import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
-import 'swiper/css/navigation';
-import { NavigationOptions } from "swiper/types";
 
 // Sample affiliations data
 const affiliations = [
@@ -268,27 +265,18 @@ export default function About() {
   const prevRef = useRef<HTMLDivElement | null>(null);
   const nextRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
-  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    if (
-      swiperRef.current &&
-      swiperRef.current.params &&
-      swiperRef.current.navigation &&
-      prevRef.current &&
-      nextRef.current
-    ) {
-      const navigation = swiperRef.current.params.navigation as NavigationOptions;
-
-      if (typeof navigation === 'object') {
-        navigation.prevEl = prevRef.current;
-        navigation.nextEl = nextRef.current;
-      }
-
-      swiperRef.current.navigation.init();
-      swiperRef.current.navigation.update();
+  const handlePrev = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev();
     }
-  }, [loaded]);
+  };
+
+  const handleNext = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slideNext();
+    }
+  };
 
   return (
     <>
@@ -350,6 +338,7 @@ export default function About() {
           {/* Prev Arrow */}
           <div
             ref={prevRef}
+            onClick={handlePrev}
             className="absolute md:-left-6 left-1/2 -translate-x-[calc(100%+140px)] top-1/2 -translate-y-1/2 z-10 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 flex items-center justify-center cursor-pointer"
           >
             <Image
@@ -364,6 +353,7 @@ export default function About() {
           {/* Next Arrow */}
           <div
             ref={nextRef}
+            onClick={handleNext}
             className="absolute md:-right-6 right-1/2 translate-x-[calc(100%+140px)] top-1/2 -translate-y-1/2 z-10 md:translate-x-0 md:top-1/2 md:-translate-y-1/2 flex items-center justify-center cursor-pointer"
           >
             <Image
@@ -376,22 +366,8 @@ export default function About() {
           </div>
 
           <Swiper
-            modules={[Navigation]}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
-
-              setTimeout(() => {
-                if (prevRef.current && nextRef.current && swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-                  swiper.params.navigation.prevEl = prevRef.current;
-                  swiper.params.navigation.nextEl = nextRef.current;
-
-                  swiper.navigation.destroy();
-                  swiper.navigation.init();
-                  swiper.navigation.update();
-                }
-              }, 100);
-
-              setLoaded(true);
             }}
             spaceBetween={20}
             breakpoints={{
