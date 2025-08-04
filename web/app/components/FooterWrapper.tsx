@@ -15,7 +15,7 @@ const FooterWrapper = () => {
   ];
 
   // Hide on any path that starts with these base routes
-  const hideIfStartsWith = ['/admin-panel', '/registration', '/players'];
+  const hideIfStartsWith = ['/admin-panel'];
 
   const shouldHideFooter =
     hideFooterOn.includes(pathname) || hideIfStartsWith.some((path) => pathname.startsWith(path));
