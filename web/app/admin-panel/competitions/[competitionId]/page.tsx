@@ -26,12 +26,12 @@ type Column = {
 };
 
 const columns: Column[] = [
-  { key: 'team', label: 'Team', minWidth: 'min-w-[300px]' },
-  { key: 'registered_players_count', label: 'Players', minWidth: 'min-w-[100px]' },
-  { key: 'kyorugi_count', label: 'Kyorugi', minWidth: 'min-w-[100px]' },
-  { key: 'poomsae_count', label: 'Poomsae', minWidth: 'min-w-[100px]' },
-  { key: 'poomsae_team_count', label: 'Poomsae Team', minWidth: 'min-w-[120px]' },
-  { key: 'status', label: 'Status', minWidth: 'min-w-[100px]' },
+  { key: 'team', label: 'Team', minWidth: 'min-w-[200px]' },
+  { key: 'registered_players_count', label: 'Players', minWidth: 'min-w-0' },
+  { key: 'kyorugi_count', label: 'Kyorugi', minWidth: 'min-w-0' },
+  { key: 'poomsae_count', label: 'Poomsae', minWidth: 'min-w-0' },
+  { key: 'poomsae_team_count', label: 'Poomsae Team', minWidth: 'min-w-0' },
+  { key: 'status', label: 'Status', minWidth: 'min-w-0' },
 ];
 
 export default function CompetitionTeamsPage() {
@@ -258,7 +258,7 @@ export default function CompetitionTeamsPage() {
         </div>
       )}
 
-      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md">
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
             <input
@@ -274,86 +274,90 @@ export default function CompetitionTeamsPage() {
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
-            <tr>
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth}`}
-                  onClick={() => handleSort(column.key)}
-                >
-                  <div className="flex items-center gap-1">
-                    {column.label}
-                    <Image
-                      src="/icons/down-arrow.svg"
-                      alt="Sort"
-                      width={10}
-                      height={10}
-                      className={`transition-transform ${sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
-                    />
-                  </div>
-                </th>
-              ))}
-              <th className="p-3 w-[60px]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
-                  Loading data...
-                </td>
-              </tr>
-            ) : filteredCompetitions.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
-                  No registered teams.
-                </td>
-              </tr>
-            ) : (
-              filteredCompetitions.map((item, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleRowClick(item.team_id)}
-                  className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                >
-                  <td className="p-3">{item.team}</td>
-                  <td className="p-3">{item.registered_players_count}</td>
-                  <td className="p-3">{item.kyorugi_count}</td>
-                  <td className="p-3">{item.poomsae_count}</td>
-                  <td className="p-3">{item.poomsae_team_count}</td>
-                  <td className="p-3 relative" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full capitalize ${getStatusColor(item.status)}`}>
-                        {item.status}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggle(item.registration_id, e);
-                        }}
-                        className="cursor-pointer w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 transition -ml-1"
-                      >
-                        <FontAwesomeIcon icon={faChevronDown} className="text-gray-600 text-xs" />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="p-3 text-center cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                    <Image
-                      src="/icons/information.svg"
-                      alt="Info"
-                      width={18}
-                      height={18}
-                      onClick={() => clickInfo(item.team_id)}
-                    />
-                  </td>
+        <div className="overflow-x-auto">
+          <div className={`w-full ${filteredCompetitions.length > 6 ? 'max-h-[440px] overflow-y-auto' : ''}`}>
+            <table className="w-full text-sm">
+              <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
+                <tr>
+                  {columns.map((column, index) => (
+                    <th
+                      key={index}
+                      className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth} truncate`}
+                      onClick={() => handleSort(column.key)}
+                    >
+                      <div className="flex items-center gap-1">
+                        {column.label}
+                        <Image
+                          src="/icons/down-arrow.svg"
+                          alt="Sort"
+                          width={10}
+                          height={10}
+                          className={`transition-transform ${sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
+                        />
+                      </div>
+                    </th>
+                  ))}
+                  <th className="p-3 w-[60px]"></th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
+                      Loading data...
+                    </td>
+                  </tr>
+                ) : filteredCompetitions.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
+                      No registered teams.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCompetitions.map((item, index) => (
+                    <tr
+                      key={index}
+                      onClick={() => handleRowClick(item.team_id)}
+                      className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                        }`}
+                    >
+                      <td className="p-3 break-words">{item.team}</td>
+                      <td className="p-3 break-words">{item.registered_players_count}</td>
+                      <td className="p-3 break-words">{item.kyorugi_count}</td>
+                      <td className="p-3 break-words">{item.poomsae_count}</td>
+                      <td className="p-3 break-words">{item.poomsae_team_count}</td>
+                      <td className="p-3 relative break-words" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 text-xs rounded-full capitalize ${getStatusColor(item.status)}`}>
+                            {item.status}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggle(item.registration_id, e);
+                            }}
+                            className="cursor-pointer w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 transition -ml-1"
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} className="text-gray-600 text-xs" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                        <Image
+                          src="/icons/information.svg"
+                          alt="Info"
+                          width={18}
+                          height={18}
+                          onClick={() => clickInfo(item.team_id)}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Status Dropdown */}

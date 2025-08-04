@@ -107,7 +107,7 @@ export default function MyTeamPage() {
     const checkAuthAndLoadTeam = async () => {
       const session = await getSession();
       if (!session?.user) {
-        router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
+        router.push('/auth/sign-in?redirectTo=/');
         return;
       }
       setUser(session.user);
@@ -123,7 +123,7 @@ export default function MyTeamPage() {
         if (debounceTimer) clearTimeout(debounceTimer);
         debounceTimer = setTimeout(async () => {
           if (event === 'SIGNED_OUT' || !session?.user) {
-            router.push('/auth/sign-in?redirectTo=/user-dashboard/my-team');
+            router.push('/auth/sign-in?redirectTo=/');
           } else if (session?.user) {
             setUser(session.user);
             await loadTeamData(session.user.id);

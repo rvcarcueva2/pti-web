@@ -73,16 +73,16 @@ export default function PlayersPage() {
   const [tempFilters, setTempFilters] = useState<FilterState>(filters);
 
   const columns = [
-    { label: 'First Name', key: 'first_name', width: 'w-[130px]' },
-    { label: 'Last Name', key: 'last_name', width: 'w-[120px]' },
-    { label: 'Middle Name', key: 'middle_name', width: 'w-[130px]' },
-    { label: 'Sex', key: 'sex', width: 'w-[70px]' },
-    { label: 'Age', key: 'age', width: 'w-[60px]' },
-    { label: 'Height (cm)', key: 'height', width: 'w-[120px]' },
-    { label: 'Weight (kg)', key: 'weight', width: 'w-[120px]' },
-    { label: 'Belt', key: 'belt', width: 'w-[100px]' },
-    { label: 'Level', key: 'level', width: 'w-[90px]' },
-    { label: 'Group', key: 'group_name', width: 'w-[170px]' },
+    { label: 'First Name', key: 'first_name', width: 'w-[150px]' },
+    { label: 'Last Name', key: 'last_name', width: 'w-[150px]' },
+    { label: 'Middle Name', key: 'middle_name', width: 'w-[100px]' },
+    { label: 'Sex', key: 'sex', width: 'w-[60px]' },
+    { label: 'Age', key: 'age', width: 'w-[50px]' },
+    { label: 'Height (cm)', key: 'height', width: 'w-[80px]' },
+    { label: 'Weight (kg)', key: 'weight', width: 'w-[80px]' },
+    { label: 'Belt', key: 'belt', width: 'w-[70px]' },
+    { label: 'Level', key: 'level', width: 'w-[70px]' },
+    { label: 'Group', key: 'group_name', width: 'w-[120px]' },
   ];
 
   const tabs = [
@@ -576,7 +576,7 @@ export default function PlayersPage() {
       </div>
 
       {/* Search + Table */}
-      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md">
         {/* Search Bar */}
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
@@ -634,58 +634,65 @@ export default function PlayersPage() {
         </div>
 
         {/* Table */}
-        <div className={`w-full ${filteredPlayers.length > 8 ? 'max-h-[400px] overflow-y-auto' : ''}`}>
-          <table className="w-full table-fixed text-sm">
-            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
-              <tr>
-                {columns.map((col) => (
-                  <th
-                    key={col.key}
-                    className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer`}
-                    onClick={() => handleSort(col.key)}
-                  >
-                    <div className="flex items-center gap-1">
-                      {col.label}
-                      <Image
-                        src="/icons/down-arrow.svg"
-                        alt="Sort"
-                        width={12}
-                        height={12}
-                        className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
-                          }`}
-                      />
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
+        <div className="overflow-x-auto">
+          <div className={`w-full ${filteredPlayers.length > 8 ? 'max-h-[400px] overflow-y-auto' : ''}`}>
+            <table className="w-full text-sm">
+              <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
                 <tr>
-                  <td colSpan={columns.length} className="p-8 text-center text-gray-500">
-                    Loading players...
-                  </td>
+                  {columns.map((col) => (
+                    <th
+                      key={col.key}
+                      className={`p-3 ${col.width} text-left text-gray-700 font-medium cursor-pointer truncate`}
+                      onClick={() => handleSort(col.key)}
+                    >
+                      <div className="flex items-center gap-1">
+                        {col.label}
+                        <Image
+                          src="/icons/down-arrow.svg"
+                          alt="Sort"
+                          width={12}
+                          height={12}
+                          className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''
+                            }`}
+                        />
+                      </div>
+                    </th>
+                  ))}
                 </tr>
-              ) : filteredPlayers.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.length} className="p-8 text-center text-gray-500">
-                    No players found in {activeTab} category.
-                  </td>
-                </tr>
-              ) : (
-                filteredPlayers.map((player, index) => (
-                  <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}>
-                    {columns.map((col) => (
-                      <td key={col.key} className="p-3">
-                        {player[col.key as keyof typeof player]}
-                      </td>
-                    ))}
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                      Loading players...
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : filteredPlayers.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                      No players found in {activeTab} category.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredPlayers.map((player, index) => (
+                    <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                      }`}>
+                      <td className="p-3 break-words">{player.first_name}</td>
+                      <td className="p-3 break-words">{player.last_name}</td>
+                      <td className="p-3 break-words">{player.middle_name}</td>
+                      <td className="p-3 break-words">{player.sex}</td>
+                      <td className="p-3 break-words">{player.age}</td>
+                      <td className="p-3 break-words">{player.height}</td>
+                      <td className="p-3 break-words">{player.weight}</td>
+                      <td className="p-3 break-words">{player.belt}</td>
+                      <td className="p-3 break-words">{player.level}</td>
+                      <td className="p-3 break-words">{player.group_name}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

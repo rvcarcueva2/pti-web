@@ -158,12 +158,12 @@ export default function CompetitionPage() {
 
   const columns = [
     { label: 'Competition', key: 'title', minWidth: 'min-w-[200px]' },
-    { label: 'Players', key: 'players', minWidth: 'min-w-[80px]' },
-    { label: 'Teams', key: 'teams', minWidth: 'min-w-[80px]' },
-    { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[80px]' },
-    { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-[80px]' },
-    { label: 'Poomsae Team', key: 'poomsae_team', minWidth: 'min-w-[100px]' },
-    { label: 'Status', key: 'status', minWidth: 'min-w-[100px]' },
+    { label: 'Players', key: 'players', minWidth: 'min-w-0' },
+    { label: 'Teams', key: 'teams', minWidth: 'min-w-0' },
+    { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-0' },
+    { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-0' },
+    { label: 'Poomsae Team', key: 'poomsae_team', minWidth: 'min-w-0' },
+    { label: 'Status', key: 'status', minWidth: 'min-w-0' },
   ];
 
   const handleSort = (column: keyof Competition) => {
@@ -411,7 +411,7 @@ export default function CompetitionPage() {
       )}
 
       {/* Search + Table */}
-      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md">
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
             <input
@@ -427,91 +427,95 @@ export default function CompetitionPage() {
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
-            <tr>
-              {columns.map((col, i) => (
-                <th
-                  key={i}
-                  onClick={() => handleSort(col.key as keyof Competition)}
-                  className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${col.minWidth}`}
-                >
-                  <div className="flex items-center gap-1">
-                    {col.label}
-                    <Image
-                      src="/icons/down-arrow.svg"
-                      alt="Sort"
-                      width={12}
-                      height={12}
-                      className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
-                    />
-                    
-                  </div>
-                </th>
-              ))}
-              <th className="p-3 text-left w-[150px]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td className="p-3 text-center text-gray-500" colSpan={8}>
-                  Loading competitions...
-                </td>
-              </tr>
-            ) : competitions.length === 0 ? (
-              <tr>
-                <td className="p-3 text-center text-gray-500" colSpan={8}>
-                  No competitions found.
-                </td>
-              </tr>
-            ) : (
-              filteredCompetitions.map((comp, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleRowClick(comp.uuid)}
-                  className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                >
-                  <td className="p-3">{comp.title}</td>
-                  <td className="p-3">{comp.players}</td>
-                  <td className="p-3">{comp.teams}</td>
-                  <td className="p-3">{comp.kyorugi}</td>
-                  <td className="p-3">{comp.poomsae}</td>
-                  <td className="p-3">{comp.poomsae_team}</td>
-                  <td className="p-3 relative" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full capitalize ${getStatusColor(comp.status)}`}>
-                        {comp.status}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggle(comp.uuid, e);
-                        }}
-                        className="cursor-pointer w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 transition -ml-1"
-                      >
-                        <FontAwesomeIcon icon={faChevronDown} className="text-gray-600 text-xs" />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="p-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-4">
-                      <button onClick={() => handleEdit(index)} className="cursor-pointer text-[#EAB044] hover:underline flex items-center gap-1">
-                        <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
-                        Edit
-                      </button>
-                      <button onClick={() => handleDelete(index)} className="cursor-pointer text-red-500 hover:underline flex items-center gap-1">
-                        <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+        <div className="overflow-x-auto">
+          <div className={`w-full ${filteredCompetitions.length > 7 ? 'max-h-[450px] overflow-y-auto' : ''}`}>
+            <table className="w-full text-sm">
+              <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
+                <tr>
+                  {columns.map((col, i) => (
+                    <th
+                      key={i}
+                      onClick={() => handleSort(col.key as keyof Competition)}
+                      className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${col.minWidth} truncate`}
+                    >
+                      <div className="flex items-center gap-1">
+                        {col.label}
+                        <Image
+                          src="/icons/down-arrow.svg"
+                          alt="Sort"
+                          width={12}
+                          height={12}
+                          className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
+                        />
+                        
+                      </div>
+                    </th>
+                  ))}
+                  <th className="p-3 text-left w-[150px]"></th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td className="p-3 text-center text-gray-500" colSpan={8}>
+                      Loading competitions...
+                    </td>
+                  </tr>
+                ) : competitions.length === 0 ? (
+                  <tr>
+                    <td className="p-3 text-center text-gray-500" colSpan={8}>
+                      No competitions found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCompetitions.map((comp, index) => (
+                    <tr
+                      key={index}
+                      onClick={() => handleRowClick(comp.uuid)}
+                      className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                        }`}
+                    >
+                      <td className="p-3 break-words">{comp.title}</td>
+                      <td className="p-3 break-words">{comp.players}</td>
+                      <td className="p-3 break-words">{comp.teams}</td>
+                      <td className="p-3 break-words">{comp.kyorugi}</td>
+                      <td className="p-3 break-words">{comp.poomsae}</td>
+                      <td className="p-3 break-words">{comp.poomsae_team}</td>
+                      <td className="p-3 relative break-words" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 text-xs rounded-full capitalize ${getStatusColor(comp.status)}`}>
+                            {comp.status}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggle(comp.uuid, e);
+                            }}
+                            className="cursor-pointer w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 transition -ml-1"
+                          >
+                            <FontAwesomeIcon icon={faChevronDown} className="text-gray-600 text-xs" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-4">
+                          <button onClick={() => handleEdit(index)} className="cursor-pointer text-[#EAB044] hover:underline flex items-center gap-1">
+                            <Image src="/icons/edit.svg" alt="Edit" width={14} height={14} />
+                            Edit
+                          </button>
+                          <button onClick={() => handleDelete(index)} className="cursor-pointer text-red-500 hover:underline flex items-center gap-1">
+                            <Image src="/icons/delete.svg" alt="Delete" width={14} height={14} />
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Status Dropdown */}

@@ -20,11 +20,11 @@ type Column = {
 };
 
 const columns: Column[] = [
-  { key: 'coach_name', label: 'Coach Name', minWidth: 'min-w-[250px]' },
-  { key: 'email', label: 'Email Address', minWidth: 'min-w-[250px]' },
-  { key: 'contact_number', label: 'Contact Number', minWidth: 'min-w-[200px]' },
-  { key: 'team_name', label: 'Team', minWidth: 'min-w-[200px]' },
-  { key: 'social_media', label: 'Social Media', minWidth: 'min-w-[200px]' },
+  { key: 'coach_name', label: 'Coach Name', minWidth: 'min-w-0' },
+  { key: 'email', label: 'Email Address', minWidth: 'min-w-0' },
+  { key: 'contact_number', label: 'Contact Number', minWidth: 'min-w-0' },
+  { key: 'team_name', label: 'Team', minWidth: 'min-w-0' },
+  { key: 'social_media', label: 'Social Media', minWidth: 'min-w-0' },
 ];
 
 
@@ -102,7 +102,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md overflow-x-auto">
+      <div className="bg-white border border-[rgba(0,0,0,0.2)] rounded-md">
         <div className="flex justify-end p-4 border-b border-[rgba(0,0,0,0.2)]">
           <div className="relative w-full max-w-xs">
             <input
@@ -118,69 +118,71 @@ export default function UsersPage() {
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
-            <tr>
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth}`}
-                  onClick={() => handleSort(column.key)}
-                >
-                  <div className="flex items-center gap-1">
-                    {column.label}
-                    <Image
-                      src="/icons/down-arrow.svg"
-                      alt="Sort"
-                      width={10}
-                      height={10}
-                      className={`transition-transform ${sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
-                    />
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)]">
               <tr>
-                <td colSpan={columns.length} className="p-4 text-center text-gray-500">
-                  Loading users...
-                </td>
+                {columns.map((column, index) => (
+                  <th
+                    key={index}
+                    className={`p-3 text-left text-gray-700 font-medium cursor-pointer ${column.minWidth} truncate`}
+                    onClick={() => handleSort(column.key)}
+                  >
+                    <div className="flex items-center gap-1">
+                      {column.label}
+                      <Image
+                        src="/icons/down-arrow.svg"
+                        alt="Sort"
+                        width={10}
+                        height={10}
+                        className={`transition-transform ${sortColumn === column.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
+                      />
+                    </div>
+                  </th>
+                ))}
               </tr>
-            ) : filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="p-4 text-center text-gray-500">
-                  No users found.
-                </td>
-              </tr>
-            ) : (
-              filteredUsers.map((item, index) => (
-                <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                  <td className="p-3">{item.coach_name}</td>
-                  <td className="p-3">{item.email}</td>
-                  <td className="p-3">{item.contact_number}</td>
-                  <td className="p-3">{item.team_name}</td>
-                  <td className="p-3">
-                    {item.social_media ? (
-                      <a
-                        href={item.social_media}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#d49a35] hover:underline"
-                      >
-                        {item.social_media}
-                      </a>
-                    ) : (
-                      'N/A'
-                    )}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={columns.length} className="p-4 text-center text-gray-500">
+                    Loading users...
                   </td>
                 </tr>
+              ) : filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="p-4 text-center text-gray-500">
+                    No users found.
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((item, index) => (
+                  <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <td className="p-3 truncate max-w-0">{item.coach_name}</td>
+                    <td className="p-3 truncate max-w-0">{item.email}</td>
+                    <td className="p-3 truncate max-w-0">{item.contact_number}</td>
+                    <td className="p-3 truncate max-w-0">{item.team_name}</td>
+                    <td className="p-3 truncate max-w-0">
+                      {item.social_media ? (
+                        <a
+                          href={item.social_media}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#d49a35] hover:underline truncate block"
+                        >
+                          {item.social_media}
+                        </a>
+                      ) : (
+                        'N/A'
+                      )}
+                    </td>
+                  </tr>
 
-              ))
-            )}
-          </tbody>
-        </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

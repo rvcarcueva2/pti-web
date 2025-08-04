@@ -52,16 +52,16 @@ export default function PlayersPage() {
     const [showReloadWarningModal, setShowReloadWarningModal] = useState(false);
 
     const columns = [
-        { label: 'Last Name', key: 'lastName', width: 'w-[120px]' },
-        { label: 'First Name', key: 'firstName', width: 'w-[130px]' },
-        { label: 'Middle Name', key: 'middleName', width: 'w-[130px]' },
-        { label: 'Sex', key: 'sex', width: 'w-[70px]' },
-        { label: 'Age', key: 'age', width: 'w-[60px]' },
-        { label: 'Height (cm)', key: 'height', width: 'w-[120px]' },
-        { label: 'Weight (kg)', key: 'weight', width: 'w-[120px]' },
-        { label: 'Belt', key: 'belt', width: 'w-[100px]' },
-        { label: 'Level', key: 'level', width: 'w-[90px]' },
-        { label: 'Group', key: 'group', width: 'w-[250px]' },
+        { label: 'Last Name', key: 'lastName', width: 'min-w-0' },
+        { label: 'First Name', key: 'firstName', width: 'min-w-0' },
+        { label: 'Middle Name', key: 'middleName', width: 'min-w-0' },
+        { label: 'Sex', key: 'sex', width: 'min-w-0' },
+        { label: 'Age', key: 'age', width: 'min-w-0' },
+        { label: 'Height (cm)', key: 'height', width: 'min-w-0' },
+        { label: 'Weight (kg)', key: 'weight', width: 'min-w-0' },
+        { label: 'Belt', key: 'belt', width: 'min-w-0' },
+        { label: 'Level', key: 'level', width: 'min-w-0' },
+        { label: 'Group', key: 'group', width: 'min-w-0' },
     ];
 
     const tabs = [
@@ -918,7 +918,7 @@ export default function PlayersPage() {
 
                             {/* Desktop Table View */}
                             <div className="hidden lg:block">
-                                <table className="w-full table-fixed text-sm">
+                                <table className="w-full table-auto text-sm">
                                     <thead className="bg-orange-50 border-b border-[rgba(0,0,0,0.2)] sticky top-0 z-10">
                                         <tr>
                                             {columns.map((col) => (
@@ -940,7 +940,7 @@ export default function PlayersPage() {
                                                     </div>
                                                 </th>
                                             ))}
-                                            <th className="p-3 w-[120px] text-left text-gray-700 font-medium"></th>
+                                            <th className="p-3 w-[150px] text-left text-gray-700 font-medium"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -955,12 +955,12 @@ export default function PlayersPage() {
                                                 <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                                                     }`}>
                                                     {columns.map((col) => (
-                                                        <td key={col.key} className="p-3">
+                                                        <td key={col.key} className="p-3 break-words">
                                                             {player[col.key as keyof typeof player]}
                                                         </td>
                                                     ))}
-                                                    <td className="p-3 text-left">
-                                                        <div className="flex items-center gap-3 -ml-8">
+                                                    <td className="p-3 text-left pr-6">
+                                                        <div className="flex items-center gap-2">
                                                             <button
                                                                 onClick={() => handleEditPlayer(players.indexOf(player))}
                                                                 className="cursor-pointer flex items-center gap-1 hover:underline text-sm text-[#EAB044]"
