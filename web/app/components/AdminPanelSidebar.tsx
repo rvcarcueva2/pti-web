@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartSimple, faTrophy, faFile } from '@fortawesome/free-solid-svg-icons';
+import { faChartSimple, faTrophy, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const AdminPanelSidebar = () => {
   const pathname = usePathname();
@@ -102,13 +102,11 @@ const AdminPanelSidebar = () => {
       href: '/admin-panel/competitions',
       icon: faTrophy,
     },
-
-
-    // {
-    //   label: 'Results',
-    //   href: '/admin-panel/results',
-    //   icon: faFile,
-    // },
+    {
+    label: 'Users',
+    href: '/admin-panel/users',
+    icon: faUser,
+    },
   ];
 
   return (
