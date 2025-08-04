@@ -46,6 +46,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <ResponsiveHeader /> {/* <-- Updated this */}
         {children}
