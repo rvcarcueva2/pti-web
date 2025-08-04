@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 
 type Competition = {
@@ -14,11 +16,13 @@ type Competition = {
   location: string;
   deadline: string;
   photo_url?: string;
+  status: 'Open' | 'Closed';
   players: number;
   teams: number;
   kyorugi: number;
   poomsae: number;
   poomsae_team: number;
+
 };
 
 export default function CompetitionPage() {
@@ -33,6 +37,14 @@ export default function CompetitionPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [successType, setSuccessType] = useState<'add' | 'update' | 'delete'>('add');
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState<{
+    competitionUuid: string;
+    newStatus: string;
+  } | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [isOpen, setIsOpen] = useState<string>('');
+  const [dropdownPosition, setDropdownPosition] = useState<{ x: number; y: number; showAbove: boolean } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [existingPosterUrl, setExistingPosterUrl] = useState<string | null>(null);
@@ -54,7 +66,7 @@ export default function CompetitionPage() {
     // Fetch competition details
     const { data: competitionsData, error: competitionsError } = await supabase
       .from('competitions')
-      .select('uuid, title, date, description, location, deadline, photo_url')
+      .select('uuid, title, date, description, location, deadline, photo_url, status')
       .order('date', { ascending: true });
 
     // Fetch competition statistics
@@ -76,6 +88,7 @@ export default function CompetitionPage() {
           location: comp.location,
           deadline: comp.deadline,
           photo_url: comp.photo_url,
+          status: comp.status,
           players: stats?.players_count || 0,
           teams: stats?.teams_count || 0,
           kyorugi: stats?.kyorugi_count || 0,
@@ -145,12 +158,12 @@ export default function CompetitionPage() {
 
   const columns = [
     { label: 'Competition', key: 'title', minWidth: 'min-w-[200px]' },
-    { label: 'Date', key: 'date', minWidth: 'min-w-[120px]' },
     { label: 'Players', key: 'players', minWidth: 'min-w-[80px]' },
     { label: 'Teams', key: 'teams', minWidth: 'min-w-[80px]' },
     { label: 'Kyorugi', key: 'kyorugi', minWidth: 'min-w-[80px]' },
     { label: 'Poomsae', key: 'poomsae', minWidth: 'min-w-[80px]' },
     { label: 'Poomsae Team', key: 'poomsae_team', minWidth: 'min-w-[100px]' },
+    { label: 'Status', key: 'status', minWidth: 'min-w-[100px]' },
   ];
 
   const handleSort = (column: keyof Competition) => {
@@ -178,6 +191,7 @@ export default function CompetitionPage() {
       return;
     }
 
+
     // Upload poster if provided
     let photo_url = existingPosterUrl; // Keep existing URL if no new file
     if (posterFile) {
@@ -197,6 +211,8 @@ export default function CompetitionPage() {
         photo_url = publicUrlData.publicUrl;
       }
     }
+
+
 
     // Payload for insert/update
     const newCompetitionData: any = { title, date, description, location, deadline };
@@ -302,6 +318,76 @@ export default function CompetitionPage() {
     router.push(`/admin-panel/competitions/${uuid}`);
   };
 
+  const handleStatusChange = async (competitionUuid: string, newStatus: 'Open' | 'Closed') => {
+    const { error } = await supabase
+      .from('competitions')
+      .update({ status: newStatus })
+      .eq('uuid', competitionUuid);
+
+    if (!error) {
+      await loadCompetitionData();
+      setSuccessMessage('Status updated successfully!');
+      setSuccessType('update');
+    } else {
+      console.error('Status update error:', error);
+    }
+  };
+
+  const handleToggle = (competitionUuid: string, event: React.MouseEvent<HTMLButtonElement>) => {
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    // Check if there's enough space below (150px for dropdown height)
+    const spaceBelow = windowHeight - rect.bottom;
+    const showAbove = spaceBelow < 150;
+
+    setDropdownPosition({
+      x: rect.left - 120, // Position to the left of the button
+      y: showAbove ? rect.top - 140 : rect.bottom + 5, // Above or below based on space
+      showAbove
+    });
+
+    setIsOpen((prev) => (prev === competitionUuid ? '' : competitionUuid));
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'open':
+        return 'text-green-700 bg-green-100';
+      case 'closed':
+        return 'text-red-700 bg-red-100';
+      default:
+        return 'text-gray-700 bg-gray-100';
+    }
+  };
+
+  const getDropdownStatusColor = (status: string, isSelected: boolean) => {
+    if (!isSelected) return 'text-gray-700';
+
+    switch (status.toLowerCase()) {
+      case 'open':
+        return 'text-green-700 font-bold';
+      case 'closed':
+        return 'text-red-700 font-bold';
+      default:
+        return 'text-gray-700 font-bold';
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsOpen('');
+      setDropdownPosition(null);
+    };
+
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isOpen]);
+
   return (
     <div className="font-geist p-6 ml-64">
       {/* Header */}
@@ -359,6 +445,7 @@ export default function CompetitionPage() {
                       height={12}
                       className={`transition-transform ${sortColumn === col.key && sortDirection === 'desc' ? 'rotate-180' : ''}`}
                     />
+                    
                   </div>
                 </th>
               ))}
@@ -387,12 +474,27 @@ export default function CompetitionPage() {
                     }`}
                 >
                   <td className="p-3">{comp.title}</td>
-                  <td className="p-3">{new Date(comp.date).toLocaleDateString()}</td>
                   <td className="p-3">{comp.players}</td>
                   <td className="p-3">{comp.teams}</td>
                   <td className="p-3">{comp.kyorugi}</td>
                   <td className="p-3">{comp.poomsae}</td>
                   <td className="p-3">{comp.poomsae_team}</td>
+                  <td className="p-3 relative" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 text-xs rounded-full capitalize ${getStatusColor(comp.status)}`}>
+                        {comp.status}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggle(comp.uuid, e);
+                        }}
+                        className="cursor-pointer w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 transition -ml-1"
+                      >
+                        <FontAwesomeIcon icon={faChevronDown} className="text-gray-600 text-xs" />
+                      </button>
+                    </div>
+                  </td>
                   <td className="p-3" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-4">
                       <button onClick={() => handleEdit(index)} className="cursor-pointer text-[#EAB044] hover:underline flex items-center gap-1">
@@ -411,6 +513,77 @@ export default function CompetitionPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Status Dropdown */}
+      {isOpen && dropdownPosition && (
+        <div
+          className="fixed z-50 bg-white border border-gray-300 rounded shadow-lg w-36 overflow-hidden"
+          style={{
+            top: dropdownPosition.y,
+            left: dropdownPosition.x,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {['Open', 'Closed'].map((statusOption) => {
+            const currentItem = competitions.find(comp => comp.uuid === isOpen);
+            const isSelected = currentItem?.status === statusOption;
+
+            return (
+              <div
+                key={statusOption}
+                onClick={() => {
+                  setSelectedStatus(statusOption);
+                  setPendingStatusChange({
+                    competitionUuid: isOpen,
+                    newStatus: statusOption,
+                  });
+                  setIsStatusModalOpen(true);
+                  setIsOpen('');
+                  setDropdownPosition(null);
+                }}
+                className={`px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${getDropdownStatusColor(statusOption, isSelected)}`}
+              >
+                {statusOption}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Status Confirmation Modal */}
+      {isStatusModalOpen && pendingStatusChange && (
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border border-gray-200 relative">
+            <p className="mb-6 text-gray-800 leading-relaxed">
+              Are you sure you want to change the status to
+              <span className="font-bold uppercase text-black"> {pendingStatusChange.newStatus}</span>?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition cursor-pointer"
+                onClick={() => {
+                  setIsStatusModalOpen(false);
+                  setPendingStatusChange(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (pendingStatusChange) {
+                    handleStatusChange(pendingStatusChange.competitionUuid, pendingStatusChange.newStatus as 'Open' | 'Closed');
+                    setIsStatusModalOpen(false);
+                    setPendingStatusChange(null);
+                  }
+                }}
+                className="px-4 py-2 rounded bg-[#EAB044] text-white hover:bg-[#d49a35] transition cursor-pointer"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

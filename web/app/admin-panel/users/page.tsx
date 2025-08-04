@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 type UserData = {
-  user_id: string;
-  name: string;
-  email: string;
-  contact_number: string;
-  team_name: string;
+  user_id: string,
+  coach_name: string,
+  email: string,
+  contact_number: string,
+  team_name: string,
+  social_media: string
 };
 
 type Column = {
@@ -19,36 +20,13 @@ type Column = {
 };
 
 const columns: Column[] = [
-  { key: 'name', label: 'Name', minWidth: 'min-w-[250px]' },
-  { key: 'team_name', label: 'Team', minWidth: 'min-w-[200px]' },
+  { key: 'coach_name', label: 'Coach Name', minWidth: 'min-w-[250px]' },
   { key: 'email', label: 'Email Address', minWidth: 'min-w-[250px]' },
-  { key: 'contact_number', label: 'Contact Number', minWidth: 'min-w-[150px]' },
+  { key: 'contact_number', label: 'Contact Number', minWidth: 'min-w-[200px]' },
+  { key: 'team_name', label: 'Team', minWidth: 'min-w-[200px]' },
+  { key: 'social_media', label: 'Social Media', minWidth: 'min-w-[200px]' },
 ];
 
-// Sample static data
-const sampleUsers: UserData[] = [
-  {
-    user_id: '1',
-    name: 'John Doe',
-    email: 'john.doe@email.com',
-    contact_number: '09123456789',
-    team_name: 'Dragon Warriors',
-  },
-  {
-    user_id: '2',
-    name: 'Jane Smith',
-    email: 'jane.smith@email.com',
-    contact_number: '09234567890',
-    team_name: 'Thunder Eagles',
-  },
-  {
-    user_id: '3',
-    name: 'Mike Johnson',
-    email: 'mike.johnson@email.com',
-    contact_number: '09345678901',
-    team_name: 'Fire Phoenix',
-  },
-];
 
 export default function UsersPage() {
   const [data, setData] = useState<UserData[]>([]);
@@ -59,14 +37,29 @@ export default function UsersPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setData(sampleUsers);
-      setLoading(false);
-    }, 500);
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('/api/users');
+        const text = await res.text();
+        const result = text ? JSON.parse(text) : [];
+        if (Array.isArray(result)) {
+          setData(result);
+        } else {
+          console.error("Expected array but got", result);
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+
+    fetchUsers();
   }, []);
+
 
   const handleSort = (column: keyof UserData) => {
     if (sortColumn === column) {
@@ -163,16 +156,27 @@ export default function UsersPage() {
               </tr>
             ) : (
               filteredUsers.map((item, index) => (
-                <tr
-                  key={index}
-                  className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                >
-                  <td className="p-3">{item.name}</td>
-                  <td className="p-3">{item.team_name}</td>
+                <tr key={index} className={`border-b border-[rgba(0,0,0,0.2)] hover:bg-orange-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="p-3">{item.coach_name}</td>
                   <td className="p-3">{item.email}</td>
                   <td className="p-3">{item.contact_number}</td>
+                  <td className="p-3">{item.team_name}</td>
+                  <td className="p-3">
+                    {item.social_media ? (
+                      <a
+                        href={item.social_media}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#d49a35] hover:underline"
+                      >
+                        {item.social_media}
+                      </a>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
                 </tr>
+
               ))
             )}
           </tbody>
