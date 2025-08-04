@@ -14,7 +14,7 @@ export default function Home() {
             alt="Pilipinas Taekwondo Incorporated"
             fill
             priority
-            className="object-contain object-top drop-shadow-lg"
+            className="object-contain object-top drop-shadow-lg scale-[1.01]"
           />
         </div>
 

@@ -422,7 +422,7 @@ export default function About() {
                       href={partner.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-black text-white text-[11px] md:text-sm py-1.5 px-3.5 md:py-2 md:px-4 w-full rounded flex items-center justify-center gap-2 cursor-pointer group mt-3 md:mt-4"
+                      className="bg-black text-white text-[11px] md:text-sm py-1.5 px-3.5 md:py-2 md:px-4 w-full rounded flex items-center justify-center gap-2 cursor-pointer group mt-3 md:mt-4 transition-colors duration-300 hover:bg-[#FED018] hover:text-black"
                     >
                       <span className="relative w-3 h-3 md:w-4 md:h-4 font-black">
                         <Image
