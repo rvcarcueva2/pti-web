@@ -8,6 +8,33 @@ export function RegisterButton({ competitionId }: { competitionId: string }) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [isCheckingTeam, setIsCheckingTeam] = useState(false);
+  const [competitionStatus, setCompetitionStatus] = useState<'Open' | 'Closed' | null>(null);
+  const [isLoadingStatus, setIsLoadingStatus] = useState(true);
+
+  // Fetch competition status
+  useEffect(() => {
+    const fetchCompetitionStatus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('competitions')
+          .select('status')
+          .eq('uuid', competitionId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching competition status:', error);
+        } else {
+          setCompetitionStatus(data.status);
+        }
+      } catch (error) {
+        console.error('Error in fetchCompetitionStatus:', error);
+      } finally {
+        setIsLoadingStatus(false);
+      }
+    };
+
+    fetchCompetitionStatus();
+  }, [competitionId]);
 
   const checkUserTeam = async () => {
     try {
@@ -64,27 +91,37 @@ export function RegisterButton({ competitionId }: { competitionId: string }) {
 
   return (
     <>
-      <button
-        onClick={handleRegister}
-        disabled={isCheckingTeam}
-        className="group bg-foreground hover:bg-[#FED018] text-white hover:text-[#1A1A1A] font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isCheckingTeam ? 'Checking...' : 'Register'}
-        <Image
-          src="/icons/Forward Button.svg"
-          alt="Forward"
-          width={24}
-          height={24}
-          className="w-6 h-6 group-hover:hidden"
-        />
-        <Image
-          src="/icons/forward-button2.svg"
-          alt="Forward Hover"
-          width={24}
-          height={24}
-          className="w-6 h-6 hidden group-hover:inline"
-        />
-      </button>
+      {isLoadingStatus ? (
+        <div className="group bg-gray-300 text-gray-600 font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 h-11">
+          Loading...
+        </div>
+      ) : competitionStatus === 'Closed' ? (
+        <div className="bg-red-100 text-red-700 font-semibold py-2 px-6 rounded-sm border border-red-300 whitespace-nowrap flex items-center gap-2 h-11">
+          Registration is closed
+        </div>
+      ) : (
+        <button
+          onClick={handleRegister}
+          disabled={isCheckingTeam}
+          className="group bg-foreground hover:bg-[#FED018] text-white hover:text-[#1A1A1A] font-semibold py-2 px-6 rounded-sm transition-colors duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isCheckingTeam ? 'Checking...' : 'Register'}
+          <Image
+            src="/icons/Forward Button.svg"
+            alt="Forward"
+            width={24}
+            height={24}
+            className="w-6 h-6 group-hover:hidden"
+          />
+          <Image
+            src="/icons/forward-button2.svg"
+            alt="Forward Hover"
+            width={24}
+            height={24}
+            className="w-6 h-6 hidden group-hover:inline"
+          />
+        </button>
+      )}
 
       {/* Modal */}
       {showModal && (

@@ -24,6 +24,8 @@ export default function PlayersPage() {
     const searchParams = useSearchParams();
     const competitionId = searchParams.get('competitionId');
     const [competitionTitle, setCompetitionTitle] = useState<string | null>(null);
+    const [competitionStatus, setCompetitionStatus] = useState<'Open' | 'Closed' | null>(null);
+    const [isLoadingCompetition, setIsLoadingCompetition] = useState(true);
     const [search, setSearch] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -74,15 +76,20 @@ export default function PlayersPage() {
         const fetchCompetition = async () => {
             if (!competitionId) return;
 
+            setIsLoadingCompetition(true);
+
             const { data, error } = await supabase
                 .from('competitions')
-                .select('title')
+                .select('title, status')
                 .eq('uuid', competitionId)
                 .single();
 
             if (!error && data) {
                 setCompetitionTitle(data.title);
+                setCompetitionStatus(data.status);
             }
+
+            setIsLoadingCompetition(false);
         };
 
         const checkTeamRegistration = async () => {
@@ -730,26 +737,63 @@ export default function PlayersPage() {
                 </div>
             )}
 
-            {isCheckingRegistration ? (
+            {isCheckingRegistration || isLoadingCompetition ? (
                 <div className="text-center py-8 lg:py-16 h-40 lg:h-60">
                     <p className="text-gray-600">Checking registration status...</p>
-
+                </div>
+            ) : competitionStatus === 'Closed' ? (
+                <div className="text-center py-8 lg:py-16 h-40 lg:h-60">
+                    <div className="max-w-md mx-auto">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-4">
+                            Registration has been closed
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            This competition is no longer accepting new registrations.
+                        </p>
+                        <button
+                            onClick={() => router.push('/competitions')}
+                            className="px-4 py-2 lg:px-6 lg:py-3 bg-[#EAB044] text-white rounded-md font-bold hover:bg-[#d49a35] transition-colors cursor-pointer"
+                        >
+                            Back to Competitions
+                        </button>
+                    </div>
                 </div>
             ) : isTeamRegistered ? (
                 <div className="text-center py-8 lg:py-16 h-40 lg:h-60">
-                    <p className="text-lg lg:text-xl font-semibold text-gray-800 mb-4 lg:mb-6">
-                        Your team has already been registered in this competition.
-                    </p>
-
-
-
-                    <button
-                        onClick={() => router.push('/registration')}
-                        className="px-4 py-2 lg:px-6 lg:py-3 bg-[#EAB044] text-white rounded-md font-bold hover:bg-[#d49a35] transition-colors cursor-pointer"
-                    >
-                        REGISTRATION
-                    </button>
-
+                    <div className="max-w-md mx-auto">
+                        <div className="w-16 h-16 bg-[#FED018]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg
+                                className="w-8 h-8 text-[#FED018]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                                />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-4">
+                            Your team has already been registered in this competition
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            You can see the status of your registration.
+                        </p>
+                        <button
+                            onClick={() => router.push('/registration')}
+                            className="px-4 py-2 lg:px-6 lg:py-3 bg-[#EAB044] text-white rounded-md font-bold hover:bg-[#d49a35] transition-colors cursor-pointer"
+                        >
+                            Registration
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <>
@@ -764,10 +808,10 @@ export default function PlayersPage() {
                                 onClick={() => {
                                     setNewPlayer(emptyPlayer());
                                     setEditIndex(null);
-                                    setIsCategoryDropdownOpen(false); // Reset dropdown state
-                                    setIsSexDropdownOpen(false); // Reset sex dropdown
-                                    setIsBeltDropdownOpen(false); // Reset belt dropdown
-                                    setFieldErrors({}); // Clear field errors
+                                    setIsCategoryDropdownOpen(false);
+                                    setIsSexDropdownOpen(false);
+                                    setIsBeltDropdownOpen(false);
+                                    setFieldErrors({});
                                     setIsModalOpen(true);
                                 }}
                                 className="cursor-pointer font-bold bg-[#EAB044] text-white px-3 py-2 lg:px-4 lg:py-2 rounded-md text-xs lg:text-sm hover:bg-[#d49a35]"
