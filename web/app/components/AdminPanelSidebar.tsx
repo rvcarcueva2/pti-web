@@ -113,13 +113,15 @@ const AdminPanelSidebar = () => {
     <aside className="fixed top-0 left-0 z-50 h-screen w-64 font-geist flex flex-col justify-between border-r bg-white border-gray-300">
       {/* Logo */}
       <div className="p-6 border-b flex justify-center border-gray-300">
-        <Image
-          src="/PTI-Logo.png"
-          alt="Pilipinas Taekwondo"
-          width={100}
-          height={100}
-          className="transition-all duration-300"
-        />
+        <Link href="/" className="transition-all duration-300 hover:opacity-80">
+          <Image
+            src="/PTI-Logo.png"
+            alt="Pilipinas Taekwondo"
+            width={100}
+            height={100}
+            className="transition-all duration-300 cursor-pointer"
+          />
+        </Link>
       </div>
 
       {/* Navigation */}
