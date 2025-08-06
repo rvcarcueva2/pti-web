@@ -23,6 +23,8 @@ const Register: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(true);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   // Check if user is already signed in
   useEffect(() => {
@@ -59,6 +61,12 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if privacy consent is given
+    if (!privacyConsent) {
+      setErrors({ general: 'You must consent to the data privacy policy to proceed with registration. Click here to review the privacy notice again.' });
+      return;
+    }
     
     setIsLoading(true);
     setErrors({});
@@ -160,6 +168,87 @@ const Register: React.FC = () => {
 
   return (
     <div className="relative font-geist bg-register min-h-screen w-full flex items-center justify-center px-4 pt-14 pb-20 overflow-hidden">
+      {/* Data Privacy Modal */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-800">Data Privacy Notice</h3>
+                <button
+                  className="text-xl font-bold text-gray-600 cursor-pointer"
+                  onClick={() => {
+                    setShowPrivacyModal(false);
+                    setPrivacyConsent(false);
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="text-sm text-gray-700 space-y-3 mb-6">
+                <p>
+                  In compliance with the <strong>Data Privacy Act of 2012</strong>, we inform you that 
+                  your personal information will be collected and used by Pilipinas Taekwondo Inc. (PTI) for:
+                </p>
+                
+                <ul className="space-y-1 ml-4">
+                  <li>• Account creation and management</li>
+                  <li>• Competition registration and participation</li>
+                  <li>• Event communication and updates</li>
+                  <li>• Emergency contact during events</li>
+                </ul>
+
+                <p className="text-sm">
+                  <strong>Your data will be kept secure</strong> and will not be shared with third parties 
+                  without your consent, except as required by law.
+                </p>
+              </div>
+
+              <div className="border-t pt-4 mb-6">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={privacyConsent}
+                    onChange={(e) => setPrivacyConsent(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">
+                    I consent to the collection and use of my personal data as described above. 
+                    I understand I can withdraw this consent by contacting PTI.
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex justify-end">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setShowPrivacyModal(false);
+                      setPrivacyConsent(false);
+                    }}
+                    className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    onClick={() => setShowPrivacyModal(false)}
+                    disabled={!privacyConsent}
+                    className={`cursor-pointer px-4 py-2 rounded text-sm transition-colors ${
+                      privacyConsent
+                        ? 'bg-yellow-500 text-black hover:bg-yellow-600'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Accept & Continue
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Decorative Images */}
       <Image
         src="/images/1.png"
@@ -197,7 +286,21 @@ const Register: React.FC = () => {
         {/* General Error Display */}
         {errors.general && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {errors.general}
+            {errors.general.includes('Click here to review') ? (
+              <span>
+                You must consent to the data privacy policy to proceed with registration. Click{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="underline text-red-700 hover:text-red-800 font-medium cursor-pointer bg-transparent border-none p-0"
+                >
+                  here
+                </button>{' '}
+                to review the privacy notice again.
+              </span>
+            ) : (
+              errors.general
+            )}
           </div>
         )}
 
