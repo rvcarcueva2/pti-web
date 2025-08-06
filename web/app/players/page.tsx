@@ -1132,56 +1132,79 @@ export default function PlayersPage() {
 
                     {/* Submit Confirmation Modal */}
                     {showSubmitConfirmModal && (
-                        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
-                            <div className="bg-white p-3 lg:p-6 rounded-md w-full max-w-xs lg:max-w-md border border-[rgba(0,0,0,0.2)] shadow-lg relative">
-                                <h3 className="text-base lg:text-xl font-semibold mb-2 lg:mb-4 text-gray-800">Confirm Registration</h3>
-                                <p className="mb-3 lg:mb-6 text-gray-700 text-xs lg:text-base">
-                                    These players will be registered to the competition, you cannot edit or delete them after submission.
-                                </p>
-
-                                <div className="mb-3 lg:mb-6">
-                                    <label className="flex items-start space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={agreeToTerms}
-                                            onChange={(e) => {
-                                                setAgreeToTerms(e.target.checked);
-                                                // Clear error when user checks the checkbox
-                                                if (e.target.checked) {
-                                                    setShowCheckboxError(false);
-                                                }
+                        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto border border-[rgba(0,0,0,0.2)] shadow-lg relative">
+                                <div className="p-6">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="text-lg font-semibold text-gray-800">Confirm Registration</h3>
+                                        <button
+                                            className="text-xl font-bold text-gray-600 cursor-pointer"
+                                            onClick={() => {
+                                                setShowSubmitConfirmModal(false);
+                                                setAgreeToTerms(false);
+                                                setShowCheckboxError(false);
                                             }}
-                                            className={`mt-1 rounded border-gray-300 text-[#EAB044] focus:ring-[#EAB044] ${showCheckboxError ? 'ring-2 ring-red-500' : ''
-                                                }`}
-                                        />
-                                        <span className="text-xs lg:text-sm text-gray-700 leading-relaxed">
-                                            I agree that the information I provided is correct and true.
-                                        </span>
-                                    </label>
-                                    {showCheckboxError && (
-                                        <span className="text-red-500 text-xs mt-2 ml-6">
-                                            Please agree to the terms before submitting.
-                                        </span>
-                                    )}
-                                </div>
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
 
-                                <div className="flex flex-col md:flex-row justify-end gap-2 lg:gap-3">
-                                    <button
-                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer text-xs lg:text-base order-2 md:order-1"
-                                        onClick={() => {
-                                            setShowSubmitConfirmModal(false);
-                                            setAgreeToTerms(false);
-                                            setShowCheckboxError(false);
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={confirmSubmitPlayers}
-                                        className="px-3 py-1.5 lg:px-4 lg:py-2 rounded bg-[#EAB044] hover:bg-[#d49a35] text-white cursor-pointer text-xs lg:text-base order-1 md:order-2"
-                                    >
-                                        Confirm
-                                    </button>
+                                    <div className="text-sm text-gray-700 space-y-3 mb-6">
+                                        <p>
+                                            These players will be registered to the competition, you cannot edit or delete them after submission.
+                                        </p>
+                                    </div>
+
+                                    <div className="border-t pt-4 mb-6">
+                                        <label className="flex items-start gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={agreeToTerms}
+                                                onChange={(e) => {
+                                                    setAgreeToTerms(e.target.checked);
+                                                    // Clear error when user checks the checkbox
+                                                    if (e.target.checked) {
+                                                        setShowCheckboxError(false);
+                                                    }
+                                                }}
+                                                className={`mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${showCheckboxError ? 'ring-2 ring-red-500' : ''}`}
+                                            />
+                                            <span className="text-sm text-gray-700">
+                                                I agree that the information I provided is correct and true.
+                                            </span>
+                                        </label>
+                                        {showCheckboxError && (
+                                            <span className="text-red-500 text-xs mt-2 ml-6">
+                                                Please agree to the terms before submitting.
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex justify-end">
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setShowSubmitConfirmModal(false);
+                                                    setAgreeToTerms(false);
+                                                    setShowCheckboxError(false);
+                                                }}
+                                                className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={confirmSubmitPlayers}
+                                                disabled={!agreeToTerms}
+                                                className={`cursor-pointer px-4 py-2 rounded text-sm transition-colors ${
+                                                    agreeToTerms
+                                                        ? 'bg-yellow-500 text-black hover:bg-yellow-600'
+                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                }`}
+                                            >
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
