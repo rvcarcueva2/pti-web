@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     if (!news) {
         return {
-            title: 'News Not Found',
+            title: "Featured | Pilipinas Taekwondo Inc.",
         };
     }
 
