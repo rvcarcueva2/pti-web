@@ -23,7 +23,7 @@ const Register: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [showPrivacyModal, setShowPrivacyModal] = useState(true);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [privacyConsent, setPrivacyConsent] = useState(false);
 
   // Check if user is already signed in
@@ -64,7 +64,7 @@ const Register: React.FC = () => {
     
     // Check if privacy consent is given
     if (!privacyConsent) {
-      setErrors({ general: 'You must consent to the data privacy policy to proceed with registration. Click here to review the privacy notice again.' });
+      setErrors({ terms: 'You must agree to the terms and conditions to proceed with registration.' });
       return;
     }
     
@@ -177,10 +177,7 @@ const Register: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-800">Data Privacy Notice</h3>
                 <button
                   className="text-xl font-bold text-gray-600 cursor-pointer"
-                  onClick={() => {
-                    setShowPrivacyModal(false);
-                    setPrivacyConsent(false);
-                  }}
+                  onClick={() => setShowPrivacyModal(false)}
                 >
                   ×
                 </button>
@@ -205,44 +202,11 @@ const Register: React.FC = () => {
                 </p>
               </div>
 
-              <div className="border-t pt-4 mb-6">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={privacyConsent}
-                    onChange={(e) => setPrivacyConsent(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="text-sm text-gray-700">
-                    I consent to the collection and use of my personal data as described above. 
-                    I understand I can withdraw this consent by contacting PTI.
-                  </span>
-                </label>
-              </div>
-
-              <div className="flex justify-end">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setShowPrivacyModal(false);
-                      setPrivacyConsent(false);
-                    }}
-                    className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                  >
-                    Decline
-                  </button>
-                  <button
-                    onClick={() => setShowPrivacyModal(false)}
-                    disabled={!privacyConsent}
-                    className={`cursor-pointer px-4 py-2 rounded text-sm transition-colors ${
-                      privacyConsent
-                        ? 'bg-yellow-500 text-black hover:bg-yellow-600'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    Accept & Continue
-                  </button>
-                </div>
+              <div className="border-t pt-4">
+                <p className="text-sm text-gray-700">
+                  By registering and checking the agreement box, you consent to the collection and use of your personal data as described above. 
+                  You understand you can withdraw this consent by contacting PTI.
+                </p>
               </div>
             </div>
           </div>
@@ -286,21 +250,7 @@ const Register: React.FC = () => {
         {/* General Error Display */}
         {errors.general && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {errors.general.includes('Click here to review') ? (
-              <span>
-                You must consent to the data privacy policy to proceed with registration. Click{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowPrivacyModal(true)}
-                  className="underline text-red-700 hover:text-red-800 font-medium cursor-pointer bg-transparent border-none p-0"
-                >
-                  here
-                </button>{' '}
-                to review the privacy notice again.
-              </span>
-            ) : (
-              errors.general
-            )}
+            {errors.general}
           </div>
         )}
 
@@ -475,6 +425,36 @@ const Register: React.FC = () => {
               </p>
             )}
           </div>
+
+          {/* Terms and Conditions */}
+          <div>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={privacyConsent}
+                onChange={(e) => setPrivacyConsent(e.target.checked)}
+                className="mt-0.5 h-3.5 w-3.5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <span className="text-sm text-gray-700">
+                I agree to{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="underline text-blue-600 hover:text-blue-800 font-medium cursor-pointer bg-transparent border-none p-0"
+                >
+                  terms and conditions
+                </button>
+                .
+              </span>
+            </label>
+          </div>
+
+          {/* Terms Error Display */}
+          {errors.terms && (
+            <div className="text-responsive text-center mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {errors.terms}
+            </div>
+          )}
 
           {/* Submit Button */}
           <button
