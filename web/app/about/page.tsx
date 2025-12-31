@@ -285,6 +285,43 @@ export default function About() {
         <div className="text-center">
           {/* h3 for mobile only */}
           <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            ABOUT
+          </h2>
+
+          {/* h1 for desktop and up */}
+          <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            ABOUT
+          </h1>
+        </div>
+
+        <p className="text-responsive font-geist font-[450] mt-8 text-justify mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
+          <strong>Pilipinas Taekwondo</strong> is a Taekwondo organization founded in 2018 with a clear and enduring purpose:
+          to uphold the values of traditional Taekwondo while forming disciplined, confident, and principled individuals.
+          We believe that Taekwondo is not merely a sport or physical activity.
+          It is a lifelong discipline that shapes character, instills respect, and develops leadership.</p>
+
+        <p className="text-responsive font-geist font-[450] mt-8 text-justify mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
+          Pilipinas Taekwondo was established as a response to the need for proper guidance, ethical instruction, and value-centered training in the practice of Taekwondo.
+          From its founding, the organization has emphasized discipline over shortcuts, character over rank, and responsibility over recognition.
+
+          Built on the foundation laid by its founder and strengthened by the next generation of leadership, Pilipinas Taekwondo continues to grow as a community bound by tradition, respect, and shared purpose.
+        </p>
+      </section>
+
+      <section className="px-4 sm:px-20 mt-[-20px] mb-[-20px] md:-mt-3">
+        <Image
+          src="/images/PTI.png"
+          alt="PTI Group"
+          width={1200}
+          height={800}
+          className="w-full h-auto max-w-6xl mx-auto"
+        />
+      </section>
+
+      <section className="px-4 mt-5 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
+        <div className="text-center">
+          {/* h3 for mobile only */}
+          <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
             MISSION
           </h2>
 
@@ -294,19 +331,9 @@ export default function About() {
           </h1>
         </div>
 
-        <p className="text-responsive font-geist font-[450] mt-8 text-justify mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
+        <p className="text-responsive font-geist font-[450] mt-8 text-center mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
           To develop and promote the practice of taekwondo to individuals who are passionate on the said sport by providing an excellent quality of training, discipline, and sportsmanship. We aim to support athletes in their journey to national and international success by building an inclusive community for Taekwondoins to excel and grow.
         </p>
-      </section>
-
-      <section className="px-4 sm:px-20 mt-[-18px] mb-[-20px] md:-mt-3">
-        <Image
-          src="/images/PTI.png"
-          alt="PTI Group"
-          width={1200}
-          height={800}
-          className="w-full h-auto max-w-6xl mx-auto"
-        />
       </section>
 
       <section className="px-4 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
@@ -322,13 +349,178 @@ export default function About() {
           </h1>
         </div>
 
-        <p className="text-responsive font-geist font-[450] mt-8 text-justify mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
+        <p className="text-responsive font-geist font-[450] mt-8 text-center mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
           To establish Pilipinas Taekwondo as a dominant force in the global taekwondo community, recognized for its commitment to excellence, integrity, and innovation. We envision a thriving taekwondo community where every athlete has the opportunity to achieve their full potential and contribute to the sport's growth and success both locally and internationally.
         </p>
       </section>
 
+      <section className="px-4 sm:px-6 pt-10 md:pt-16 pb-10">
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row gap-10">
+
+          {/* PHILOSOPHY */}
+          <div className="flex-1 text-center">
+            <div>
+              <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR PHILOSOPHY
+              </h2>
+              <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR PHILOSOPHY
+              </h1>
+            </div>
+
+            <p className="mt-8 text-responsive font-geist font-[450] text-sm md:text-base leading-relaxed text-left pl-6">
+              We believe that:
+            </p>
+
+            <ul className="p-4 pl-10 text-responsive font-geist font-[450] text-left text-sm md:text-base leading-relaxed space-y-2 list-disc list-inside">
+              <li>Technique without character is incomplete</li>
+              <li>Power without discipline is dangerous</li>
+              <li>Rank is earned through responsibility, not entitlement</li>
+              <li>
+                True mastery begins with humility, discipline, and respect for tradition.
+              </li>
+            </ul>
+          </div>
+
+          {/* CORE VALUES */}
+          <div className="flex-1 text-center">
+            <div>
+              <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR CORE VALUES
+              </h2>
+              <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR CORE VALUES
+              </h1>
+            </div>
+
+            <p className="mt-8 text-responsive font-geist font-[450] text-sm md:text-base leading-relaxed text-left pl-6">
+              Pilipinas Taekwondo upholds the traditional tenets of Taekwondo as the foundation of all training:
+            </p>
+
+            <ul className="p-4 pl-10 mx-auto max-w-6xl
+               text-responsive font-geist font-[450]
+               text-left text-sm md:text-base leading-relaxed
+               space-y-3
+               list-disc list-inside">
+              <li>
+                <span className="font-semibold">Courtesy (Ye Ui)</span>
+                <p className="ml-4 ">
+                  Respect for instructors, fellow students, parents, and oneself.
+                </p>
+              </li>
+
+              <li>
+                <span className="font-semibold">Integrity (Yom Chi)</span>
+                <p className="ml-4">
+                  Honesty in action, words, and conduct—both inside and outside the dojang.
+                </p>
+              </li>
+
+              <li>
+                <span className="font-semibold">Perseverance (In Nae)</span>
+                <p className="ml-4">
+                  The strength to endure hardship, challenges, and continuous training.
+                </p>
+              </li>
+
+              <li>
+                <span className="font-semibold">Self-Control (Guk Gi)</span>
+                <p className="ml-4">
+                  Mastery of emotion, behavior, and discipline under pressure.
+                </p>
+              </li>
+
+              <li>
+                <span className="font-semibold">Indomitable Spirit (Baekjul Boolgool)</span>
+                <p className="ml-4">
+                  Courage and resolve that does not yield in the face of adversity.
+                </p>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <section className="px-4 sm:px-6 pt-10 md:pt-16 pb-10">
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row gap-10">
+
+          {/* OUR COMMITMENT */}
+          <div className="flex-1 text-center">
+            <div>
+              <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR COMMITMENT
+              </h2>
+              <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR COMMITMENT
+              </h1>
+            </div>
+
+            <p className="mt-8 text-responsive font-geist font-[450] text-sm md:text-base leading-relaxed text-left pl-6">
+              Pilipinas Taekwondo is committed to:
+            </p>
+
+            <ul className="p-4 pl-10 text-responsive font-geist font-[450] text-left text-sm md:text-base leading-relaxed space-y-2 list-disc list-inside">
+              <li>Proper and ethical instruction</li>
+              <li>Fair and disciplined promotion standards</li>
+              <li>Continuous learning and instructor development</li>
+              <li>Unity and brotherhood among practitioners</li>
+              <li>Preserving the honor and traditions of Taekwondo</li>
+            </ul>
+
+            <p className="mt-2 text-responsive font-geist  text-sm md:text-base leading-relaxed text-justify pl-6">
+              We hold our instructors, officers, and members to the highest standards of
+              conduct, recognizing that leadership is demonstrated through example.
+            </p>
+          </div>
+
+          {/* OUR COMMUNITY */}
+          <div className="flex-1 text-center">
+            <div>
+              <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR COMMUNITY
+              </h2>
+              <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+                OUR COMMUNITY
+              </h1>
+            </div>
+
+            <p className="mt-8 text-responsive font-geist font-[450] text-sm md:text-base leading-relaxed text-left pl-6">
+              Pilipinas Taekwondo is more than an organization—it is a community.
+              Students, parents, instructors, and affiliated clubs are united by shared values, mutual respect, and a commitment to growth.
+
+              Every member represents the organization not only in uniform, but in daily life.
+            </p>
+
+
+          </div>
+
+        </div>
+      </section>
+
+      <section className="px-4 mt-5 sm:px-4 pt-10 md:pt-16 pb-10 text-center">
+        <div className="text-center">
+          {/* h3 for mobile only */}
+          <h2 className="block md:hidden font-poppins-black text-2xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            OUR PURPOSE MOVING FORWARD
+          </h2>
+
+          {/* h1 for desktop and up */}
+          <h1 className="hidden md:block font-poppins-black text-3xl border-b-4 border-[#FED018] w-fit mx-auto pb-2">
+            OUR PURPOSE MOVING FORWARD
+          </h1>
+        </div>
+
+        <p className="text-responsive font-geist font-[450] mt-8 text-center mx-auto max-w-6xl text-sm md:text-base leading-relaxed">
+          As Pilipinas Taekwondo continues to grow, we remain guided by the same principles upon which it was founded:
+          discipline, honor, responsibility, and service.
+
+          We move forward not in haste, but with purpose—building individuals who carry the values of Taekwondo for life.</p>
+      </section>
+
+
       {/* AFFILIATIONS Carousel */}
-      <section className="bg-[#1A1A1A] text-white text-center py-10 md:py-16 font-geist relative">
+      <section className="bg-[#1A1A1A] text-white text-center py-10 md:py-16 mt-30 font-geist relative">
         <div className="text-center mb-10">
           <h3 className="block md:hidden font-poppins-black text-[#FED018] text-lg w-fit mx-auto">AFFILIATIONS</h3>
           <h2 className="hidden md:block font-poppins-black text-[#FED018] text-xl w-fit mx-auto">AFFILIATIONS</h2>
