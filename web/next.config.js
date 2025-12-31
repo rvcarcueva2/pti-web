@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
+  reactStrictMode: true,
   devIndicators: false,
   images: {
     domains: ['ynguattppcreuxywihzv.supabase.co'],
