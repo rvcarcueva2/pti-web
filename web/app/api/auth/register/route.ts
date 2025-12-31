@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: insertError.message }, { status: 400 })
     }
 
-    console.log('✅ User registered with default role: User')
     return NextResponse.json({ success: true, user: authData.user, profile: insertData })
 
   } catch (error) {
