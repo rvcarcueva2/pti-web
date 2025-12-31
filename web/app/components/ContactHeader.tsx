@@ -64,7 +64,7 @@ export default function Header() {
                 rel="noopener noreferrer"
             >
                 <Image
-                    src="/icons/Youtube.svg"
+                    src="/icons/YouTube.svg"
                     alt="YouTube"
                     width={22}
                     height={22}
