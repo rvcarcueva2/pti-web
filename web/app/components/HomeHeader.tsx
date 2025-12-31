@@ -121,7 +121,7 @@ export default function HomeHeader() {
               <Image src="/icons/Instagram.svg" alt="Instagram" width={20} height={20} className="hover:opacity-80 transition" />
             </a>
             <a href="https://www.youtube.com/@pilipinastaekwondo" target="_blank" rel="noopener noreferrer">
-              <Image src="/icons/Youtube.svg" alt="YouTube" width={22} height={22} className="hover:opacity-80 transition" />
+              <Image src="/icons/YouTube.svg" alt="YouTube" width={22} height={22} className="hover:opacity-80 transition" />
             </a>
           </div>
         </div>
