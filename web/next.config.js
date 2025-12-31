@@ -3,7 +3,7 @@
 const nextConfig = {
   /* config options here */
   reactStrictMode: true,
-  devIndicators: false,
+
   images: {
     domains: ['ynguattppcreuxywihzv.supabase.co'],
     remotePatterns: [
@@ -16,4 +16,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

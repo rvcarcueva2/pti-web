@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import { Poppins } from "next/font/google";
 import FooterWrapper from "@/app/components/FooterWrapper";
 import ResponsiveHeader from "@/app/components/ResponsiveHeader";
@@ -7,15 +7,9 @@ import ResponsiveHeader from "@/app/components/ResponsiveHeader";
 import "../lib/fontawesome";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+
+
 
 const poppinsBlack = Poppins({
   weight: "900",
@@ -45,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
+        className={` ${poppinsBlack.variable} ${poppinsRegular.variable} antialiased`}
         suppressHydrationWarning={true}
       >
         <ResponsiveHeader /> {/* <-- Updated this */}

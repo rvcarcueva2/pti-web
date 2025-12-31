@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;700&display=swap');
 @import "tailwindcss";
+
+
 
 :root {
   --background: #F7F7F7;
@@ -24,7 +27,8 @@
 }
 
 .font-geist {
-  font-family: var(--font-geist-sans);
+  font-family: 'Geist', sans-serif;
+
 }
 
 .font-poppins-regular {
@@ -44,19 +48,50 @@ body {
   color: var(--foreground);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
 }
 
-h1 { font-size: 2.25rem; font-weight: 900;} /* 36px */
-h2 { font-size: 1.875rem; } /* 30px */
-h3 { font-size: 1.5rem; }   /* 24px */
-h4 { font-size: 1.25rem; }  /* 20px */
-h5 { font-size: 1.125rem; } /* 18px */
-h6 { font-size: 1rem; }     /* 16px */
+h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+}
+
+/* 36px */
+h2 {
+  font-size: 1.875rem;
+}
+
+/* 30px */
+h3 {
+  font-size: 1.5rem;
+}
+
+/* 24px */
+h4 {
+  font-size: 1.25rem;
+}
+
+/* 20px */
+h5 {
+  font-size: 1.125rem;
+}
+
+/* 18px */
+h6 {
+  font-size: 1rem;
+}
+
+/* 16px */
 
 p {
-  font-size: 1rem; /* 16px */
+  font-size: 1rem;
+  /* 16px */
   line-height: 1.5;
 }
 
@@ -72,26 +107,30 @@ input[type="password"]::-webkit-textfield-decoration-container {
   pointer-events: none;
 }
 
- @media (max-width: 1490px) {
-    .text-responsive {
-      font-size: 1rem; /* ~16px */
-    }
+@media (max-width: 1490px) {
+  .text-responsive {
+    font-size: 1rem;
+    /* ~16px */
   }
+}
 
-  @media (max-width: 1280px) {
-    .text-responsive {
-      font-size: 0.875rem; /* 14px */
-    }
+@media (max-width: 1280px) {
+  .text-responsive {
+    font-size: 0.875rem;
+    /* 14px */
   }
+}
 
-  @media (max-width: 1024px) {
-    .text-responsive {
-      font-size: 0.8125rem; /* 13px */
-    }
+@media (max-width: 1024px) {
+  .text-responsive {
+    font-size: 0.8125rem;
+    /* 13px */
   }
+}
 
-  @media (max-width: 768px) {
-    .text-responsive {
-      font-size: 0.8125rem; /* 13px */
-    }
+@media (max-width: 768px) {
+  .text-responsive {
+    font-size: 0.8125rem;
+    /* 13px */
   }
+}

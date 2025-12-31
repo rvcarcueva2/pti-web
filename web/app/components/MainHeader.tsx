@@ -4,17 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Geist } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faBars, faTimes, faUser, faSignOutAlt, faChevronDown, faBookmark, faChartSimple, faPenNib } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faSquareInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { faBars, faTimes, faUser, faSignOutAlt, faChevronDown, faBookmark, faChartSimple, faPenNib } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
 
 export default function Header() {
     const pathname = usePathname();
