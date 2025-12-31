@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -19,7 +19,7 @@ type Player = {
     level: string;
 };
 
-export default function PlayersPage() {
+function PlayersPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const competitionId = searchParams.get('competitionId');
@@ -1426,4 +1426,61 @@ export default function PlayersPage() {
             </div>
         );
     }
+}
+
+// Loading fallback component
+const PlayersPageLoading = () => {
+    return (
+        <div className="bg-white min-h-screen">
+            <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="animate-pulse">
+                    {/* Header */}
+                    <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+                    
+                    {/* Tabs */}
+                    <div className="flex space-x-4 mb-6">
+                        <div className="h-10 bg-gray-200 rounded w-24"></div>
+                        <div className="h-10 bg-gray-200 rounded w-24"></div>
+                        <div className="h-10 bg-gray-200 rounded w-32"></div>
+                    </div>
+                    
+                    {/* Search and Add button */}
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="h-10 bg-gray-200 rounded w-64"></div>
+                        <div className="h-10 bg-gray-200 rounded w-32"></div>
+                    </div>
+                    
+                    {/* Table header */}
+                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div className="grid grid-cols-6 gap-4">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Table rows */}
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="bg-white border rounded-lg p-4 mb-2">
+                            <div className="grid grid-cols-6 gap-4">
+                                {[...Array(6)].map((_, j) => (
+                                    <div key={j} className="h-4 bg-gray-200 rounded"></div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Main component with Suspense boundary
+export default function PlayersPage() {
+    return (
+        <Suspense fallback={<PlayersPageLoading />}>
+            <PlayersPageContent />
+        </Suspense>
+    );
 }

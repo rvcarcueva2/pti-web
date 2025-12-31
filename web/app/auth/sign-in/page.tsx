@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
-const SignIn: React.FC = () => {
+const SignInForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || '/';
@@ -272,6 +272,66 @@ const SignIn: React.FC = () => {
         </p>
       </div>
     </div>
+  );
+};
+
+// Loading fallback component
+const SignInLoading: React.FC = () => {
+  return (
+    <div className="relative font-geist bg-sign-in min-h-screen w-full flex items-center justify-center px-4 pt-14 pb-20 overflow-hidden">
+      {/* Decorative Images */}
+      <Image
+        src="/images/1.png"
+        alt="Top Left Decoration"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 120px, 200px"
+        className="absolute top-0 left-0 z-0 w-[120px] md:w-[200px]"
+      />
+      <Image
+        src="/images/2.png"
+        alt="Bottom Right Decoration"
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 240px, 500px"
+        className="absolute bottom-0 right-0 z-0 w-[240px] md:w-[500px]"
+      />
+
+      {/* Loading Container */}
+      <div className="relative z-10 w-full max-w-md text-center rounded-lg p-6">
+        {/* Logo */}
+        <div className="mb-6">
+          <Link href="/">
+            <Image
+              src="/PTI-Logo.png"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="mx-auto cursor-pointer"
+            />
+          </Link>
+        </div>
+
+        {/* Loading Content */}
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main component with Suspense boundary
+const SignIn: React.FC = () => {
+  return (
+    <Suspense fallback={<SignInLoading />}>
+      <SignInForm />
+    </Suspense>
   );
 };
 
