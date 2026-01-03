@@ -208,9 +208,8 @@ const SignInForm: React.FC = () => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ paddingRight: '2.5rem' }} // 🔥 force spacing
-              className={`w-full px-4 py-2 rounded outline-none bg-[#F9F8F8] border ${errors.password ? 'border-[#D41716]' : 'border-black/20'
-                } focus:ring-2 focus:ring-black`}
+              className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
+              style={{ paddingRight: '3rem' }} 
             />
             <button
               type="button"
