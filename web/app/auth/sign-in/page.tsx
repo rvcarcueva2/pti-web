@@ -215,26 +215,21 @@ const SignInForm: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5 flex items-center justify-center"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               tabIndex={-1}
             >
-              {showPassword ? (
+              <span className="relative block w-5 h-5">
                 <Image
-                  src="/icons/hide-password.svg"
-                  alt="Hide password"
-                  width={20}
-                  height={20}
+                  src={
+                    showPassword
+                      ? '/icons/hide-password.svg'
+                      : '/icons/show-password.svg'
+                  }
+                  alt={showPassword ? 'Hide password' : 'Show password'}
+                  fill
                   className="object-contain"
                 />
-              ) : (
-                <Image
-                  src="/icons/show-password.svg"
-                  alt="Show password"
-                  width={20}
-                  height={20}
-                  className="object-contain"
-                />
-              )}
+              </span>
             </button>
             {errors.password && (
               <p className="text-sm text-[#D41716] mt-1">

@@ -371,16 +371,21 @@ const Register: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-11 -translate-y-1/2 text-gray-500 h-5 w-5 flex items-center justify-center"
+              className="absolute right-3 top-1/2 -translate-y-1/2"
               tabIndex={-1}
             >
-              <Image
-                src={showPassword ? '/icons/hide-password.svg' : '/icons/show-password.svg'}
-                alt="Toggle password"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <span className="block w-5 h-5">
+                <Image
+                  src={
+                    showPassword
+                      ? '/icons/hide-password.svg'
+                      : '/icons/show-password.svg'
+                  }
+                  alt="Toggle password"
+                  fill
+                  className="object-contain"
+                />
+              </span>
             </button>
             {errors.password && (
               <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>
@@ -404,21 +409,23 @@ const Register: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-11 -translate-y-1/2 text-gray-500 h-5 w-5 flex items-center justify-center"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               tabIndex={-1}
             >
-              <Image
-                src={
-                  showConfirmPassword
-                    ? '/icons/hide-password.svg'
-                    : '/icons/show-password.svg'
-                }
-                alt="Toggle confirm password"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <span className="relative block w-5 h-5">
+                <Image
+                  src={
+                    showConfirmPassword
+                      ? '/icons/hide-password.svg'
+                      : '/icons/show-password.svg'
+                  }
+                  alt="Toggle confirm password"
+                  fill
+                  className="object-contain"
+                />
+              </span>
             </button>
+
             {errors.confirmPassword && (
               <p className="text-sm text-[#D41716] mt-1">
                 {errors.confirmPassword}
