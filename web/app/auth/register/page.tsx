@@ -61,13 +61,13 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Check if privacy consent is given
     if (!privacyConsent) {
       setErrors({ terms: 'You must agree to the terms and conditions to proceed with registration.' });
       return;
     }
-    
+
     setIsLoading(true);
     setErrors({});
 
@@ -121,14 +121,14 @@ const Register: React.FC = () => {
         if (response.ok) {
           // Registration successful
           console.log('Registration successful:', data);
-          
+
           // Now sign in the user automatically
           try {
             const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
               email: formData.email,
               password: formData.password,
             });
-            
+
             if (signInError) {
               console.error('Auto sign-in failed:', signInError);
               // Still redirect to home, but user will need to sign in manually
@@ -162,7 +162,7 @@ const Register: React.FC = () => {
         setErrors({ general: 'Network error. Please check your connection and try again.' });
       }
     }
-    
+
     setIsLoading(false);
   };
 
@@ -185,10 +185,10 @@ const Register: React.FC = () => {
 
               <div className="text-sm text-gray-700 space-y-3 mb-6">
                 <p>
-                  In compliance with the <strong>Data Privacy Act of 2012</strong>, we inform you that 
+                  In compliance with the <strong>Data Privacy Act of 2012</strong>, we inform you that
                   your personal information will be collected and used by Pilipinas Taekwondo Inc. (PTI) for:
                 </p>
-                
+
                 <ul className="space-y-1 ml-4">
                   <li>• Account creation and management</li>
                   <li>• Competition registration and participation</li>
@@ -197,14 +197,14 @@ const Register: React.FC = () => {
                 </ul>
 
                 <p className="text-sm">
-                  <strong>Your data will be kept secure</strong> and will not be shared with third parties 
+                  <strong>Your data will be kept secure</strong> and will not be shared with third parties
                   without your consent, except as required by law.
                 </p>
               </div>
 
               <div className="border-t pt-4">
                 <p className="text-sm text-gray-700">
-                  By registering and checking the agreement box, you consent to the collection and use of your personal data as described above. 
+                  By registering and checking the agreement box, you consent to the collection and use of your personal data as described above.
                   You understand you can withdraw this consent by contacting PTI.
                 </p>
               </div>
@@ -353,7 +353,7 @@ const Register: React.FC = () => {
             )}
           </div>
 
-          
+
           {/* Password */}
           <div className="relative">
             <label className="block text-sm font-semibold mb-1">
@@ -365,12 +365,13 @@ const Register: React.FC = () => {
               placeholder="Create a password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 pr-10 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
+              style={{ paddingRight: '2.5rem' }}
+              className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
+              className="absolute right-3 top-11 -translate-y-1/2 text-gray-500 h-5 w-5 flex items-center justify-center"
               tabIndex={-1}
             >
               <Image
@@ -397,14 +398,13 @@ const Register: React.FC = () => {
               placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 pr-10 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
+              style={{ paddingRight: '2.5rem' }}
+              className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
             <button
               type="button"
-              onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
-              className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-11 -translate-y-1/2 text-gray-500 h-5 w-5 flex items-center justify-center"
               tabIndex={-1}
             >
               <Image
@@ -460,11 +460,10 @@ const Register: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full font-semibold py-2 rounded transition cursor-pointer ${
-              isLoading
-                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                : 'bg-[#1A1A1A] text-white hover:opacity-90'
-            }`}
+            className={`w-full font-semibold py-2 rounded transition cursor-pointer ${isLoading
+              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+              : 'bg-[#1A1A1A] text-white hover:opacity-90'
+              }`}
           >
             {isLoading ? 'Creating Account...' : 'Register'}
           </button>
