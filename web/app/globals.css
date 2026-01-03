@@ -95,6 +95,10 @@ p {
   line-height: 1.5;
 }
 
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
 
 
 
