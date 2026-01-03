@@ -355,77 +355,36 @@ const Register: React.FC = () => {
 
 
           {/* Password */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold mb-1">
               Password<span className="text-[#D41716]">*</span>
             </label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               name="password"
               placeholder="Create a password"
               value={formData.password}
               onChange={handleChange}
-              style={{ paddingRight: '2.5rem' }}
               className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-              tabIndex={-1}
-            >
-              <span className="block w-5 h-5">
-                <Image
-                  src={
-                    showPassword
-                      ? '/icons/hide-password.svg'
-                      : '/icons/show-password.svg'
-                  }
-                  alt="Toggle password"
-                  fill
-                  className="object-contain"
-                />
-              </span>
-            </button>
             {errors.password && (
               <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>
             )}
           </div>
 
           {/* Confirm Password */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold mb-1">
               Confirm Password<span className="text-[#D41716]">*</span>
             </label>
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type="password"
               name="confirmPassword"
               placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              style={{ paddingRight: '2.5rem' }}
               className="w-full px-4 py-2 rounded bg-[#F9F8F8] border border-black/20 outline-none focus:ring-2 focus:ring-black"
             />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-              tabIndex={-1}
-            >
-              <span className="relative block w-5 h-5">
-                <Image
-                  src={
-                    showConfirmPassword
-                      ? '/icons/hide-password.svg'
-                      : '/icons/show-password.svg'
-                  }
-                  alt="Toggle confirm password"
-                  fill
-                  className="object-contain"
-                />
-              </span>
-            </button>
-
             {errors.confirmPassword && (
               <p className="text-sm text-[#D41716] mt-1">
                 {errors.confirmPassword}

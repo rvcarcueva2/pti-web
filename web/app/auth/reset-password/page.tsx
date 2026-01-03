@@ -189,64 +189,36 @@ const ResetPasswordForm: React.FC = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} noValidate className="space-y-4 text-left">
           {/* New Password */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold mb-1">
               New Password <span className="text-[#D41716]">*</span>
             </label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               placeholder="Enter your new password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${errors.password ? 'border-[#D41716]' : 'border-black/20'
+              className={`w-full px-4 py-2 rounded outline-none bg-[#F9F8F8] border ${errors.password ? 'border-[#D41716]' : 'border-black/20'
                 } focus:ring-2 focus:ring-black`}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
-              tabIndex={-1}
-            >
-              <Image
-                src={showPassword ? '/icons/hide-password.svg' : '/icons/show-password.svg'}
-                alt="Toggle password"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
-            </button>
             {errors.password && (
               <p className="text-sm text-[#D41716] mt-1">{errors.password}</p>
             )}
           </div>
 
           {/* Confirm New Password */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-semibold mb-1">
               Confirm New Password <span className="text-[#D41716]">*</span>
             </label>
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type="password"
               placeholder="Confirm your new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full px-4 py-2 pr-10 rounded outline-none bg-[#F9F8F8] border ${errors.confirmPassword ? 'border-[#D41716]' : 'border-black/20'
+              className={`w-full px-4 py-2 rounded outline-none bg-[#F9F8F8] border ${errors.confirmPassword ? 'border-[#D41716]' : 'border-black/20'
                 } focus:ring-2 focus:ring-black`}
             />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-[34px] text-gray-500 h-5 w-5 flex items-center justify-center"
-              tabIndex={-1}
-            >
-              <Image
-                src={showConfirmPassword ? '/icons/hide-password.svg' : '/icons/show-password.svg'}
-                alt="Toggle confirm password"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
-            </button>
             {errors.confirmPassword && (
               <p className="text-sm text-[#D41716] mt-1">{errors.confirmPassword}</p>
             )}
